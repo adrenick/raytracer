@@ -1,0 +1,33 @@
+/* 	Alexa Drenick
+	CSC 473
+	Raytracer Project */
+
+#include "SceneObject.hpp"
+
+//#include "ray.hpp"
+
+class Plane : public SceneObject
+{
+public:
+
+	glm::vec3 normal;
+	float distance;
+	glm::vec3 color;
+
+	float intersect(const ray & r);
+	void print(void);
+
+		Plane(glm::vec3 n, float d, glm::vec3 c)
+		{
+			normal = n;
+			distance = d;
+			color = c;
+		}
+		Plane()
+		{
+			normal = glm::vec3(0., 0., 0.);
+			distance = 0.;
+			color = glm::vec3(1., 1., 1.);
+		}
+		
+};
