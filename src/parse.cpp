@@ -25,7 +25,7 @@ vec3 Parse::ParseVector(stringstream & Stream)
 	stringbuf buf;
 
 	//Stream.ignore(1, '<');
-	Stream.ignore(3, '<');
+	Stream.ignore(10, '<');
 	Stream.get(buf, '>');
 	if (Stream.eof()){
     	cerr << "Expected <x, y, z>'" << endl;
@@ -125,6 +125,36 @@ SceneObject * Parse::ParsePlane(stringstream & Stream)
     SceneObject * obj = new Plane(n, d, c);
 
     return obj;
+}
+
+Camera * Parse::ParseCamera(std::stringstream & Stream)
+{
+	vec3 l;
+	vec3 u;
+	vec3 r;
+	vec3 la;
+	stringbuf buf;
+
+	Stream.get(buf, 'n');
+	l = Parse::ParseVector(Stream);
+
+	Stream.get(buf, 'p');
+	u = Parse::ParseVector(Stream);
+
+	//buf.clear();
+	Stream.get(buf, 'h');
+	Stream.ignore(1, 't');
+	//string line = buf.str();
+	//cout << "R***: " << line << endl;
+	r = Parse::ParseVector(Stream);
+
+	Stream.get(buf, '_');
+	Stream.ignore(1, 'a');
+	Stream.ignore(1, 't');
+	la = Parse::ParseVector(Stream);
+
+	//cout << "camera" << endl;
+	return new Camera(l, u, r, la);
 }
 
 

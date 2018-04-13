@@ -6,17 +6,22 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <iomanip>
+
 using namespace std;
 using namespace glm;
 
-void printScene(vector <SceneObject *> scene);
-void parseFile(string filename, vector <SceneObject *> & scene);
+void printScene(vector <SceneObject *> scene, Camera * & camera);
+void parseFile(string filename, vector <SceneObject *> & scene, Camera * & camera);
 
 int main(int argc, char *argv[])
 {
 	stringstream s;
 	vec3 v;
 	vector <SceneObject *> scene;
+	Camera * camera;
+
+	std::cout << std::fixed << std::setprecision(4);
 
 	if (argc < 2){
 		cerr << "Unexpected usage" << endl;
@@ -37,8 +42,8 @@ int main(int argc, char *argv[])
 			return 0;
 
 		}
-		parseFile(argv[2], scene);
-		printScene(scene);
+		parseFile(argv[2], scene, camera);
+		printScene(scene, camera);
 	} else if (exec.compare("pixelray") == 0) {
 		if (argc != 7){
 			cerr << "Usage: ./raytrace pixelray <input_filename> <width> <height> <x> <y>" << endl;
@@ -75,7 +80,7 @@ int main(int argc, char *argv[])
 	return 0;
 }
 
-void parseString(std::stringstream & stream, vector <SceneObject *> & scene)
+void parseString(std::stringstream & stream, vector <SceneObject *> & scene, Camera * & camera)
 {
 	std::string token;
 	std::string trash;
@@ -95,14 +100,19 @@ void parseString(std::stringstream & stream, vector <SceneObject *> & scene)
 			//cout << "** TOKEN PLANE**" << endl;
 			stream.ignore(3, '{');
 			scene.push_back(Parse::ParsePlane(stream));
-		} else if (token.substr(0, 2) == "\\") {
+		} //else if (token.find("\\") == nopos) {
+		else if (token.substr(0, 2) == "//") { //NOT THROWING OUT COMMENTS
+			//cout << "FOUND COMMENT" << endl;
 			getline(stream, trash);
-		} 
+		} else if (token.compare("camera") == 0){
+			stream.ignore(3, '{');
+			camera = Parse::ParseCamera(stream);
+		}
 	}
 	//printScene(scene);
 }
 
-void parseFile(string filename, vector <SceneObject *> &scene)
+void parseFile(string filename, vector <SceneObject *> &scene, Camera * & camera)
 {
 	//cout << "hello" << endl;
 	stringstream s;
@@ -113,19 +123,20 @@ void parseFile(string filename, vector <SceneObject *> &scene)
 
 	s.str(content);
 
-	parseString(s, scene);
+	parseString(s, scene, camera);
 
 }
 
-void printScene(vector <SceneObject *> scene)
+void printScene(vector <SceneObject *> scene, Camera * & camera)
 {
 	//cout << "printScene" << endl;
 
 	cout << "Camera: " << endl;
-	cout << "\n\n --- \n\n" << endl;
+	(camera)->print();
+	cout << "\n --- \n\n" << endl;
 
 	cout << "1 light(s)\n" << endl;
-	cout << "\n\n --- \n\n" << endl;
+	cout << "\n --- \n\n" << endl;
 
 	cout << scene.size() << " object(s)\n" << endl;
 	for (int i = 0; i < scene.size(); i++){
