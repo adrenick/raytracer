@@ -36,4 +36,8 @@ public:
 
 	static Light * ParseLight(std::stringstream & Stream);
 
+	static float ParseAmbient(std::stringstream & Stream);
+
+	static float ParseDiffuse(std::stringstream & Stream);
+
 };

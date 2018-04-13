@@ -47,5 +47,6 @@ void Sphere::print(void)
 	cout << "- Center: {" << origin.x << " " << origin.y << " " << origin.z << "}" << endl;
 	cout << "- Radius: " << radius << endl;
 	cout << "- Color: {" << color.x << " " << color.y << " " << color.z << "}" << endl;
+	cout << "- Material: \n  -Ambient: " << ambient << "\n  -Diffuse: " << diffuse << endl;
 	cout << endl;
 }

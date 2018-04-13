@@ -50,6 +50,8 @@ SceneObject * Parse::ParseSphere(stringstream & Stream)
 	vec3 v;
 	vec3 c;
 	float d;
+	float amb;
+	float diff;
 	stringbuf buf;
 
 	//cout << "**SPHERE**" << endl;
@@ -78,19 +80,65 @@ SceneObject * Parse::ParseSphere(stringstream & Stream)
 
     c = Parse::ParseVector(Stream);
 
+	amb = Parse::ParseAmbient(Stream);
+
+	diff = Parse::ParseDiffuse(Stream);
+
     //std::cout << c.x << " " << c.y << " " << c.z << std::endl;
 
     SceneObject * obj = new Sphere(v, d, c);
+    obj->ambient = amb;
+    obj->diffuse = diff;
 
     return obj;
 
+}
+
+float Parse::ParseAmbient(stringstream & Stream)
+{
+	float a;
+	stringbuf buf;
+
+	Stream.get(buf, '{');
+    Stream.get(buf, 't');
+    Stream.ignore(1, 't');
+    buf.str("");
+    Stream.get(buf, 'd');
+    string line = buf.str();
+    //cout << "line: " << line << endl;
+    int read = sscanf(line.c_str(), "%f", &a);
+	if (read != 1)
+	{
+		cerr << "Expected to read 1 material ambient constant but found '" << line << "'" << endl;
+	}
+
+	return a;
+}
+
+float Parse::ParseDiffuse(stringstream & Stream)
+{
+	float d;
+	stringbuf buf;
+
+	Stream.get(buf, 'e');
+    Stream.ignore(1, 'e');
+    buf.str("");
+    Stream.get(buf, '}');
+    string line = buf.str();
+    //cout << "line: " << line << endl;
+    int read = sscanf(line.c_str(), "%f", &d);
+	if (read != 1)
+	{
+		cerr << "Expected to read 1 material ambient constant but found '" << line << "'" << endl;
+	}
+	return d;
 }
 
 SceneObject * Parse::ParsePlane(stringstream & Stream)
 {
 	vec3 n;
 	vec3 c;
-	float d;
+	float d, amb, diff;
 	stringbuf buf;
 
 	//cout << "**PLANE**" << endl;
@@ -120,9 +168,15 @@ SceneObject * Parse::ParsePlane(stringstream & Stream)
 
     c = Parse::ParseVector(Stream);
 
+    amb = Parse::ParseAmbient(Stream);
+
+	diff = Parse::ParseDiffuse(Stream);
+
     //std::cout << c.x << " " << c.y << " " << c.z << std::endl;
 
     SceneObject * obj = new Plane(n, d, c);
+    obj->ambient = amb;
+    obj->diffuse = diff;
 
     return obj;
 }

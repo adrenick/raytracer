@@ -308,7 +308,7 @@ void printScene(vector <SceneObject *> scene, Camera * & camera, vector <Light *
 
 	cout << lights.size() << " light(s)\n" << endl;
 	for (int i = 0; i < lights.size(); i++){
-		cout << "Object[" << i << "]:" << endl;
+		cout << "Light[" << i << "]:" << endl;
 		(lights[i])->print();
 	}
 	cout << "\n --- \n\n" << endl;

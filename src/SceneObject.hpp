@@ -13,6 +13,8 @@ class SceneObject
 public:
 	//SceneObject() {}
 	//virtual ~SceneObject() {}
+	float ambient;
+	float diffuse;
 
 	virtual float intersect(const ray & r) = 0;
 		//virtual ~SceneObject() {};
