@@ -11,15 +11,17 @@ float Plane::intersect(const ray & r)
 	float top = distance-dot(r.origin, normal);
 	float bottom = dot(r.direction, normal);
 
-	float solution = -1;
+	//float solution = -1;
 	if (bottom == 0){
 		//cout << "no intersection" << endl;
+		return -1;
 	} else {
 		//cout << "intersection" << endl;
-		solution = top/bottom;
+		return top/bottom;
+		//cout << solution << endl;
 	}
 
-	return solution;
+	//return solution;
 }
 
 void Plane::print(void)

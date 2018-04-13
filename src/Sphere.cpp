@@ -30,15 +30,16 @@ float Sphere::intersect(const ray & r)
 	} else if (disc < 0) {
 		//cout << "no solutions" << endl;
 		return -1;
-	} else {
+	} else if (disc == 0){
 		//cout << "1 solution" << endl;
 		//solution = -B/(2*A);
 		return -B/(2*A);
 		//cout << solution << endl;
 	}
+	return -1;
 
 	//return -1;
-}
+} //failing 10, 11, 14, 15
 
 void Sphere::print(void)
 {

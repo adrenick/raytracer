@@ -98,12 +98,14 @@ void pixelRay(vector <SceneObject *> scene, Camera * & camera, int width, int he
 	vec3 origin = camera->location;
 	//vec3 dir = dot(Us, camera->right)+dot(Vs, camera->up)+dot(Ws, camera->look_at);
 	vec3 dir = normalize((Us * camera->right)+(Vs * camera->up)+(Ws * normalize(camera->location-camera->look_at)));
+	
+
 	//vec3 dir = normalize((Us * camera->right)+(Vs * camera->up)+(Ws * camera->look_at));
 
 	cout << "Pixel: [" << x << ", " << y << "] Ray: {";
-	cout << "origin: " << origin.x << " " << origin.y << " " << origin.z;
+	cout << origin.x << " " << origin.y << " " << origin.z;
 	cout << "} -> {";
-	cout << "direction: " << dir.x << " " << dir.y << " " << dir.z << "}" << endl;
+	cout << dir.x << " " << dir.y << " " << dir.z << "}" << endl;
 }
 
 void firstHit(vector <SceneObject *> scene, Camera * & camera, int width, int height, int x, int y)
@@ -119,15 +121,15 @@ void firstHit(vector <SceneObject *> scene, Camera * & camera, int width, int he
 	//vec3 dir = normalize((Us * camera->right)+(Vs * camera->up)+(Ws * camera->look_at));
 
 	cout << "Pixel: [" << x << ", " << y << "] Ray: {";
-	cout << "origin: " << origin.x << " " << origin.y << " " << origin.z;
+	cout << origin.x << " " << origin.y << " " << origin.z;
 	cout << "} -> {";
-	cout << "direction: " << dir.x << " " << dir.y << " " << dir.z << "}" << endl;
+	cout << dir.x << " " << dir.y << " " << dir.z << "}" << endl;
 
 	float closestHit = -1;
 	float closestObjIndex = -1;
 	for (int i = 0; i < scene.size(); i++){
 		float hit = scene[i]->intersect(ray(origin, dir));
-		if (closestHit == -1){
+		if ((hit > 0) && (closestHit == -1)){
 			closestHit = hit;
 			closestObjIndex = i;
 		}
