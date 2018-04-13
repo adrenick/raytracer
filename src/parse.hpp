@@ -9,6 +9,7 @@
 #include "Plane.hpp"
 #include "Sphere.hpp"
 #include "camera.hpp"
+#include "Light.hpp"
 
 //#include "ray.hpp"
 
@@ -32,5 +33,7 @@ public:
 	static SceneObject * ParsePlane(std::stringstream & Stream);
 
 	static Camera * ParseCamera(std::stringstream & Stream);
+
+	static Light * ParseLight(std::stringstream & Stream);
 
 };

@@ -157,5 +157,23 @@ Camera * Parse::ParseCamera(std::stringstream & Stream)
 	return new Camera(l, u, r, la);
 }
 
+Light * Parse::ParseLight(std::stringstream & Stream)
+{
+	vec3 l;
+	vec3 c;
+	stringbuf buf;
+
+	//Stream.ignore(1, '{');
+	l = Parse::ParseVector(Stream);
+
+	Stream.get(buf, 'b');
+	//Stream.ignore(10, '{');
+    //Stream.ignore(15, 'g');
+	c = Parse::ParseVector(Stream);
+
+	return new Light(l, c);
+
+
+}
 
 

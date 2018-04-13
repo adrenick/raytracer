@@ -3,6 +3,7 @@
 	Raytracer Project */
 
 #include "parse.hpp"
+
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -11,14 +12,17 @@
 using namespace std;
 using namespace glm;
 
-void printScene(vector <SceneObject *> scene, Camera * & camera);
-void parseFile(string filename, vector <SceneObject *> & scene, Camera * & camera);
+void printScene(vector <SceneObject *> scene, Camera * & camera, vector <Light *> & lights);
+void pixelRay(vector <SceneObject *> scene, Camera * & camera, int width, int height, int x, int y);
+void parseFile(string filename, vector <SceneObject *> & scene, Camera * & camera, vector <Light *> & lights);
+void firstHit(vector <SceneObject *> scene, Camera * & camera, int width, int height, int x, int y);
 
 int main(int argc, char *argv[])
 {
 	stringstream s;
 	vec3 v;
 	vector <SceneObject *> scene;
+	vector <Light *> lights;
 	Camera * camera;
 
 	std::cout << std::fixed << std::setprecision(4);
@@ -42,20 +46,24 @@ int main(int argc, char *argv[])
 			return 0;
 
 		}
-		parseFile(argv[2], scene, camera);
-		printScene(scene, camera);
+		parseFile(argv[2], scene, camera, lights);
+		printScene(scene, camera, lights);
 	} else if (exec.compare("pixelray") == 0) {
 		if (argc != 7){
 			cerr << "Usage: ./raytrace pixelray <input_filename> <width> <height> <x> <y>" << endl;
 			return 0;
 
 		}
+		parseFile(argv[2], scene, camera, lights);
+		pixelRay(scene, camera, stoi(argv[3]), stoi(argv[4]), stoi(argv[5]), stoi(argv[6]));
 	} else if (exec.compare("firsthit") == 0) {
 		if (argc != 7){
 			cerr << "Usage: ./raytrace raycast <input_filename> <width> <height> <x> <y>" << endl;
 			return 0;
 
 		}
+		parseFile(argv[2], scene, camera, lights);
+		firstHit(scene, camera, stoi(argv[3]), stoi(argv[4]), stoi(argv[5]), stoi(argv[6]));
 	} else {
 		cerr << "Unexpected usage" << endl;
 		return 0;
@@ -80,7 +88,74 @@ int main(int argc, char *argv[])
 	return 0;
 }
 
-void parseString(std::stringstream & stream, vector <SceneObject *> & scene, Camera * & camera)
+void pixelRay(vector <SceneObject *> scene, Camera * & camera, int width, int height, int x, int y)
+{
+	float Us = (((float)x + 0.5)/(float)width)-0.5;
+	float Vs = (((float)y + 0.5)/(float)height)-0.5;
+	float Ws = -1.0; //IS THIS RIGHT
+
+	//vec3 origin = vec3((float)Us, (float)Vs, Ws); //what is z of ray origin
+	vec3 origin = camera->location;
+	//vec3 dir = dot(Us, camera->right)+dot(Vs, camera->up)+dot(Ws, camera->look_at);
+	vec3 dir = normalize((Us * camera->right)+(Vs * camera->up)+(Ws * normalize(camera->location-camera->look_at)));
+	//vec3 dir = normalize((Us * camera->right)+(Vs * camera->up)+(Ws * camera->look_at));
+
+	cout << "Pixel: [" << x << ", " << y << "] Ray: {";
+	cout << "origin: " << origin.x << " " << origin.y << " " << origin.z;
+	cout << "} -> {";
+	cout << "direction: " << dir.x << " " << dir.y << " " << dir.z << "}" << endl;
+}
+
+void firstHit(vector <SceneObject *> scene, Camera * & camera, int width, int height, int x, int y)
+{
+	float Us = (((float)x + 0.5)/(float)width)-0.5;
+	float Vs = (((float)y + 0.5)/(float)height)-0.5;
+	float Ws = -1.0; //IS THIS RIGHT
+
+	//vec3 origin = vec3((float)Us, (float)Vs, Ws); //what is z of ray origin
+	vec3 origin = camera->location;
+	//vec3 dir = dot(Us, camera->right)+dot(Vs, camera->up)+dot(Ws, camera->look_at);
+	vec3 dir = normalize((Us * camera->right)+(Vs * camera->up)+(Ws * normalize(camera->location-camera->look_at)));
+	//vec3 dir = normalize((Us * camera->right)+(Vs * camera->up)+(Ws * camera->look_at));
+
+	cout << "Pixel: [" << x << ", " << y << "] Ray: {";
+	cout << "origin: " << origin.x << " " << origin.y << " " << origin.z;
+	cout << "} -> {";
+	cout << "direction: " << dir.x << " " << dir.y << " " << dir.z << "}" << endl;
+
+	float closestHit = -1;
+	float closestObjIndex = -1;
+	for (int i = 0; i < scene.size(); i++){
+		float hit = scene[i]->intersect(ray(origin, dir));
+		if (closestHit == -1){
+			closestHit = hit;
+			closestObjIndex = i;
+		}
+		if ((hit > 0) && (hit < closestHit)){
+			closestHit = hit;
+			closestObjIndex = i;
+		}
+	}
+
+	if (closestHit == -1){
+		cout << "No Hit" << endl;
+	} else {
+		cout << "T = " << closestHit << endl;
+		cout << "Object Type: ";
+		auto sptr = dynamic_cast<Sphere*>(scene[closestObjIndex]);
+		auto pptr = dynamic_cast<Plane*>(scene[closestObjIndex]);
+		if (sptr != nullptr){
+			cout << "Sphere" << endl;
+			cout << "Color: " << sptr->color.x << " " << sptr->color.y << " " << sptr->color.z << endl;
+		} else if (pptr != nullptr){
+			cout << "Plane" << endl;
+			cout << "Color: " << pptr->color.x << " " << pptr->color.y << " " << pptr->color.z << endl;
+		}
+
+	} 
+}
+
+void parseString(std::stringstream & stream, vector <SceneObject *> & scene, Camera * & camera, vector <Light *> & lights)
 {
 	std::string token;
 	std::string trash;
@@ -107,27 +182,37 @@ void parseString(std::stringstream & stream, vector <SceneObject *> & scene, Cam
 		} else if (token.compare("camera") == 0){
 			stream.ignore(3, '{');
 			camera = Parse::ParseCamera(stream);
+		} else if (token.compare("light_source") == 0){
+			//cout << "LIGHT FOUND" << endl;
+			stream.ignore(3, '{');
+			lights.push_back(Parse::ParseLight(stream));
 		}
 	}
 	//printScene(scene);
 }
 
-void parseFile(string filename, vector <SceneObject *> &scene, Camera * & camera)
+void parseFile(string filename, vector <SceneObject *> &scene, Camera * & camera, vector <Light *> & lights)
 {
 	//cout << "hello" << endl;
 	stringstream s;
 
 	ifstream ifs(filename);
+
+	if (!ifs){
+		cerr << "File not found " << endl;
+		exit(-1);
+	}
+
 	string content((istreambuf_iterator<char>(ifs)), istreambuf_iterator<char>());
 	//cout << content << endl;
 
 	s.str(content);
 
-	parseString(s, scene, camera);
+	parseString(s, scene, camera, lights);
 
 }
 
-void printScene(vector <SceneObject *> scene, Camera * & camera)
+void printScene(vector <SceneObject *> scene, Camera * & camera, vector <Light *> & lights)
 {
 	//cout << "printScene" << endl;
 
@@ -135,7 +220,11 @@ void printScene(vector <SceneObject *> scene, Camera * & camera)
 	(camera)->print();
 	cout << "\n --- \n\n" << endl;
 
-	cout << "1 light(s)\n" << endl;
+	cout << lights.size() << " light(s)\n" << endl;
+	for (int i = 0; i < lights.size(); i++){
+		cout << "Object[" << i << "]:" << endl;
+		(lights[i])->print();
+	}
 	cout << "\n --- \n\n" << endl;
 
 	cout << scene.size() << " object(s)\n" << endl;

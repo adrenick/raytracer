@@ -8,7 +8,18 @@ using namespace std;
 
 float Plane::intersect(const ray & r)
 {
-	return 1.0;
+	float top = distance-dot(r.origin, normal);
+	float bottom = dot(r.direction, normal);
+
+	float solution = -1;
+	if (bottom == 0){
+		//cout << "no intersection" << endl;
+	} else {
+		//cout << "intersection" << endl;
+		solution = top/bottom;
+	}
+
+	return solution;
 }
 
 void Plane::print(void)
