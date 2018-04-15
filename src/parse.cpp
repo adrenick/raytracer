@@ -89,6 +89,7 @@ SceneObject * Parse::ParseSphere(stringstream & Stream)
     SceneObject * obj = new Sphere(v, d, c);
     obj->ambient = amb;
     obj->diffuse = diff;
+    obj->type = "Sphere";
 
     return obj;
 
@@ -177,6 +178,7 @@ SceneObject * Parse::ParsePlane(stringstream & Stream)
     SceneObject * obj = new Plane(n, d, c);
     obj->ambient = amb;
     obj->diffuse = diff;
+    obj->type = "Plane";
 
     return obj;
 }

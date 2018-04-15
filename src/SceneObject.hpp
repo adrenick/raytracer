@@ -5,6 +5,7 @@
 #define SCENEOBJECT_H
 
 #include "ray.hpp"
+#include <string>
 
 
 class SceneObject
@@ -15,8 +16,11 @@ public:
 	//virtual ~SceneObject() {}
 	float ambient;
 	float diffuse;
+	std::string type;
 
 	virtual float intersect(const ray & r) = 0;
+
+	virtual void print() = 0;
 		//virtual ~SceneObject() {};
 };
 

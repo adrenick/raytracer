@@ -17,7 +17,7 @@ using namespace std;
 using namespace glm;
 
 void printScene(vector <SceneObject *> scene, Camera * & camera, vector <Light *> & lights);
-void pixelRay(vector <SceneObject *> scene, Camera * & camera, int width, int height, int x, int y);
+void pixelRay(Camera * & camera, int width, int height, int x, int y);
 void parseFile(string filename, vector <SceneObject *> & scene, Camera * & camera, vector <Light *> & lights);
 void firstHit(vector <SceneObject *> scene, Camera * & camera, int width, int height, int x, int y);
 void raycast(string filename, vector <SceneObject *> & scene, Camera * & camera, vector <Light *> & lights, int width, int height);
@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
 
 		}
 		parseFile(argv[2], scene, camera, lights);
-		pixelRay(scene, camera, stoi(argv[3]), stoi(argv[4]), stoi(argv[5]), stoi(argv[6]));
+		pixelRay(camera, stoi(argv[3]), stoi(argv[4]), stoi(argv[5]), stoi(argv[6]));
 	} else if (exec.compare("firsthit") == 0) {
 		if (argc != 7){
 			cerr << "Usage: ./raytrace raycast <input_filename> <width> <height> <x> <y>" << endl;
@@ -95,6 +95,22 @@ int main(int argc, char *argv[])
 	return 0;
 }
 
+ray * createRay(Camera * & camera, int width, int height, int x, int y)
+{
+	float Us = (((float)x + 0.5)/(float)width)-0.5;
+	float Vs = (((float)y + 0.5)/(float)height)-0.5;
+	float Ws = -1.0;
+
+	vec3 origin = camera->location;
+	vec3 dir = normalize((Us * camera->right)+(Vs * camera->up)+(Ws * normalize(camera->location-camera->look_at)));
+
+	ray * r = new ray(origin, dir);
+
+	//printPixelRay(x, y, r);
+
+	return r;
+}
+
 void raycast(string filename, vector <SceneObject *> & scene, Camera * & camera, vector <Light *> & lights, int width, int height)
 {
 	//output.png
@@ -110,12 +126,16 @@ void raycast(string filename, vector <SceneObject *> & scene, Camera * & camera,
 	    {
 	    	unsigned int red, green, blue = 0;
 
-	    	float Us = (((float)x + 0.5)/(float)width)-0.5;
+	    	/*float Us = (((float)x + 0.5)/(float)width)-0.5;
 			float Vs = (((float)y + 0.5)/(float)height)-0.5;
 			float Ws = -1.0; 
 
 			vec3 origin = camera->location;
 			vec3 dir = normalize((Us * camera->right)+(Vs * camera->up)+(Ws * normalize(camera->location-camera->look_at)));
+			*/
+			ray * r = createRay(camera, width, height, x, y);
+			vec3 origin = r->origin;
+			vec3 dir = r->direction;
 
 			float closestHit = -1;
 			float closestObjIndex = -1;
@@ -172,9 +192,17 @@ void raycast(string filename, vector <SceneObject *> & scene, Camera * & camera,
 
 }
 
-void pixelRay(vector <SceneObject *> scene, Camera * & camera, int width, int height, int x, int y)
+void printPixelRay(int x, int y, ray * & r)
 {
-	float Us = (((float)x + 0.5)/(float)width)-0.5;
+	cout << "Pixel: [" << x << ", " << y << "] Ray: {";
+	cout << r->origin.x << " " << r->origin.y << " " << r->origin.z;
+	cout << "} -> {";
+	cout << r->direction.x << " " << r->direction.y << " " << r->direction.z << "}" << std::endl;
+}
+
+void pixelRay(Camera * & camera, int width, int height, int x, int y)
+{
+	/*float Us = (((float)x + 0.5)/(float)width)-0.5;
 	float Vs = (((float)y + 0.5)/(float)height)-0.5;
 	float Ws = -1.0; //IS THIS RIGHT
 
@@ -182,19 +210,24 @@ void pixelRay(vector <SceneObject *> scene, Camera * & camera, int width, int he
 	vec3 origin = camera->location;
 	//vec3 dir = dot(Us, camera->right)+dot(Vs, camera->up)+dot(Ws, camera->look_at);
 	vec3 dir = normalize((Us * camera->right)+(Vs * camera->up)+(Ws * normalize(camera->location-camera->look_at)));
-	
+
+	ray * r = new ray(origin, dir);*/
+	ray * r = createRay(camera, width, height, x, y);
+
+	printPixelRay(x, y, r);
 
 	//vec3 dir = normalize((Us * camera->right)+(Vs * camera->up)+(Ws * camera->look_at));
 
-	cout << "Pixel: [" << x << ", " << y << "] Ray: {";
+	/*cout << "Pixel: [" << x << ", " << y << "] Ray: {";
 	cout << origin.x << " " << origin.y << " " << origin.z;
 	cout << "} -> {";
-	cout << dir.x << " " << dir.y << " " << dir.z << "}" << endl;
+	cout << dir.x << " " << dir.y << " " << dir.z << "}" << endl;*/
+
 }
 
 void firstHit(vector <SceneObject *> scene, Camera * & camera, int width, int height, int x, int y)
 {
-	float Us = (((float)x + 0.5)/(float)width)-0.5;
+	/*float Us = (((float)x + 0.5)/(float)width)-0.5;
 	float Vs = (((float)y + 0.5)/(float)height)-0.5;
 	float Ws = -1.0; //IS THIS RIGHT
 
@@ -202,7 +235,13 @@ void firstHit(vector <SceneObject *> scene, Camera * & camera, int width, int he
 	vec3 origin = camera->location;
 	//vec3 dir = dot(Us, camera->right)+dot(Vs, camera->up)+dot(Ws, camera->look_at);
 	vec3 dir = normalize((Us * camera->right)+(Vs * camera->up)+(Ws * normalize(camera->location-camera->look_at)));
-	//vec3 dir = normalize((Us * camera->right)+(Vs * camera->up)+(Ws * camera->look_at));
+	//vec3 dir = normalize((Us * camera->right)+(Vs * camera->up)+(Ws * camera->look_at));*/
+
+	ray * r = createRay(camera, width, height, x, y);
+	vec3 origin = r->origin;
+	vec3 dir = r->direction;
+
+	printPixelRay(x, y, r);
 
 	cout << "Pixel: [" << x << ", " << y << "] Ray: {";
 	cout << origin.x << " " << origin.y << " " << origin.z;
@@ -316,13 +355,19 @@ void printScene(vector <SceneObject *> scene, Camera * & camera, vector <Light *
 	cout << scene.size() << " object(s)\n" << endl;
 	for (int i = 0; i < scene.size(); i++){
 		cout << "Object[" << i << "]:" << endl;
+		cout << "- Type: " << scene[i]->type << endl;
+
+		scene[i]->print();
+		/*if (scene[i]->type.compare("Sphere")){
+
+		}
 		auto sptr = dynamic_cast<Sphere*>(scene[i]);
 		auto pptr = dynamic_cast<Plane*>(scene[i]);
 		if (sptr != nullptr){
 			(sptr)->print();
 		} else if (pptr != nullptr){
 			(pptr)->print();
-		}
+		}*/
 	}
 
 }

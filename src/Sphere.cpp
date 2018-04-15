@@ -43,7 +43,7 @@ float Sphere::intersect(const ray & r)
 
 void Sphere::print(void)
 {
-	cout << "- Type: Sphere" << endl;
+	//cout << "- Type: Sphere" << endl;
 	cout << "- Center: {" << origin.x << " " << origin.y << " " << origin.z << "}" << endl;
 	cout << "- Radius: " << radius << endl;
 	cout << "- Color: {" << color.x << " " << color.y << " " << color.z << "}" << endl;

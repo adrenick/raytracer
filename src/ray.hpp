@@ -8,6 +8,7 @@
 #define RAY_H
 
 #include <glm/glm.hpp>
+#include <iostream>
 
 class ray
 {
