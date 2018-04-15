@@ -243,10 +243,10 @@ void firstHit(vector <SceneObject *> scene, Camera * & camera, int width, int he
 
 	printPixelRay(x, y, r);
 
-	cout << "Pixel: [" << x << ", " << y << "] Ray: {";
+	/*cout << "Pixel: [" << x << ", " << y << "] Ray: {";
 	cout << origin.x << " " << origin.y << " " << origin.z;
 	cout << "} -> {";
-	cout << dir.x << " " << dir.y << " " << dir.z << "}" << endl;
+	cout << dir.x << " " << dir.y << " " << dir.z << "}" << endl;*/
 
 	float closestHit = -1;
 	float closestObjIndex = -1;
