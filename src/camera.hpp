@@ -2,6 +2,9 @@
 	CSC 473
 	Raytracer Project */
 
+#ifndef CAMERA_H
+#define CAMERA_H
+
 #include "ray.hpp"
 
 class Camera {
@@ -29,3 +32,4 @@ class Camera {
 
 		}
 };
+#endif

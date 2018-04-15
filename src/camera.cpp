@@ -2,7 +2,7 @@
 	CSC 473
 	Raytracer Project */
 
-#include "camera.hpp"
+#include "Camera.hpp"
 #include <iostream>
 using namespace std;
 
