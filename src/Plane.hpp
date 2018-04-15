@@ -4,8 +4,6 @@
 
 #include "SceneObject.hpp"
 
-//#include "ray.hpp"
-
 class Plane : public SceneObject
 {
 public:

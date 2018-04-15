@@ -2,8 +2,6 @@
 	CSC 473
 	Raytracer Project */
 
-//#include <glm/gtc/type_ptr.hpp>
-//#include <glm/gtc/matrix_transform.hpp>
 #ifndef RAY_H
 #define RAY_H
 

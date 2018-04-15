@@ -76,22 +76,6 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
-	/*s.str("<-3.0, 1.0, 2.0>");
-	v = Parse::ParseVector(s);
-	cout << v.x << " " << v.y << " " << v.z << endl;
-
-	s.str("{ <-5, 3, 0>, 1.1 pigment { color rgb <0.12, 0.34, 0.56>} finish {ambient 0.2 diffuse 0.4}}");
-	
-	s.ignore(3, '{');
-	scene.push_back(Parse::ParseSphere(s));
-
-	s.str("{<1, 0, 0>, -5 pigment {color rgb <0.15, 0.2, 0.8>} finish {ambient 0.4 diffuse 0.8}}");
-	
-	s.ignore(3, '{');
-	scene.push_back(Parse::ParsePlane(s));*/
-
-	//printScene(scene);
-
 	return 0;
 }
 
@@ -106,14 +90,11 @@ ray * createRay(Camera * & camera, int width, int height, int x, int y)
 
 	ray * r = new ray(origin, dir);
 
-	//printPixelRay(x, y, r);
-
 	return r;
 }
 
 void raycast(string filename, vector <SceneObject *> & scene, Camera * & camera, vector <Light *> & lights, int width, int height)
 {
-	//output.png
 	const int numChannels = 3;
 	const string fileName = "output.png";
 	const glm::ivec2 size = glm::ivec2(width, height);
@@ -126,13 +107,6 @@ void raycast(string filename, vector <SceneObject *> & scene, Camera * & camera,
 	    {
 	    	unsigned int red, green, blue = 0;
 
-	    	/*float Us = (((float)x + 0.5)/(float)width)-0.5;
-			float Vs = (((float)y + 0.5)/(float)height)-0.5;
-			float Ws = -1.0; 
-
-			vec3 origin = camera->location;
-			vec3 dir = normalize((Us * camera->right)+(Vs * camera->up)+(Ws * normalize(camera->location-camera->look_at)));
-			*/
 			ray * r = createRay(camera, width, height, x, y);
 			vec3 origin = r->origin;
 			vec3 dir = r->direction;
@@ -159,14 +133,10 @@ void raycast(string filename, vector <SceneObject *> & scene, Camera * & camera,
 				auto sptr = dynamic_cast<Sphere*>(scene[closestObjIndex]);
 				auto pptr = dynamic_cast<Plane*>(scene[closestObjIndex]);
 				if (sptr != nullptr){
-					//cout << "Sphere" << endl;
-					//cout << "Color: " << sptr->color.x << " " << sptr->color.y << " " << sptr->color.z << endl;
 					red = (unsigned int) std::round(sptr->color.x * 255.f);
 					green = (unsigned int) std::round(sptr->color.y * 255.f);
 					blue = (unsigned int) std::round(sptr->color.z * 255.f);
 				} else if (pptr != nullptr){
-					//cout << "Plane" << endl;
-					//cout << "Color: " << pptr->color.x << " " << pptr->color.y << " " << pptr->color.z << endl;
 					red = (unsigned int) std::round(pptr->color.x * 255.f);
 					green = (unsigned int) std::round(pptr->color.y * 255.f);
 					blue = (unsigned int) std::round(pptr->color.z * 255.f);
@@ -177,9 +147,6 @@ void raycast(string filename, vector <SceneObject *> & scene, Camera * & camera,
 				}
 
 			} 
-
-	       // unsigned char red, green, blue;
-	       // unsigned int red = (unsigned int) std::round(color.r * 255.f);
 
 	        data[(size.x * numChannels) * (size.y - 1 - y) + numChannels * x + 0] = red;
 	        data[(size.x * numChannels) * (size.y - 1 - y) + numChannels * x + 1] = green;
@@ -202,51 +169,19 @@ void printPixelRay(int x, int y, ray * & r)
 
 void pixelRay(Camera * & camera, int width, int height, int x, int y)
 {
-	/*float Us = (((float)x + 0.5)/(float)width)-0.5;
-	float Vs = (((float)y + 0.5)/(float)height)-0.5;
-	float Ws = -1.0; //IS THIS RIGHT
-
-	//vec3 origin = vec3((float)Us, (float)Vs, Ws); //what is z of ray origin
-	vec3 origin = camera->location;
-	//vec3 dir = dot(Us, camera->right)+dot(Vs, camera->up)+dot(Ws, camera->look_at);
-	vec3 dir = normalize((Us * camera->right)+(Vs * camera->up)+(Ws * normalize(camera->location-camera->look_at)));
-
-	ray * r = new ray(origin, dir);*/
 	ray * r = createRay(camera, width, height, x, y);
 
 	printPixelRay(x, y, r);
-
-	//vec3 dir = normalize((Us * camera->right)+(Vs * camera->up)+(Ws * camera->look_at));
-
-	/*cout << "Pixel: [" << x << ", " << y << "] Ray: {";
-	cout << origin.x << " " << origin.y << " " << origin.z;
-	cout << "} -> {";
-	cout << dir.x << " " << dir.y << " " << dir.z << "}" << endl;*/
-
 }
 
 void firstHit(vector <SceneObject *> scene, Camera * & camera, int width, int height, int x, int y)
 {
-	/*float Us = (((float)x + 0.5)/(float)width)-0.5;
-	float Vs = (((float)y + 0.5)/(float)height)-0.5;
-	float Ws = -1.0; //IS THIS RIGHT
-
-	//vec3 origin = vec3((float)Us, (float)Vs, Ws); //what is z of ray origin
-	vec3 origin = camera->location;
-	//vec3 dir = dot(Us, camera->right)+dot(Vs, camera->up)+dot(Ws, camera->look_at);
-	vec3 dir = normalize((Us * camera->right)+(Vs * camera->up)+(Ws * normalize(camera->location-camera->look_at)));
-	//vec3 dir = normalize((Us * camera->right)+(Vs * camera->up)+(Ws * camera->look_at));*/
 
 	ray * r = createRay(camera, width, height, x, y);
 	vec3 origin = r->origin;
 	vec3 dir = r->direction;
 
 	printPixelRay(x, y, r);
-
-	/*cout << "Pixel: [" << x << ", " << y << "] Ray: {";
-	cout << origin.x << " " << origin.y << " " << origin.z;
-	cout << "} -> {";
-	cout << dir.x << " " << dir.y << " " << dir.z << "}" << endl;*/
 
 	float closestHit = -1;
 	float closestObjIndex = -1;
@@ -284,41 +219,32 @@ void parseString(std::stringstream & stream, vector <SceneObject *> & scene, Cam
 {
 	std::string token;
 	std::string trash;
-	//token << contents;
 
 	while(!stream.eof())
 	{
-		//token << stream;
 		stream >> token;
-		//cout << token << endl;
 
 		if (token.compare("sphere") == 0){
-			//cout << "** TOKEN SPHERE**" << endl;
 			stream.ignore(3, '{');
 			scene.push_back(Parse::ParseSphere(stream));
 		} else if (token.compare("plane") == 0){
-			//cout << "** TOKEN PLANE**" << endl;
 			stream.ignore(3, '{');
 			scene.push_back(Parse::ParsePlane(stream));
-		} //else if (token.find("\\") == nopos) {
-		else if (token.substr(0, 2) == "//") { //NOT THROWING OUT COMMENTS
-			//cout << "FOUND COMMENT" << endl;
+		} 
+		else if (token.substr(0, 2) == "//") { 
 			getline(stream, trash);
 		} else if (token.compare("camera") == 0){
 			stream.ignore(3, '{');
 			camera = Parse::ParseCamera(stream);
 		} else if (token.compare("light_source") == 0){
-			//cout << "LIGHT FOUND" << endl;
 			stream.ignore(3, '{');
 			lights.push_back(Parse::ParseLight(stream));
 		}
 	}
-	//printScene(scene);
 }
 
 void parseFile(string filename, vector <SceneObject *> &scene, Camera * & camera, vector <Light *> & lights)
 {
-	//cout << "hello" << endl;
 	stringstream s;
 
 	ifstream ifs(filename);
@@ -329,7 +255,6 @@ void parseFile(string filename, vector <SceneObject *> &scene, Camera * & camera
 	}
 
 	string content((istreambuf_iterator<char>(ifs)), istreambuf_iterator<char>());
-	//cout << content << endl;
 
 	s.str(content);
 
@@ -339,7 +264,6 @@ void parseFile(string filename, vector <SceneObject *> &scene, Camera * & camera
 
 void printScene(vector <SceneObject *> scene, Camera * & camera, vector <Light *> & lights)
 {
-	//cout << "printScene" << endl;
 
 	cout << "Camera: " << endl;
 	(camera)->print();
@@ -358,16 +282,6 @@ void printScene(vector <SceneObject *> scene, Camera * & camera, vector <Light *
 		cout << "- Type: " << scene[i]->type << endl;
 
 		scene[i]->print();
-		/*if (scene[i]->type.compare("Sphere")){
-
-		}
-		auto sptr = dynamic_cast<Sphere*>(scene[i]);
-		auto pptr = dynamic_cast<Plane*>(scene[i]);
-		if (sptr != nullptr){
-			(sptr)->print();
-		} else if (pptr != nullptr){
-			(pptr)->print();
-		}*/
 	}
 
 }

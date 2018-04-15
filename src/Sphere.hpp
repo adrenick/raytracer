@@ -4,8 +4,6 @@
 
 #include "SceneObject.hpp"
 
-//#include "ray.hpp"
-
 class Sphere : public SceneObject
 {
 public:

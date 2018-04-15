@@ -12,8 +12,7 @@ class SceneObject
 {
 
 public:
-	//SceneObject() {}
-	//virtual ~SceneObject() {}
+
 	float ambient;
 	float diffuse;
 	std::string type;
@@ -21,7 +20,7 @@ public:
 	virtual float intersect(const ray & r) = 0;
 
 	virtual void print() = 0;
-		//virtual ~SceneObject() {};
+
 };
 
 #endif
