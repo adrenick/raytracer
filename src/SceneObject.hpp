@@ -16,6 +16,7 @@ public:
 	float ambient;
 	float diffuse;
 	std::string type;
+	glm::vec3 color;
 
 	virtual float intersect(const ray & r) = 0;
 

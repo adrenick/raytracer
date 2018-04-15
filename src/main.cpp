@@ -130,7 +130,11 @@ void raycast(string filename, vector <SceneObject *> & scene, Camera * & camera,
 				green = (unsigned int) std::round(0.0 * 255.f);
 				blue = (unsigned int) std::round(0.0 * 255.f);
 			} else {
-				auto sptr = dynamic_cast<Sphere*>(scene[closestObjIndex]);
+				red = (unsigned int) std::round(scene[closestObjIndex]->color.x * 255.f);
+				green = (unsigned int) std::round(scene[closestObjIndex]->color.y * 255.f);
+				blue = (unsigned int) std::round(scene[closestObjIndex]->color.z * 255.f);
+
+				/*auto sptr = dynamic_cast<Sphere*>(scene[closestObjIndex]);
 				auto pptr = dynamic_cast<Plane*>(scene[closestObjIndex]);
 				if (sptr != nullptr){
 					red = (unsigned int) std::round(sptr->color.x * 255.f);
@@ -144,7 +148,7 @@ void raycast(string filename, vector <SceneObject *> & scene, Camera * & camera,
 					red = (unsigned int) std::round(0.0 * 255.f);
 					green = (unsigned int) std::round(0.0 * 255.f);
 					blue = (unsigned int) std::round(0.0 * 255.f);
-				}
+				}*/
 
 			} 
 

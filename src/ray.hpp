@@ -19,6 +19,8 @@ public:
 		origin = o;
 		direction = d;
 	}
+
+	
 };
 
 #endif
