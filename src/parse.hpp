@@ -7,7 +7,7 @@
 
 #include "Plane.hpp"
 #include "Sphere.hpp"
-#include "camera.hpp"
+#include "Camera.hpp"
 #include "Light.hpp"
 
 class Parse

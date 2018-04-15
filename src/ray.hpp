@@ -7,6 +7,7 @@
 
 #include <glm/glm.hpp>
 #include <iostream>
+#include "Camera.hpp"
 
 class ray
 {
@@ -19,8 +20,6 @@ public:
 		origin = o;
 		direction = d;
 	}
-
-	
 };
 
 #endif

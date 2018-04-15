@@ -2,11 +2,8 @@
 	CSC 473
 	Raytracer Project */
 
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-
-#include "stb_image_write.h"
-
 #include "parse.hpp"
+#include "raycast.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -17,10 +14,10 @@ using namespace std;
 using namespace glm;
 
 void printScene(vector <SceneObject *> scene, Camera * & camera, vector <Light *> & lights);
-void pixelRay(Camera * & camera, int width, int height, int x, int y);
+//void pixelRay(Camera * & camera, int width, int height, int x, int y);
 void parseFile(string filename, vector <SceneObject *> & scene, Camera * & camera, vector <Light *> & lights);
-void firstHit(vector <SceneObject *> scene, Camera * & camera, int width, int height, int x, int y);
-void raycast(string filename, vector <SceneObject *> & scene, Camera * & camera, vector <Light *> & lights, int width, int height);
+//void firstHit(vector <SceneObject *> scene, Camera * & camera, int width, int height, int x, int y);
+//void raycast(string filename, vector <SceneObject *> & scene, Camera * & camera, vector <Light *> & lights, int width, int height);
 
 int main(int argc, char *argv[])
 {
@@ -46,7 +43,7 @@ int main(int argc, char *argv[])
 
 		}
 		parseFile(argv[2], scene, camera, lights);
-		raycast(argv[2], scene, camera, lights, atoi(argv[3]), atoi(argv[4]));
+		raycast::doRaycast(argv[2], scene, camera, atoi(argv[3]), atoi(argv[4]));
 	} else if (exec.compare("sceneinfo") == 0) {
 		if (argc != 3){
 			cerr << "Usage: ./raytrace sceneinfo <input_filename>" << endl;
@@ -62,7 +59,7 @@ int main(int argc, char *argv[])
 
 		}
 		parseFile(argv[2], scene, camera, lights);
-		pixelRay(camera, stoi(argv[3]), stoi(argv[4]), stoi(argv[5]), stoi(argv[6]));
+		raycast::pixelRay(camera, stoi(argv[3]), stoi(argv[4]), stoi(argv[5]), stoi(argv[6]));
 	} else if (exec.compare("firsthit") == 0) {
 		if (argc != 7){
 			cerr << "Usage: ./raytrace raycast <input_filename> <width> <height> <x> <y>" << endl;
@@ -70,7 +67,7 @@ int main(int argc, char *argv[])
 
 		}
 		parseFile(argv[2], scene, camera, lights);
-		firstHit(scene, camera, stoi(argv[3]), stoi(argv[4]), stoi(argv[5]), stoi(argv[6]));
+		raycast::firstHit(scene, camera, stoi(argv[3]), stoi(argv[4]), stoi(argv[5]), stoi(argv[6]));
 	} else {
 		cerr << "Unexpected usage" << endl;
 		return 0;
@@ -78,7 +75,7 @@ int main(int argc, char *argv[])
 
 	return 0;
 }
-
+/*
 ray * createRay(Camera * & camera, int width, int height, int x, int y)
 {
 	float Us = (((float)x + 0.5)/(float)width)-0.5;
@@ -134,21 +131,7 @@ void raycast(string filename, vector <SceneObject *> & scene, Camera * & camera,
 				green = (unsigned int) std::round(scene[closestObjIndex]->color.y * 255.f);
 				blue = (unsigned int) std::round(scene[closestObjIndex]->color.z * 255.f);
 
-				/*auto sptr = dynamic_cast<Sphere*>(scene[closestObjIndex]);
-				auto pptr = dynamic_cast<Plane*>(scene[closestObjIndex]);
-				if (sptr != nullptr){
-					red = (unsigned int) std::round(sptr->color.x * 255.f);
-					green = (unsigned int) std::round(sptr->color.y * 255.f);
-					blue = (unsigned int) std::round(sptr->color.z * 255.f);
-				} else if (pptr != nullptr){
-					red = (unsigned int) std::round(pptr->color.x * 255.f);
-					green = (unsigned int) std::round(pptr->color.y * 255.f);
-					blue = (unsigned int) std::round(pptr->color.z * 255.f);
-				} else {
-					red = (unsigned int) std::round(0.0 * 255.f);
-					green = (unsigned int) std::round(0.0 * 255.f);
-					blue = (unsigned int) std::round(0.0 * 255.f);
-				}*/
+
 
 			} 
 
@@ -217,7 +200,7 @@ void firstHit(vector <SceneObject *> scene, Camera * & camera, int width, int he
 		}
 
 	} 
-}
+}*/
 
 void parseString(std::stringstream & stream, vector <SceneObject *> & scene, Camera * & camera, vector <Light *> & lights)
 {
