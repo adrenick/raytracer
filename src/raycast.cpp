@@ -122,16 +122,6 @@ void raycast::firstHit(vector <SceneObject *> scene, Camera * & camera, int widt
 	} else {
 		cout << "T = " << closestHit << endl;
 		cout << "Object Type: " << scene[closestObjIndex]->type << endl;
-		/*auto sptr = dynamic_cast<Sphere*>(scene[closestObjIndex]);
-		auto pptr = dynamic_cast<Plane*>(scene[closestObjIndex]);
-
-		if (sptr != nullptr){
-			cout << "Sphere" << endl;
-			cout << "Color: " << sptr->color.x << " " << sptr->color.y << " " << sptr->color.z << endl;
-		} else if (pptr != nullptr){
-			cout << "Plane" << endl;
-			cout << "Color: " << pptr->color.x << " " << pptr->color.y << " " << pptr->color.z << endl;
-		}*/
 		cout << "Color: " << scene[closestObjIndex]->color.x << " " << scene[closestObjIndex]->color.y << " " << scene[closestObjIndex]->color.z << endl;
 
 	} 

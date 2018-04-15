@@ -257,5 +257,3 @@ void Parse::parseFile(string filename, vector <SceneObject *> &scene, Camera * &
 	parseString(s, scene, camera, lights);
 
 }
-
-

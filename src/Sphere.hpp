@@ -10,7 +10,6 @@ public:
 
 	glm::vec3 origin;
 	float radius;
-	//glm::vec3 color;
 
 	float intersect(const ray & r);
 
@@ -31,4 +30,3 @@ public:
 
 		
 };
-

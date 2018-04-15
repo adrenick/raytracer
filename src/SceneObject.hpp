@@ -1,6 +1,7 @@
 /* 	Alexa Drenick
 	CSC 473
 	Raytracer Project */
+
 #ifndef SCENEOBJECT_H
 #define SCENEOBJECT_H
 

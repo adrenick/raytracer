@@ -10,7 +10,6 @@ public:
 
 	glm::vec3 normal;
 	float distance;
-	//glm::vec3 color;
 
 	float intersect(const ray & r);
 	void print(void);

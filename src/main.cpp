@@ -12,8 +12,6 @@
 using namespace std;
 using namespace glm;
 
-//void printScene(vector <SceneObject *> scene, Camera * & camera, vector <Light *> & lights);
-
 int main(int argc, char *argv[])
 {
 	stringstream s;
@@ -70,27 +68,3 @@ int main(int argc, char *argv[])
 
 	return 0;
 }
-/*
-void printScene(vector <SceneObject *> scene, Camera * & camera, vector <Light *> & lights)
-{
-
-	cout << "Camera: " << endl;
-	(camera)->print();
-	cout << "\n --- \n\n" << endl;
-
-	cout << lights.size() << " light(s)\n" << endl;
-	for (int i = 0; i < lights.size(); i++){
-		cout << "Light[" << i << "]:" << endl;
-		(lights[i])->print();
-	}
-	cout << "\n --- \n\n" << endl;
-
-	cout << scene.size() << " object(s)\n" << endl;
-	for (int i = 0; i < scene.size(); i++){
-		cout << "Object[" << i << "]:" << endl;
-		cout << "- Type: " << scene[i]->type << endl;
-
-		scene[i]->print();
-	}
-
-}*/

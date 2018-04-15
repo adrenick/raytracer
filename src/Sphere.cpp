@@ -3,8 +3,8 @@
 	Raytracer Project */
 
 #include "Sphere.hpp"
-using namespace std;
 #include <iostream>
+using namespace std;
 
 float Sphere::intersect(const ray & r)
 {

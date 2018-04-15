@@ -26,4 +26,3 @@ void Plane::print(void)
 	cout << "- Material: \n  -Ambient: " << ambient << "\n  -Diffuse: " << diffuse << endl;
 	cout << endl;
 }
-
