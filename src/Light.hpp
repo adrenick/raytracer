@@ -2,6 +2,9 @@
 	CSC 473
 	Raytracer Project */
 
+#ifndef LIGHT_H
+#define LIGHT_H
+
 #include "ray.hpp"
 
 class Light {
@@ -24,3 +27,4 @@ public:
 		}
 
 };
+#endif

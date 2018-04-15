@@ -6,15 +6,13 @@
 #include "raycast.hpp"
 
 #include <iostream>
-//#include <fstream>
 #include <vector>
 #include <iomanip>
 
 using namespace std;
 using namespace glm;
 
-void printScene(vector <SceneObject *> scene, Camera * & camera, vector <Light *> & lights);
-//void parseFile(string filename, vector <SceneObject *> & scene, Camera * & camera, vector <Light *> & lights);
+//void printScene(vector <SceneObject *> scene, Camera * & camera, vector <Light *> & lights);
 
 int main(int argc, char *argv[])
 {
@@ -48,7 +46,7 @@ int main(int argc, char *argv[])
 
 		}
 		Parse::parseFile(argv[2], scene, camera, lights);
-		printScene(scene, camera, lights);
+		SceneObject::printScene(scene, camera, lights);
 	} else if (exec.compare("pixelray") == 0) {
 		if (argc != 7){
 			cerr << "Usage: ./raytrace pixelray <input_filename> <width> <height> <x> <y>" << endl;
@@ -72,54 +70,7 @@ int main(int argc, char *argv[])
 
 	return 0;
 }
-
-/*void parseString(std::stringstream & stream, vector <SceneObject *> & scene, Camera * & camera, vector <Light *> & lights)
-{
-	std::string token;
-	std::string trash;
-
-	while(!stream.eof())
-	{
-		stream >> token;
-
-		if (token.compare("sphere") == 0){
-			stream.ignore(3, '{');
-			scene.push_back(Parse::ParseSphere(stream));
-		} else if (token.compare("plane") == 0){
-			stream.ignore(3, '{');
-			scene.push_back(Parse::ParsePlane(stream));
-		} 
-		else if (token.substr(0, 2) == "//") { 
-			getline(stream, trash);
-		} else if (token.compare("camera") == 0){
-			stream.ignore(3, '{');
-			camera = Parse::ParseCamera(stream);
-		} else if (token.compare("light_source") == 0){
-			stream.ignore(3, '{');
-			lights.push_back(Parse::ParseLight(stream));
-		}
-	}
-}
-
-void parseFile(string filename, vector <SceneObject *> &scene, Camera * & camera, vector <Light *> & lights)
-{
-	stringstream s;
-
-	ifstream ifs(filename);
-
-	if (!ifs){
-		cerr << "File not found " << endl;
-		exit(-1);
-	}
-
-	string content((istreambuf_iterator<char>(ifs)), istreambuf_iterator<char>());
-
-	s.str(content);
-
-	parseString(s, scene, camera, lights);
-
-}*/
-
+/*
 void printScene(vector <SceneObject *> scene, Camera * & camera, vector <Light *> & lights)
 {
 
@@ -142,4 +93,4 @@ void printScene(vector <SceneObject *> scene, Camera * & camera, vector <Light *
 		scene[i]->print();
 	}
 
-}
+}*/
