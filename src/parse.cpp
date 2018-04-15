@@ -211,4 +211,51 @@ Light * Parse::ParseLight(std::stringstream & Stream)
 
 }
 
+void Parse::parseString(std::stringstream & stream, vector <SceneObject *> & scene, Camera * & camera, vector <Light *> & lights)
+{
+	std::string token;
+	std::string trash;
+
+	while(!stream.eof())
+	{
+		stream >> token;
+
+		if (token.compare("sphere") == 0){
+			stream.ignore(3, '{');
+			scene.push_back(Parse::ParseSphere(stream));
+		} else if (token.compare("plane") == 0){
+			stream.ignore(3, '{');
+			scene.push_back(Parse::ParsePlane(stream));
+		} 
+		else if (token.substr(0, 2) == "//") { 
+			getline(stream, trash);
+		} else if (token.compare("camera") == 0){
+			stream.ignore(3, '{');
+			camera = Parse::ParseCamera(stream);
+		} else if (token.compare("light_source") == 0){
+			stream.ignore(3, '{');
+			lights.push_back(Parse::ParseLight(stream));
+		}
+	}
+}
+
+void Parse::parseFile(string filename, vector <SceneObject *> &scene, Camera * & camera, vector <Light *> & lights)
+{
+	stringstream s;
+
+	ifstream ifs(filename);
+
+	if (!ifs){
+		cerr << "File not found " << endl;
+		exit(-1);
+	}
+
+	string content((istreambuf_iterator<char>(ifs)), istreambuf_iterator<char>());
+
+	s.str(content);
+
+	parseString(s, scene, camera, lights);
+
+}
+
 

@@ -4,6 +4,8 @@
 
 #include <string>
 #include <sstream>
+#include <vector>
+#include <fstream>
 
 #include "Plane.hpp"
 #include "Sphere.hpp"
@@ -31,4 +33,7 @@ public:
 
 	static float ParseDiffuse(std::stringstream & Stream);
 
+	static void parseString(std::stringstream & stream, std::vector <SceneObject *> & scene, Camera * & camera, std::vector <Light *> & lights);
+
+	static void parseFile(std::string filename, std::vector <SceneObject *> &scene, Camera * & camera, std::vector <Light *> & lights);
 };
