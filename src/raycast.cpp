@@ -203,6 +203,59 @@ vec3 raycast::computeColor(vec3 hit, vector <SceneObject *> scene, int objIndex,
 	return color;
 }
 
+void raycast::render(vector <SceneObject *> & scene, Camera * camera, vector <Light *> lights, int width, int height)
+{
+	const int numChannels = 3;
+	const string fileName = "output.png";
+	const glm::ivec2 size = glm::ivec2(width, height);
 
+	unsigned char *data = new unsigned char[size.x * size.y * numChannels];
+
+	for (int y = 0; y < size.y; ++ y)
+	{
+	    for (int x = 0; x < size.x; ++ x)
+	    {
+	    	unsigned int red, green, blue = 0;
+
+			ray * r = createRay(camera, width, height, x, y);
+			vec3 origin = r->origin;
+			vec3 dir = r->direction;
+
+			float closestHit = -1;
+			float closestObjIndex = -1;
+			for (int i = 0; i < scene.size(); i++){
+				float hit = scene[i]->intersect(ray(origin, dir));
+				if ((hit > 0) && (closestHit == -1)){
+					closestHit = hit;
+					closestObjIndex = i;
+				}
+				if ((hit > 0) && (hit < closestHit)){
+					closestHit = hit;
+					closestObjIndex = i;
+				}
+			}
+
+			if (closestHit == -1){
+				red = (unsigned int) std::round(0.0 * 255.f);
+				green = (unsigned int) std::round(0.0 * 255.f);
+				blue = (unsigned int) std::round(0.0 * 255.f);
+			} else {
+				vec3 color = computeColor(origin+closestHit*dir, scene, closestObjIndex, camera, lights, false);
+
+				red = (unsigned int) std::round(color.x * 255.f);
+				green = (unsigned int) std::round(color.y * 255.f);
+				blue = (unsigned int) std::round(color.z * 255.f);
+			} 
+
+	        data[(size.x * numChannels) * (size.y - 1 - y) + numChannels * x + 0] = red;
+	        data[(size.x * numChannels) * (size.y - 1 - y) + numChannels * x + 1] = green;
+	        data[(size.x * numChannels) * (size.y - 1 - y) + numChannels * x + 2] = blue;
+	    }
+	}
+
+	stbi_write_png(fileName.c_str(), size.x, size.y, numChannels, data, size.x * numChannels);
+	delete[] data;
+
+}
 
 

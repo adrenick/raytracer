@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
 			return -1;
 		}
 		Parse::parseFile(argv[2], scene, camera, lights);
-		raycast::doRaycast(scene, camera, atoi(argv[3]), atoi(argv[4]));
+		raycast::render(scene, camera, lights, atoi(argv[3]), atoi(argv[4]));
 
 	} else if (exec == "pixelcolor"){
 		if (argc < 7 || argc > 8){
