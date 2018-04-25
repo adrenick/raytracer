@@ -186,7 +186,7 @@ vec3 raycast::computeColor(vec3 hit, vector <SceneObject *> scene, int objIndex,
 			//shadow = true;
 			cout << "shadow" << endl;
 		} else {*/
-			color += lights[i]->color*SceneObject::computeDiffuse(scene[objIndex], hit, l);
+			color += (lights[i]->color)*SceneObject::computeDiffuse(scene[objIndex], hit, l);
 			//color += lights[i]->color*compute_specular(scene[objIndex], hit, normalize(dot(l, v)));
 		//}
 	}
@@ -195,7 +195,7 @@ vec3 raycast::computeColor(vec3 hit, vector <SceneObject *> scene, int objIndex,
 		uint r = round(clamp(color.x, 0.f, 1.f) * 255.f);
 		uint g = round(clamp(color.y, 0.f, 1.f) * 255.f);
 		uint b = round(clamp(color.z, 0.f, 1.f) * 255.f);
-		cout << "Color: " << r << " " << g << " " << b << " " << endl;
+		cout << "Color: (" << r << " " << g << " " << b << ")" << endl;
 	}
 
 	color = vec3(clamp(color.x, 0.f, 1.f), clamp(color.y, 0.f, 1.f), clamp(color.z, 0.f, 1.f));

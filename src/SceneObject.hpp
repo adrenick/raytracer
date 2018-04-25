@@ -52,7 +52,7 @@ public:
 
 	}*/
 
-	static float computeDiffuse(SceneObject * obj, glm::vec3 hit, glm::vec3 l);
+	static glm::vec3 computeDiffuse(SceneObject * obj, glm::vec3 hit, glm::vec3 l);
 
 };
 

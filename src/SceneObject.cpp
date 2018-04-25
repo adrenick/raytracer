@@ -30,12 +30,12 @@ void SceneObject::printScene(std::vector <SceneObject *> scene, Camera * camera,
 
 	}
 
-float SceneObject::computeDiffuse(SceneObject * obj, vec3 hit, vec3 l){
+glm::vec3 SceneObject::computeDiffuse(SceneObject * obj, vec3 hit, vec3 l){
 	
 	vec3 n = obj->computeNormal(hit);
 	//vec3 h = normalize(l + v);
 
-	return obj->diffuse*dot(n, l);
+	return (obj->diffuse)*(obj->color)*dot(n, l);
 
 }
 
