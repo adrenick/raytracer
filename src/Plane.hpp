@@ -12,6 +12,9 @@ public:
 	float distance;
 
 	float intersect(const ray & r);
+
+	glm::vec3 computeNormal(glm::vec3 p);
+
 	void print(void);
 
 		Plane(glm::vec3 n, float d, glm::vec3 c)

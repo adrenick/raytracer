@@ -55,12 +55,18 @@ int main(int argc, char *argv[])
 		raycast::pixelRay(camera, stoi(argv[3]), stoi(argv[4]), stoi(argv[5]), stoi(argv[6]));
 	} else if (exec.compare("firsthit") == 0) {
 		if (argc != 7){
-			cerr << "Usage: ./raytrace raycast <input_filename> <width> <height> <x> <y>" << endl;
+			cerr << "Usage: ./raytrace firsthit <input_filename> <width> <height> <x> <y>" << endl;
 			return -1;
 
 		}
 		Parse::parseFile(argv[2], scene, camera, lights);
-		raycast::firstHit(scene, camera, stoi(argv[3]), stoi(argv[4]), stoi(argv[5]), stoi(argv[6]));
+
+		ray * pRay = raycast::createRay(camera, stoi(argv[3]), stoi(argv[4]), stoi(argv[5]), stoi(argv[6]));
+		raycast::printPixelRay(stoi(argv[3]), stoi(argv[4]), pRay);
+		//raycast::firstHit(scene, camera, stoi(argv[3]), stoi(argv[4]), stoi(argv[5]), stoi(argv[6]));
+		raycast::firstHit(pRay, scene, true);
+
+
 	} else if (exec == "render") {
 		if (argc < 5 || argc > 6) {
 			cerr << "Usage: ./raytrace render <input_filename> <width> <height> [-altbrdf]" << endl;
@@ -69,6 +75,12 @@ int main(int argc, char *argv[])
 		Parse::parseFile(argv[2], scene, camera, lights);
 		raycast::doRaycast(scene, camera, atoi(argv[3]), atoi(argv[4]));
 
+	} else if (exec == "pixelcolor"){
+		if (argc < 7 || argc > 8){
+			cerr << "Usage: ./raytrace pixelcolor <input_filename> <width> <height> <x> <y> [-altbrdf]" << endl;
+		}
+		Parse::parseFile(argv[2], scene, camera, lights);
+		raycast::pixelColor(scene, camera, lights, stoi(argv[3]), stoi(argv[4]), stoi(argv[5]), stoi(argv[6]));
 	} else {
 		cerr << "Unexpected usage" << endl;
 		return -1;

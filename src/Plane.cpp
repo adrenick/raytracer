@@ -26,3 +26,7 @@ void Plane::print(void)
 	cout << "- Material: \n  -Ambient: " << ambient << "\n  -Diffuse: " << diffuse << endl;
 	cout << endl;
 }
+
+glm::vec3 Plane::computeNormal(glm::vec3 p) {
+	return normal;
+}

@@ -12,7 +12,7 @@ using namespace std;
 using namespace glm;
 
 
-ray * raycast::createRay(Camera * & camera, int width, int height, int x, int y)
+ray * raycast::createRay(Camera * camera, int width, int height, int x, int y)
 {
 	float Us = (((float)x + 0.5)/(float)width)-0.5;
 	float Vs = (((float)y + 0.5)/(float)height)-0.5;
@@ -26,7 +26,7 @@ ray * raycast::createRay(Camera * & camera, int width, int height, int x, int y)
 	return r;
 }
 
-void raycast::doRaycast(vector <SceneObject *> & scene, Camera * & camera, int width, int height)
+void raycast::doRaycast(vector <SceneObject *> & scene, Camera * camera, int width, int height)
 {
 	const int numChannels = 3;
 	const string fileName = "output.png";
@@ -87,14 +87,53 @@ void raycast::printPixelRay(int x, int y, ray * & r)
 	cout << r->direction.x << " " << r->direction.y << " " << r->direction.z << "}" << std::endl;
 }
 
-void raycast::pixelRay(Camera * & camera, int width, int height, int x, int y)
+void raycast::pixelRay(Camera * camera, int width, int height, int x, int y)
 {
 	ray * r = createRay(camera, width, height, x, y);
 
 	printPixelRay(x, y, r);
 }
 
-void raycast::firstHit(vector <SceneObject *> scene, Camera * & camera, int width, int height, int x, int y)
+//void raycast::firstHit(ray r, vector <SceneObject *> scene, Camera * & camera, int width, int height, int x, int y)
+float raycast::firstHit(ray * r, vector <SceneObject *> scene, bool print)
+{
+
+	//ray * r = createRay(camera, width, height, x, y);
+	vec3 origin = r->origin;
+	vec3 dir = r->direction;
+
+	float closestHit = -1;
+	float closestObjIndex = -1;
+	for (int i = 0; i < scene.size(); i++){
+		float hit = scene[i]->intersect(ray(origin, dir));
+		if ((hit > 0) && (closestHit == -1)){
+			closestHit = hit;
+			closestObjIndex = i;
+		}
+		if ((hit > 0) && (hit < closestHit)){
+			closestHit = hit;
+			closestObjIndex = i;
+		}
+	}
+
+
+	if (print){
+		//printPixelRay(x, y, r);
+
+		if (closestHit == -1){
+			cout << "No Hit" << endl;
+		} else {
+			cout << "T = " << closestHit << endl;
+			cout << "Object Type: " << scene[closestObjIndex]->type << endl;
+			cout << "Color: " << scene[closestObjIndex]->color.x << " " << scene[closestObjIndex]->color.y << " " << scene[closestObjIndex]->color.z << endl;
+
+		} 
+	}
+
+	return closestHit;
+}
+
+void raycast::pixelColor(vector <SceneObject *> scene, Camera * camera, vector <Light *> lights, int width, int height, int x, int y)
 {
 
 	ray * r = createRay(camera, width, height, x, y);
@@ -122,7 +161,48 @@ void raycast::firstHit(vector <SceneObject *> scene, Camera * & camera, int widt
 	} else {
 		cout << "T = " << closestHit << endl;
 		cout << "Object Type: " << scene[closestObjIndex]->type << endl;
-		cout << "Color: " << scene[closestObjIndex]->color.x << " " << scene[closestObjIndex]->color.y << " " << scene[closestObjIndex]->color.z << endl;
+		computeColor(origin+closestHit*dir, scene, closestObjIndex, camera, lights, true);
+		/*std::cout << std::fixed << std::setprecision(4);
+		cout << "Color: " << color.x << " " << color.y << " " << color.z << endl;
+		std::cout << std::fixed << std::setprecision(4);*/
 
 	} 
 }
+
+vec3 raycast::computeColor(vec3 hit, vector <SceneObject *> scene, int objIndex, Camera * camera, vector <Light *> lights, bool print)
+{
+	vec3 color = scene[objIndex]->color * scene[objIndex]->ambient;
+	vec3 v = normalize(camera->location - hit);
+
+	for (int i = 0; i < lights.size(); i++){
+		
+		vec3 l = normalize(lights[i]->location - hit);
+		ray * lRay = new ray(hit, l);
+
+		float lightHit = firstHit(lRay, scene, false);
+		//bool shadow;
+		
+		/*if (lightHit < length(lights[i]->location - hit)){
+			//shadow = true;
+			cout << "shadow" << endl;
+		} else {*/
+			color += lights[i]->color*SceneObject::computeDiffuse(scene[objIndex], hit, l);
+			//color += lights[i]->color*compute_specular(scene[objIndex], hit, normalize(dot(l, v)));
+		//}
+	}
+
+	if (print) {
+		uint r = round(clamp(color.x, 0.f, 1.f) * 255.f);
+		uint g = round(clamp(color.y, 0.f, 1.f) * 255.f);
+		uint b = round(clamp(color.z, 0.f, 1.f) * 255.f);
+		cout << "Color: " << r << " " << g << " " << b << " " << endl;
+	}
+
+	color = vec3(clamp(color.x, 0.f, 1.f), clamp(color.y, 0.f, 1.f), clamp(color.z, 0.f, 1.f));
+
+	return color;
+}
+
+
+
+

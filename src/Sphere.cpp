@@ -37,3 +37,7 @@ void Sphere::print(void)
 	cout << "- Material: \n  -Ambient: " << ambient << "\n  -Diffuse: " << diffuse << endl;
 	cout << endl;
 }
+
+glm::vec3 Sphere::computeNormal(glm::vec3 p) {
+	return glm::normalize(p - origin);
+}

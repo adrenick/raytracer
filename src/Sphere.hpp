@@ -15,6 +15,8 @@ public:
 
 	void print(void);
 
+	glm::vec3 computeNormal(glm::vec3 p);
+
 		Sphere(glm::vec3 o, float r, glm::vec3 c)
 		{
 			origin = o;
