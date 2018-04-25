@@ -26,7 +26,7 @@ ray * raycast::createRay(Camera * & camera, int width, int height, int x, int y)
 	return r;
 }
 
-void raycast::doRaycast(string filename, vector <SceneObject *> & scene, Camera * & camera, int width, int height)
+void raycast::doRaycast(vector <SceneObject *> & scene, Camera * & camera, int width, int height)
 {
 	const int numChannels = 3;
 	const string fileName = "output.png";

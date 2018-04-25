@@ -14,7 +14,7 @@ public:
 
 	static ray * createRay(Camera * & camera, int width, int height, int x, int y);
 
-	static void doRaycast(std::string filename, std::vector <SceneObject *> & scene, Camera * & camera, int width, int height);
+	static void doRaycast(std::vector <SceneObject *> & scene, Camera * & camera, int width, int height);
 
 	static void printPixelRay(int x, int y, ray * & r);
 
