@@ -195,6 +195,7 @@ vec3 raycast::computeColor(vec3 hit, vector <SceneObject *> scene, int objIndex,
 		uint r = round(clamp(color.x, 0.f, 1.f) * 255.f);
 		uint g = round(clamp(color.y, 0.f, 1.f) * 255.f);
 		uint b = round(clamp(color.z, 0.f, 1.f) * 255.f);
+		cout << "BRDF: Blinn-Phong" << endl;
 		cout << "Color: (" << r << " " << g << " " << b << ")" << endl;
 	}
 
