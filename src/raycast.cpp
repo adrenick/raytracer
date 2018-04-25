@@ -177,18 +177,19 @@ vec3 raycast::computeColor(vec3 hit, vector <SceneObject *> scene, int objIndex,
 	for (int i = 0; i < lights.size(); i++){
 		
 		vec3 l = normalize(lights[i]->location - hit);
-		ray * lRay = new ray(hit, l);
+		vec3 n = scene[objIndex]->computeNormal(hit);
+		ray * lRay = new ray(hit + (n*0.0001f), l);
 
+		//cout << "look for intersection with light: " << endl;
 		float lightHit = firstHit(lRay, scene, false);
-		//bool shadow;
 		
-		/*if (lightHit < length(lights[i]->location - hit)){
+		if ((lightHit) != -1 && (lightHit < length(lights[i]->location - hit))) {
 			//shadow = true;
-			cout << "shadow" << endl;
-		} else {*/
+			//cout << "shadow" << endl;
+		} else {
 			color += (lights[i]->color)*SceneObject::computeDiffuse(scene[objIndex], hit, l);
 			//color += lights[i]->color*compute_specular(scene[objIndex], hit, normalize(dot(l, v)));
-		//}
+		} //color += (lights[i]->color)*SceneObject::computeDiffuse(scene[objIndex], hit, l);
 	}
 
 	if (print) {
@@ -196,7 +197,7 @@ vec3 raycast::computeColor(vec3 hit, vector <SceneObject *> scene, int objIndex,
 		uint g = round(clamp(color.y, 0.f, 1.f) * 255.f);
 		uint b = round(clamp(color.z, 0.f, 1.f) * 255.f);
 		cout << "BRDF: Blinn-Phong" << endl;
-		cout << "Color: (" << r << " " << g << " " << b << ")" << endl;
+		cout << "Color: (" << r << ", " << g << ", " << b << ")" << endl;
 	}
 
 	color = vec3(clamp(color.x, 0.f, 1.f), clamp(color.y, 0.f, 1.f), clamp(color.z, 0.f, 1.f));

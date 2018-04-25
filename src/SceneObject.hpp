@@ -19,6 +19,9 @@ public:
 
 	float ambient;
 	float diffuse;
+	float specular;
+	float roughness;
+	
 	std::string type;
 	glm::vec3 color;
 

@@ -78,6 +78,7 @@ int main(int argc, char *argv[])
 	} else if (exec == "pixelcolor"){
 		if (argc < 7 || argc > 8){
 			cerr << "Usage: ./raytrace pixelcolor <input_filename> <width> <height> <x> <y> [-altbrdf]" << endl;
+			return -1;
 		}
 		Parse::parseFile(argv[2], scene, camera, lights);
 		raycast::pixelColor(scene, camera, lights, stoi(argv[3]), stoi(argv[4]), stoi(argv[5]), stoi(argv[6]));
