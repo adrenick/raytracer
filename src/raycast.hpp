@@ -25,7 +25,7 @@ public:
 
 	static void pixelColor(std::vector <SceneObject *> scene, Camera * camera, std::vector <Light *> lights, int width, int height, int x, int y);
 
-	static glm::vec3 computeColor(glm::vec3 hit, std::vector <SceneObject *> scene, int objIndex, Camera * camera, std::vector <Light *> lights, bool print);
+	static glm::vec3 computeColor(glm::vec3 hit, std::vector <SceneObject *> scene, int objIndex, Camera * camera, std::vector <Light *> lights, bool print, ray * c);
 
 	static void render(std::vector <SceneObject *> & scene, Camera * camera, std::vector <Light *> lights, int width, int height);
 };

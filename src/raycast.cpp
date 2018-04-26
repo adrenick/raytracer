@@ -161,7 +161,7 @@ void raycast::pixelColor(vector <SceneObject *> scene, Camera * camera, vector <
 	} else {
 		cout << "T = " << closestHit << endl;
 		cout << "Object Type: " << scene[closestObjIndex]->type << endl;
-		computeColor(origin+closestHit*dir, scene, closestObjIndex, camera, lights, true);
+		computeColor(origin+closestHit*dir, scene, closestObjIndex, camera, lights, true, r);
 		/*std::cout << std::fixed << std::setprecision(4);
 		cout << "Color: " << color.x << " " << color.y << " " << color.z << endl;
 		std::cout << std::fixed << std::setprecision(4);*/
@@ -169,7 +169,7 @@ void raycast::pixelColor(vector <SceneObject *> scene, Camera * camera, vector <
 	} 
 }
 
-vec3 raycast::computeColor(vec3 hit, vector <SceneObject *> scene, int objIndex, Camera * camera, vector <Light *> lights, bool print)
+vec3 raycast::computeColor(vec3 hit, vector <SceneObject *> scene, int objIndex, Camera * camera, vector <Light *> lights, bool print, ray * c)
 {
 	vec3 color = scene[objIndex]->color * scene[objIndex]->ambient;
 	//vec3 v = normalize(camera->location - hit);
@@ -178,12 +178,13 @@ vec3 raycast::computeColor(vec3 hit, vector <SceneObject *> scene, int objIndex,
 	for (int i = 0; i < lights.size(); i++){
 		
 		vec3 n = scene[objIndex]->computeNormal(hit);
-		hit = hit + (n*0.0001f);
+		//hit = hit + (n*0.001f);
 		vec3 l = normalize(lights[i]->location - hit);
 		vec3 v = normalize(camera->location - n);
+		//vec3 v = normalize(-1.f*c->direction);
 		
-		//ray * lRay = new ray(hit + (n*0.0001f), l);
-		ray * lRay = new ray(hit, l);
+		ray * lRay = new ray(hit + (n*0.0001f), l);
+		//ray * lRay = new ray(hit, l);
 
 		//cout << "look for intersection with light: " << endl;
 		float lightHit = firstHit(lRay, scene, false);
@@ -193,7 +194,7 @@ vec3 raycast::computeColor(vec3 hit, vector <SceneObject *> scene, int objIndex,
 			//cout << "shadow" << endl;
 		} else {
 			color += (lights[i]->color)*SceneObject::computeDiffuse(scene[objIndex], hit, l, n);
-			color += (lights[i]->color)*SceneObject::computeSpecular(scene[objIndex], hit, normalize(l + v), n);
+			//color += (lights[i]->color)*SceneObject::computeSpecular(scene[objIndex], hit, normalize(l + v), n);
 		} //color += (lights[i]->color)*SceneObject::computeDiffuse(scene[objIndex], hit, l);
 	}
 
@@ -247,7 +248,7 @@ void raycast::render(vector <SceneObject *> & scene, Camera * camera, vector <Li
 				green = (unsigned int) std::round(0.0 * 255.f);
 				blue = (unsigned int) std::round(0.0 * 255.f);
 			} else {
-				vec3 color = computeColor(origin+closestHit*dir, scene, closestObjIndex, camera, lights, false);
+				vec3 color = computeColor(origin+closestHit*dir, scene, closestObjIndex, camera, lights, false, r);
 
 				red = (unsigned int) std::round(color.x * 255.f);
 				green = (unsigned int) std::round(color.y * 255.f);

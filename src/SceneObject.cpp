@@ -35,6 +35,7 @@ glm::vec3 SceneObject::computeDiffuse(SceneObject * obj, vec3 hit, vec3 l, vec3 
 	//vec3 n = obj->computeNormal(hit);
 	//vec3 h = normalize(l + v);
 
+	//return (obj->diffuse)*dot(n, l);
 	return (obj->diffuse)*(obj->color)*dot(n, l);
 
 }
@@ -47,10 +48,13 @@ glm::vec3 SceneObject::computeSpecular(SceneObject * obj, vec3 hit, vec3 h, vec3
 		//std::cout << "specular = 0" << std::endl;
 		//std::cout << obj->specular << std::endl;
 		return vec3(0, 0, 0);
+		//return 0;
 	} else {
 		vec3 spec = (obj->specular)*(obj->color)*pow(dot(h, n), pow(obj->roughness, 2.f));
+		//vec3 spec = (obj->specular)*(obj->color)*pow(dot(h, n), (1/obj->roughness));
 		//vec3 spec = (obj->specular)*(obj->color)*pow(dot(h, n), obj->roughness);
 		//std::cout << spec.x << ", " << spec.y << ", " << spec.z << std::endl;
+		//float spec = (obj->specular)*pow(dot(h, n), (1/obj->roughness));
 		return spec;
 	}
 }
