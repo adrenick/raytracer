@@ -33,6 +33,12 @@ public:
 
 	static float ParseDiffuse(std::stringstream & Stream);
 
+	static float ParseSpecular(std::stringstream & Stream);
+
+	static float ParseRoughness(std::stringstream & Stream);
+
+	static void ParseFinish(std::stringstream & Stream, float & a, float & d, float & s, float & r);
+
 	static void parseString(std::stringstream & stream, std::vector <SceneObject *> & scene, Camera * & camera, std::vector <Light *> & lights);
 
 	static void parseFile(std::string filename, std::vector <SceneObject *> &scene, Camera * & camera, std::vector <Light *> & lights);

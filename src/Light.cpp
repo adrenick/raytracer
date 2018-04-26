@@ -6,7 +6,7 @@
 #include <iostream>
 using namespace std;
 
-void Light::print(void)
+void Light::print()
 {
 	cout << "- Location: {" << location.x << " " << location.y << " " << location.z << "}" << endl;
 	cout << "- Color: {" << color.x << " " << color.y << " " << color.z << "}" << endl;

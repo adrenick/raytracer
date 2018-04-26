@@ -21,7 +21,7 @@ public:
 	float diffuse;
 	float specular;
 	float roughness;
-	
+
 	std::string type;
 	glm::vec3 color;
 
@@ -55,7 +55,9 @@ public:
 
 	}*/
 
-	static glm::vec3 computeDiffuse(SceneObject * obj, glm::vec3 hit, glm::vec3 l);
+	static glm::vec3 computeDiffuse(SceneObject * obj, glm::vec3 hit, glm::vec3 l, glm::vec3 n);
+
+	static glm::vec3 computeSpecular(SceneObject * obj, glm::vec3 hit, glm::vec3 h, glm::vec3 n);
 
 };
 

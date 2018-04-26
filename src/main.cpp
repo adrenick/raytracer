@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
 
 	string exec = argv[1];
 
-	if (exec.compare("raycast") == 0){
+	if (exec == "raycast"){
 		if (argc != 5){
 			cerr << "Usage: ./raytrace raycast <input_filename> <width> <height>" << endl;
 			return -1;
@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
 		}
 		Parse::parseFile(argv[2], scene, camera, lights);
 		raycast::doRaycast(scene, camera, atoi(argv[3]), atoi(argv[4]));
-	} else if (exec.compare("sceneinfo") == 0) {
+	} else if (exec == "sceneinfo") {
 		if (argc != 3){
 			cerr << "Usage: ./raytrace sceneinfo <input_filename>" << endl;
 			return -1;
@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
 		}
 		Parse::parseFile(argv[2], scene, camera, lights);
 		SceneObject::printScene(scene, camera, lights);
-	} else if (exec.compare("pixelray") == 0) {
+	} else if (exec == "pixelray") {
 		if (argc != 7){
 			cerr << "Usage: ./raytrace pixelray <input_filename> <width> <height> <x> <y>" << endl;
 			return -1;
@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
 		}
 		Parse::parseFile(argv[2], scene, camera, lights);
 		raycast::pixelRay(camera, stoi(argv[3]), stoi(argv[4]), stoi(argv[5]), stoi(argv[6]));
-	} else if (exec.compare("firsthit") == 0) {
+	} else if (exec == "firsthit") {
 		if (argc != 7){
 			cerr << "Usage: ./raytrace firsthit <input_filename> <width> <height> <x> <y>" << endl;
 			return -1;

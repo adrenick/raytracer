@@ -6,7 +6,7 @@
 #include <iostream>
 using namespace std;
 
-void Camera::print(void)
+void Camera::print()
 {
 	cout << "- Location: {" << location.x << " " << location.y << " " << location.z << "}" << endl;
 	cout << "- Up: {" << up.x << " " << up.y << " " << up.z << "}" << endl;

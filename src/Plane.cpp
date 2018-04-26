@@ -18,7 +18,7 @@ float Plane::intersect(const ray & r)
 	}
 }
 
-void Plane::print(void)
+void Plane::print()
 {
 	cout << "- Normal: {" << normal.x << " " << normal.y << " " << normal.z << "}" << endl;
 	cout << "- Distance: " << distance << endl;

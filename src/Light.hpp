@@ -13,7 +13,7 @@ public:
 	glm::vec3 location;
 	glm::vec3 color;
 
-	void print(void);
+	void print();
 
 		Light(glm::vec3 l, glm::vec3 c)
 		{

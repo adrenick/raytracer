@@ -13,7 +13,7 @@ public:
 
 	float intersect(const ray & r);
 
-	void print(void);
+	void print();
 
 	glm::vec3 computeNormal(glm::vec3 p);
 

@@ -30,13 +30,29 @@ void SceneObject::printScene(std::vector <SceneObject *> scene, Camera * camera,
 
 	}
 
-glm::vec3 SceneObject::computeDiffuse(SceneObject * obj, vec3 hit, vec3 l){
+glm::vec3 SceneObject::computeDiffuse(SceneObject * obj, vec3 hit, vec3 l, vec3 n){
 	
-	vec3 n = obj->computeNormal(hit);
+	//vec3 n = obj->computeNormal(hit);
 	//vec3 h = normalize(l + v);
 
 	return (obj->diffuse)*(obj->color)*dot(n, l);
 
+}
+
+glm::vec3 SceneObject::computeSpecular(SceneObject * obj, vec3 hit, vec3 h, vec3 n){
+
+	
+	//std::cout << obj->specular << std::endl;
+	if (obj->specular == 0.f){
+		//std::cout << "specular = 0" << std::endl;
+		//std::cout << obj->specular << std::endl;
+		return vec3(0, 0, 0);
+	} else {
+		vec3 spec = (obj->specular)*(obj->color)*pow(dot(h, n), pow(obj->roughness, 2.f));
+		//vec3 spec = (obj->specular)*(obj->color)*pow(dot(h, n), obj->roughness);
+		//std::cout << spec.x << ", " << spec.y << ", " << spec.z << std::endl;
+		return spec;
+	}
 }
 
 /*static vec3 SceneObject::computeSpecular(SceneObject * obj, vec3 hit, vec3 h){

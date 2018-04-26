@@ -48,8 +48,7 @@ SceneObject * Parse::ParseSphere(stringstream & Stream)
 	vec3 v;
 	vec3 c;
 	float d;
-	float amb;
-	float diff;
+	float amb, diff, spec, rough;
 	stringbuf buf;
 
 	v = Parse::ParseVector(Stream);
@@ -73,17 +72,96 @@ SceneObject * Parse::ParseSphere(stringstream & Stream)
 
     c = Parse::ParseVector(Stream);
 
-	amb = Parse::ParseAmbient(Stream);
-
-	diff = Parse::ParseDiffuse(Stream);
+	Parse::ParseFinish(Stream, amb, diff, spec, rough);
 
     SceneObject * obj = new Sphere(v, d, c);
+
     obj->ambient = amb;
     obj->diffuse = diff;
+    obj->specular = spec;
+    obj->roughness = rough;
+
+    //cout << "spec: " << spec << " rough: " << rough << endl;
+
     obj->type = "Sphere";
 
     return obj;
 
+}
+
+void Parse::ParseFinish(stringstream & Stream, float & a, float & d, float & s, float & r){
+
+	//float a, d;
+	string whole;
+	stringbuf buf;
+	stringstream finish;
+
+	Stream.get(buf, '{');
+	buf.str("");
+	Stream.get(buf, '}');
+
+	whole = buf.str();
+
+	finish.str(whole);
+
+	a = ParseAmbient(finish);
+
+	d = ParseDiffuse(finish);
+
+	stringstream newfinish;
+	newfinish.str(whole);
+
+	s = ParseSpecular(newfinish);
+
+	stringstream newnewfinish;
+	newnewfinish.str(whole);
+
+	r = ParseRoughness(newnewfinish);
+
+}
+
+float Parse::ParseSpecular(stringstream & Stream)
+{
+	float s;
+	stringbuf buf;
+
+	Stream.ignore(40, 'r');
+	Stream.get(buf, 'r');
+
+	string line = buf.str();
+
+	int read = sscanf(line.c_str(), "%f", &s);
+
+	if (read != 1)
+	{
+		s = 0.f;
+	}
+
+	line = Stream.str();
+
+	return s;
+}
+
+float Parse::ParseRoughness(stringstream & Stream)
+{
+	float r;
+	stringbuf buf;
+   
+	Stream.ignore(40, 'r');
+	Stream.ignore(15, 's');
+	Stream.ignore(1, 's');
+	Stream.get(buf, EOF);
+
+	string line = buf.str();
+
+	int read = sscanf(line.c_str(), "%f", &r);
+
+	if (read != 1)
+	{
+		r = 0.f;
+	}
+
+	return r;
 }
 
 float Parse::ParseAmbient(stringstream & Stream)
@@ -91,7 +169,7 @@ float Parse::ParseAmbient(stringstream & Stream)
 	float a;
 	stringbuf buf;
 
-	Stream.get(buf, '{');
+	Stream.ignore(2, '{');
     Stream.get(buf, 't');
     Stream.ignore(1, 't');
 
@@ -119,19 +197,21 @@ float Parse::ParseDiffuse(stringstream & Stream)
     Stream.get(buf, '}');
 
     string line = buf.str();
+
     int read = sscanf(line.c_str(), "%f", &d);
 	if (read != 1)
 	{
-		cerr << "Expected to read 1 material ambient constant but found '" << line << "'" << endl;
+		cerr << "Expected to read 1 material diffuse constant but found '" << line << "'" << endl;
 	}
 	return d;
+
 }
 
 SceneObject * Parse::ParsePlane(stringstream & Stream)
 {
 	vec3 n;
 	vec3 c;
-	float d, amb, diff;
+	float d, amb, diff, spec, rough;
 	stringbuf buf;
 
 	n = Parse::ParseVector(Stream);
@@ -155,15 +235,17 @@ SceneObject * Parse::ParsePlane(stringstream & Stream)
 
     c = Parse::ParseVector(Stream);
 
-    amb = Parse::ParseAmbient(Stream);
-
-	diff = Parse::ParseDiffuse(Stream);
+	Parse::ParseFinish(Stream, amb, diff, spec, rough);
 
     SceneObject * obj = new Plane(n, d, c);
+
     obj->ambient = amb;
     obj->diffuse = diff;
-    obj->type = "Plane";
+    obj->specular = spec;
+    obj->roughness = rough;
 
+    obj->type = "Plane";
+    
     return obj;
 }
 
@@ -207,8 +289,6 @@ Light * Parse::ParseLight(std::stringstream & Stream)
 	c = Parse::ParseVector(Stream);
 
 	return new Light(l, c);
-
-
 }
 
 void Parse::parseString(std::stringstream & stream, vector <SceneObject *> & scene, Camera * & camera, vector <Light *> & lights)

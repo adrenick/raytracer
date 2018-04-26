@@ -14,7 +14,7 @@ class Camera {
 		glm::vec3 right;
 		glm::vec3 look_at;
 
-		void print(void);
+		void print();
 
 		Camera(glm::vec3 l, glm::vec3 u, glm::vec3 r, glm::vec3 la)
 		{
