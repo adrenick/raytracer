@@ -20,7 +20,6 @@ public:
 
 	static void pixelRay(Camera * camera, int width, int height, int x, int y);
 
-	//static void firstHit(std::vector <SceneObject *> scene, Camera * & camera, int width, int height, int x, int y);
 	static float firstHit(ray * r, std::vector <SceneObject *> scene, bool print);
 
 	static void pixelColor(std::vector <SceneObject *> scene, Camera * camera, std::vector <Light *> lights, int width, int height, int x, int y);

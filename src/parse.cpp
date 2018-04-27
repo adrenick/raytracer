@@ -82,8 +82,6 @@ SceneObject * Parse::ParseSphere(stringstream & Stream)
     obj->roughness = rough;
     obj->ior = ior;
 
-    //cout << "spec: " << spec << " rough: " << rough << endl;
-
     obj->type = "Sphere";
 
     return obj;
@@ -92,7 +90,6 @@ SceneObject * Parse::ParseSphere(stringstream & Stream)
 
 void Parse::ParseFinish(stringstream & Stream, float & a, float & d, float & s, float & r, float & ior){
 
-	//float a, d;
 	string whole;
 	stringbuf buf;
 	stringstream finish;
@@ -123,7 +120,6 @@ void Parse::ParseFinish(stringstream & Stream, float & a, float & d, float & s, 
 	newnewnewfinish.str(whole);
 
 	ior = ParseIOR(newnewnewfinish);
-
 
 }
 
@@ -190,7 +186,6 @@ float Parse::ParseIOR(stringstream & Stream)
 	{
 		i = 0.f;
 	}
-	//cout << "i: " << i << endl;
 
 	return i;
 }

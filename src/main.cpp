@@ -63,7 +63,6 @@ int main(int argc, char *argv[])
 
 		ray * pRay = raycast::createRay(camera, stoi(argv[3]), stoi(argv[4]), stoi(argv[5]), stoi(argv[6]));
 		raycast::printPixelRay(stoi(argv[3]), stoi(argv[4]), pRay);
-		//raycast::firstHit(scene, camera, stoi(argv[3]), stoi(argv[4]), stoi(argv[5]), stoi(argv[6]));
 		raycast::firstHit(pRay, scene, true);
 
 

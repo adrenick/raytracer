@@ -97,8 +97,6 @@ void raycast::pixelRay(Camera * camera, int width, int height, int x, int y)
 //void raycast::firstHit(ray r, vector <SceneObject *> scene, Camera * & camera, int width, int height, int x, int y)
 float raycast::firstHit(ray * r, vector <SceneObject *> scene, bool print)
 {
-
-	//ray * r = createRay(camera, width, height, x, y);
 	vec3 origin = r->origin;
 	vec3 dir = r->direction;
 
@@ -118,8 +116,6 @@ float raycast::firstHit(ray * r, vector <SceneObject *> scene, bool print)
 
 
 	if (print){
-		//printPixelRay(x, y, r);
-
 		if (closestHit == -1){
 			cout << "No Hit" << endl;
 		} else {
@@ -162,10 +158,6 @@ void raycast::pixelColor(vector <SceneObject *> scene, Camera * camera, vector <
 		cout << "T = " << closestHit << endl;
 		cout << "Object Type: " << scene[closestObjIndex]->type << endl;
 		computeColor(origin+closestHit*dir, scene, closestObjIndex, camera, lights, true, r, false);
-		/*std::cout << std::fixed << std::setprecision(4);
-		cout << "Color: " << color.x << " " << color.y << " " << color.z << endl;
-		std::cout << std::fixed << std::setprecision(4);*/
-
 	} 
 }
 
@@ -174,29 +166,19 @@ vec3 raycast::computeColor(vec3 hit, vector <SceneObject *> scene, int objIndex,
 	SceneObject * obj = scene[objIndex];
 
 	vec3 color = obj->color * obj->ambient;
-	//vec3 v = normalize(camera->location - hit);
-
 
 	for (int i = 0; i < lights.size(); i++){
 		
 		vec3 n = obj->computeNormal(hit);
-		//hit = hit + (n*0.001f);
 		vec3 l = normalize(lights[i]->location - hit);
 		vec3 v = normalize(camera->location - hit);
-		//vec3 v = normalize(camera->location - n);
-		//vec3 v = normalize(-1.f*c->direction);
 		vec3 h = normalize(l+v);
 		
 		ray * lRay = new ray(hit + (n*0.0001f), l);
-		//ray * lRay = new ray(hit, l);
 
-		//cout << "look for intersection with light: " << endl;
 		float lightHit = firstHit(lRay, scene, false);
 		
-		if ((lightHit) != -1 && (lightHit < length(lights[i]->location - hit))) {
-			//shadow = true;
-			//cout << "shadow" << endl;
-		} else {
+		if (!((lightHit) != -1 && (lightHit < length(lights[i]->location - hit)))) {
 
 			vec3 kd = obj->diffuse*obj->color;
 			vec3 ks = obj->specular*obj->color;
@@ -211,21 +193,17 @@ vec3 raycast::computeColor(vec3 hit, vector <SceneObject *> scene, int objIndex,
 				float Fo = (pow(obj->ior - 1, 2))/(pow(obj->ior + 1, 2));
 				float F = Fo + (1 - Fo)*(pow(1-clamp(dot(v, h), 0.f, 1.f), 5));
 
-				//vec3 rs = ks*((D*G*F)/(4*clamp(dot(n, v), 0.f, 1.f))); 
-				//vec3 rs = ks*((G)); 
 				vec3 rs = ks*((D*G*F)/(4*clamp(dot(n, v), 0.f, 1.f))); 
 
 				color += (lights[i]->color)*(kd*(clamp(dot(n, l), 0.f, 1.f))+rs);
 			} else {
-				//color += (lights[i]->color)*SceneObject::computeDiffuse(scene[objIndex], hit, l, n);
+
 				float alpha = 2/(pow(obj->roughness, 2))-2;
 				color += ( lights[i]->color)*kd*dot(n, l);
 				color += (lights[i]->color)*ks*(pow(dot(h, n), alpha));
-				//color += (lights[i]->color)*SceneObject::computeSpecular(scene[objIndex], hit, normalize(l + v), n);
-			}
 
-			
-		} //color += (lights[i]->color)*SceneObject::computeDiffuse(scene[objIndex], hit, l);
+			}
+		} 
 	}
 
 	if (print) {

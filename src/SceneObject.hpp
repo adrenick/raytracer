@@ -33,32 +33,6 @@ public:
 	virtual glm::vec3 computeNormal(glm::vec3 hit) = 0;
 
 	static void printScene(std::vector <SceneObject *> scene, Camera * camera, std::vector <Light *> lights);
-	/*{
-
-		std::cout << "Camera: " << std::endl;
-		(camera)->print();
-		std::cout << "\n --- \n\n" << std::endl;
-
-		std::cout << lights.size() << " light(s)\n" << std::endl;
-		for (int i = 0; i < lights.size(); i++){
-			std::cout << "Light[" << i << "]:" << std::endl;
-			(lights[i])->print();
-		}
-		std::cout << "\n --- \n\n" << std::endl;
-
-		std::cout << scene.size() << " object(s)\n" << std::endl;
-		for (int i = 0; i < scene.size(); i++){
-			std::cout << "Object[" << i << "]:" << std::endl;
-			std::cout << "- Type: " << scene[i]->type << std::endl;
-
-			scene[i]->print();
-		}
-
-	}*/
-
-	static glm::vec3 computeDiffuse(SceneObject * obj, glm::vec3 hit, glm::vec3 l, glm::vec3 n);
-
-	static glm::vec3 computeSpecular(SceneObject * obj, glm::vec3 hit, glm::vec3 h, glm::vec3 n);
 
 };
 
