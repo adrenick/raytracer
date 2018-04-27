@@ -94,7 +94,6 @@ void raycast::pixelRay(Camera * camera, int width, int height, int x, int y)
 	printPixelRay(x, y, r);
 }
 
-//void raycast::firstHit(ray r, vector <SceneObject *> scene, Camera * & camera, int width, int height, int x, int y)
 float raycast::firstHit(ray * r, vector <SceneObject *> scene, bool print)
 {
 	vec3 origin = r->origin;
@@ -195,7 +194,7 @@ vec3 raycast::computeColor(vec3 hit, vector <SceneObject *> scene, int objIndex,
 
 				vec3 rs = ks*((D*G*F)/(4*clamp(dot(n, v), 0.f, 1.f))); 
 
-				color += (lights[i]->color)*(kd*(clamp(dot(n, l), 0.f, 1.f))+rs);
+				color += (lights[i]->color)*(kd*(clamp(dot(n, l), 0.f, 1.f))+rs*2.5f);
 			} else {
 
 				float alpha = 2/(pow(obj->roughness, 2))-2;
