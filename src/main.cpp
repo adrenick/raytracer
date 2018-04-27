@@ -72,8 +72,13 @@ int main(int argc, char *argv[])
 			cerr << "Usage: ./raytrace render <input_filename> <width> <height> [-altbrdf]" << endl;
 			return -1;
 		}
+		bool altbrdf = false;
+		//if ((argc == 6)&&(argv[5] == "-altbrdf")){
+		if (argc == 6){
+			altbrdf = true;
+		}
 		Parse::parseFile(argv[2], scene, camera, lights);
-		raycast::render(scene, camera, lights, atoi(argv[3]), atoi(argv[4]));
+		raycast::render(scene, camera, lights, atoi(argv[3]), atoi(argv[4]), altbrdf);
 
 	} else if (exec == "pixelcolor"){
 		if (argc < 7 || argc > 8){
