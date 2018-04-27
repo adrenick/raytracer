@@ -197,30 +197,29 @@ vec3 raycast::computeColor(vec3 hit, vector <SceneObject *> scene, int objIndex,
 			//shadow = true;
 			//cout << "shadow" << endl;
 		} else {
+
 			vec3 kd = obj->diffuse*obj->color;
 			vec3 ks = obj->specular*obj->color;
+
 			if (altbrdf){
 				float alpha = pow(obj->roughness, 2);
 
 				float D = calcD(n, h, alpha);
 
-				//float G = min(1.f, calcG(l, h, n, alpha), calcG(v, h, n, alpha));
-				//float G = min(min(calcG(l, h, n, alpha), calcG(v, h, n, alpha)), 1.f);
-
-				float G1 = calcG(l, h, n, alpha);
-				float G2 = calcG(v, h, n, alpha);
-				float minim = glm::min(G1, G2);		
-				float G = glm::min(minim, 1.f);
+				float G = (calcG(l, h, n, alpha))*(calcG(v, h, n, alpha));
 
 				float Fo = (pow(obj->ior - 1, 2))/(pow(obj->ior + 1, 2));
-				float F = Fo + (1 - Fo)*(pow(1-dot(v, h), 5));
+				float F = Fo + (1 - Fo)*(pow(1-clamp(dot(v, h), 0.f, 1.f), 5));
 
-				vec3 rs = ks*((D*G*F)/(4*dot(n, v))); 
-				color += ((lights[i]->color)*((kd)+(rs)));
+				//vec3 rs = ks*((D*G*F)/(4*clamp(dot(n, v), 0.f, 1.f))); 
+				//vec3 rs = ks*((G)); 
+				vec3 rs = ks*((D*G*F)/(4*clamp(dot(n, v), 0.f, 1.f))); 
+
+				color += (lights[i]->color)*(kd*(clamp(dot(n, l), 0.f, 1.f))+rs);
 			} else {
 				//color += (lights[i]->color)*SceneObject::computeDiffuse(scene[objIndex], hit, l, n);
 				float alpha = 2/(pow(obj->roughness, 2))-2;
-				color += (lights[i]->color)*kd*dot(n, l);
+				color += ( lights[i]->color)*kd*dot(n, l);
 				color += (lights[i]->color)*ks*(pow(dot(h, n), alpha));
 				//color += (lights[i]->color)*SceneObject::computeSpecular(scene[objIndex], hit, normalize(l + v), n);
 			}
@@ -245,7 +244,7 @@ vec3 raycast::computeColor(vec3 hit, vector <SceneObject *> scene, int objIndex,
 float raycast::calcD(vec3 n, vec3 h, float alpha)
 {
 	int chi;
-	float ndoth = dot(n, h);
+	float ndoth = clamp(dot(n, h), 0.f, 1.f);
 	float alpha2 = pow(alpha, 2);
 
 	if (ndoth > 0){
@@ -264,13 +263,13 @@ float raycast::calcG(vec3 x, vec3 h, vec3 n, float r)
 {
 	int chi;
 
-	if ((dot(x, h))/(dot(x, n)) > 0){
+	if ((clamp(dot(x, h), 0.f, 1.f))/(clamp(dot(x, n), 0.f, 1.f)) > 0){
 		chi = 1;
 	} else {
 		chi = 0;
 	}
 
-	float xdotn2 = pow(dot(x, n), 2);
+	float xdotn2 = pow(clamp(dot(x, n), 0.f, 1.f), 2);
 	float quant = 1 + pow(r, 2)*((1 - xdotn2)/xdotn2);
 
 	return chi * (2 / (1 + sqrt(quant)));
