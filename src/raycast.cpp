@@ -192,7 +192,7 @@ vec3 raycast::computeColor(vec3 hit, vector <SceneObject *> scene, int objIndex,
 				float Fo = (pow(obj->ior - 1, 2))/(pow(obj->ior + 1, 2));
 				float F = Fo + (1 - Fo)*(pow(1-clamp(dot(v, h), 0.f, 1.f), 5));
 
-				vec3 rs = ks*((D*G*F)/(clamp(dot(n, v), 0.f, 1.f))); 
+				vec3 rs = ks*((D*G*F)/(4*clamp(dot(n, v), 0.f, 1.f))); 
 
 				color += (lights[i]->color)*(kd*(clamp(dot(n, l), 0.f, 1.f))+rs);
 			} else {
