@@ -48,7 +48,7 @@ SceneObject * Parse::ParseSphere(stringstream & Stream)
 	vec3 v;
 	vec3 c;
 	float d;
-	float amb, diff, spec, rough, ior, ref;
+	float amb, diff, spec, rough, ior, ref, refrac;
 	stringbuf buf;
 
 	v = Parse::ParseVector(Stream);
@@ -72,7 +72,7 @@ SceneObject * Parse::ParseSphere(stringstream & Stream)
 
     c = Parse::ParseVector(Stream);
 
-	Parse::ParseFinish(Stream, amb, diff, spec, rough, ior, ref);
+	Parse::ParseFinish(Stream, amb, diff, spec, rough, ior, ref, refrac);
 
     SceneObject * obj = new Sphere(v, d, c);
 
@@ -82,6 +82,7 @@ SceneObject * Parse::ParseSphere(stringstream & Stream)
     obj->roughness = rough;
     obj->ior = ior;
     obj->reflection = ref;
+    obj->refraction = refrac;
 
     obj->type = "Sphere";
 
@@ -95,7 +96,7 @@ SceneObject * Parse::ParseTriangle(stringstream & Stream)
 	vec3 b;
 	vec3 c;
 	vec3 color;
-	float amb, diff, spec, rough, ior, ref;
+	float amb, diff, spec, rough, ior, ref, refrac;
 	stringbuf buf;
 
 	a = Parse::ParseVector(Stream);
@@ -113,7 +114,7 @@ SceneObject * Parse::ParseTriangle(stringstream & Stream)
 
     color = Parse::ParseVector(Stream);
 
-	Parse::ParseFinish(Stream, amb, diff, spec, rough, ior, ref);
+	Parse::ParseFinish(Stream, amb, diff, spec, rough, ior, ref, refrac);
 
     SceneObject * obj = new Triangle(a, b, c, color);
 
@@ -123,6 +124,7 @@ SceneObject * Parse::ParseTriangle(stringstream & Stream)
     obj->roughness = rough;
     obj->ior = ior;
     obj->reflection = ref;
+    obj->refraction = refrac;
 
     obj->type = "Triangle";
 
@@ -130,7 +132,7 @@ SceneObject * Parse::ParseTriangle(stringstream & Stream)
 
 }
 
-void Parse::ParseFinish(stringstream & Stream, float & a, float & d, float & s, float & r, float & ior, float & ref){
+void Parse::ParseFinish(stringstream & Stream, float & a, float & d, float & s, float & r, float & ior, float & ref, float & refrac){
 
 	string whole;
 	stringbuf buf;
@@ -171,11 +173,73 @@ void Parse::ParseFinish(stringstream & Stream, float & a, float & d, float & s, 
 		stringstream newnewnewfinish;
 		newnewnewfinish.str(whole);
 
+		refrac = ParseRefraction(newnewnewfinish);
+
 		ior = ParseIOR(newnewnewfinish);
-	
 
-	
+}
 
+float Parse::ParseRefraction(stringstream & Stream)
+{
+	float r;
+	stringbuf buf;
+
+	/*Stream.ignore(16, 'n');
+	Stream.ignore(32, 'n');
+	Stream.ignore(16, 'n');
+	Stream.get(buf, 'r');*/
+
+	Stream.ignore(18, 'f');
+	Stream.ignore(1, 'f');
+	Stream.ignore(14, 'f');
+	Stream.ignore(100, 'r');
+
+
+	Stream.ignore(10, 'n');
+	Stream.get(buf, 'i');
+	//Stream.ignore(1, 'i');
+	//Stream.ignore(1, 'o');
+	//Stream.ignore(1, 'r');
+
+
+	string line = buf.str();
+	//cout << "string: " << line << endl;
+
+	int read = sscanf(line.c_str(), "%f", &r);
+
+	if (read != 1)
+	{
+		r = 0.f;
+	}
+
+	line = Stream.str();
+
+	return r;
+}
+
+float Parse::ParseIOR(stringstream & Stream)
+{
+	float i;
+	stringbuf buf;
+   
+	/*Stream.ignore(40, 'r');
+	Stream.ignore(15, 's');
+	Stream.ignore(10, 'r');
+	Stream.ignore(1, 'r');*/
+
+	Stream.ignore(3, 'r');
+	Stream.get(buf, EOF);
+
+	string line = buf.str();
+
+	int read = sscanf(line.c_str(), "%f", &i);
+
+	if (read != 1)
+	{
+		i = 0.f;
+	}
+
+	return i;
 }
 
 float Parse::ParseReflection(stringstream & Stream)
@@ -183,12 +247,16 @@ float Parse::ParseReflection(stringstream & Stream)
 	float r;
 	stringbuf buf;
 
-	Stream.ignore(16, 'n');
+	/*Stream.ignore(16, 'n');
 	Stream.ignore(32, 'n');
+	Stream.get(buf, '}');*/
+
+	Stream.ignore(100, 'l');
+	Stream.ignore(8, 'n');
 	Stream.get(buf, '}');
 
 	string line = buf.str();
-	//cout << "string: " << line << endl;
+	//cout << "reflection string: " << line << endl;
 
 	int read = sscanf(line.c_str(), "%f", &r);
 
@@ -247,29 +315,6 @@ float Parse::ParseRoughness(stringstream & Stream)
 	return r;
 }
 
-float Parse::ParseIOR(stringstream & Stream)
-{
-	float i;
-	stringbuf buf;
-   
-	Stream.ignore(40, 'r');
-	Stream.ignore(15, 's');
-	Stream.ignore(10, 'r');
-	Stream.ignore(1, 'r');
-	Stream.get(buf, EOF);
-
-	string line = buf.str();
-
-	int read = sscanf(line.c_str(), "%f", &i);
-
-	if (read != 1)
-	{
-		i = 0.f;
-	}
-
-	return i;
-}
-
 float Parse::ParseAmbient(stringstream & Stream)
 {
 	float a;
@@ -317,7 +362,7 @@ SceneObject * Parse::ParsePlane(stringstream & Stream)
 {
 	vec3 n;
 	vec3 c;
-	float d, amb, diff, spec, rough, ior, ref;
+	float d, amb, diff, spec, rough, ior, ref, refrac;
 	stringbuf buf;
 
 	n = Parse::ParseVector(Stream);
@@ -341,7 +386,7 @@ SceneObject * Parse::ParsePlane(stringstream & Stream)
 
     c = Parse::ParseVector(Stream);
 
-	Parse::ParseFinish(Stream, amb, diff, spec, rough, ior, ref);
+	Parse::ParseFinish(Stream, amb, diff, spec, rough, ior, ref, refrac);
 
     SceneObject * obj = new Plane(n, d, c);
 
@@ -351,6 +396,7 @@ SceneObject * Parse::ParsePlane(stringstream & Stream)
     obj->roughness = rough;
     obj->ior = ior;
     obj->reflection = ref;
+    obj->refraction = refrac;
 
     obj->type = "Plane";
     

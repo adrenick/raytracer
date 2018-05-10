@@ -23,6 +23,7 @@ public:
 	float roughness;
 	float ior;
 	float reflection;
+	float refraction;
 
 	std::string type;
 	glm::vec3 color;

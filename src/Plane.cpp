@@ -28,6 +28,8 @@ void Plane::print()
 	cout << "- Color: {" << color.x << " " << color.y << " " << color.z << "}" << endl;
 	cout << "- Material: \n  - Ambient: " << ambient << "\n  - Diffuse: " << diffuse << endl;
 	cout << "  - Reflection: " << reflection << endl;
+	cout << "  - Refraction: " << refraction << endl;
+	cout << "  - IOR: " << ior << endl;
 	cout << endl;
 }
 

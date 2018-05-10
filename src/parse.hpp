@@ -42,9 +42,11 @@ public:
 
 	static float ParseReflection(std::stringstream & Stream);
 
+	static float ParseRefraction(std::stringstream & Stream);
+
 	static float ParseIOR(std::stringstream & Stream);
 
-	static void ParseFinish(std::stringstream & Stream, float & a, float & d, float & s, float & r, float & ior, float & ref);
+	static void ParseFinish(std::stringstream & Stream, float & a, float & d, float & s, float & r, float & ior, float & ref, float & refrac);
 
 	static void parseString(std::stringstream & stream, std::vector <SceneObject *> & scene, Camera * & camera, std::vector <Light *> & lights);
 
