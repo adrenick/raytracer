@@ -8,6 +8,7 @@ using namespace std;
 
 float Triangle::intersect(const ray & r)
 {
+	//cout << "intersect in triangle" << endl;
 	float a = A.x - B.x;
 	float b = A.y - B.y;
 	float c = A.z - B.z;

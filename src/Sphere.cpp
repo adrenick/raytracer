@@ -8,6 +8,8 @@ using namespace std;
 
 float Sphere::intersect(const ray & r)
 {
+	//cout << "intersect in sphere" << endl;
+
 	float A = dot(r.direction, r.direction);
 	float B = 2*dot((r.origin-origin), r.direction);
 	float C = (dot((r.origin-origin), (r.origin-origin)) - pow(radius, 2));

@@ -295,7 +295,7 @@ void raycast::render(vector <SceneObject *> & scene, Camera * camera, vector <Li
 				green = (unsigned int) std::round(color.y * 255.f);
 				blue = (unsigned int) std::round(color.z * 255.f);
 			} */
-			vec3 color = getColorForRay(r, scene, camera, lights, altbrdf);
+			vec3 color = getColorForRay(r, scene, camera, lights, altbrdf, 0);
 			red = (unsigned int) std::round(color.x * 255.f);
 			green = (unsigned int) std::round(color.y * 255.f);
 			blue = (unsigned int) std::round(color.z * 255.f);
@@ -310,11 +310,18 @@ void raycast::render(vector <SceneObject *> & scene, Camera * camera, vector <Li
 	delete[] data;
 }
 
-vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * camera, vector <Light *> lights, bool altbrdf)
+vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * camera, vector <Light *> lights, bool altbrdf, int numRecurse)
 {
 	//ray * r = createRay(camera, width, height, x, y);
 			//vec3 origin = r->origin;
 			//vec3 dir = r->direction;
+
+	if (numRecurse > 0)
+	{
+		cout << "Ray: {" << r->origin.x << " " << r->origin.y << " " << r->origin.z << "} -> {";
+		cout << r->direction.x << " " << r->direction.y << " " << r->direction.z << "}" << endl;
+	}
+	
 
 	float closestHit = -1;
 	float closestObjIndex = -1;
@@ -341,7 +348,17 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 	
 	} else {
 		float ref = scene[closestObjIndex]->reflection;
-		vec3 color = (1.f-ref)*computeColor(r->origin+closestHit*r->direction, scene, closestObjIndex, camera, lights, false, r, altbrdf);
+		vec3 P = r->origin+closestHit*r->direction;
+		vec3 color = (1.f-ref)*computeColor(P, scene, closestObjIndex, camera, lights, false, r, altbrdf);
+		//cout << "ref: " << ref << endl;
+		if ((ref > 0.f) && (numRecurse < 7)){
+			vec3 normal = scene[closestObjIndex]->computeNormal(P);
+			vec3 refDir = r->direction-2.f*dot(r->direction, normal)*normal;
+			ray refRay = ray(P+.0001f*refDir, refDir);
+			//vec3 refRay = r->direction-2.f*dot(r->direction, normal)*normal; //calcReflectionRay()
+			color += ref*getColorForRay(&refRay, scene, camera, lights, altbrdf, numRecurse++);
+		}
+		
 		return color;
 
 	}
