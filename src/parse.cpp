@@ -88,6 +88,46 @@ SceneObject * Parse::ParseSphere(stringstream & Stream)
 
 }
 
+SceneObject * Parse::ParseTriangle(stringstream & Stream)
+{
+	vec3 a;
+	vec3 b;
+	vec3 c;
+	vec3 color;
+	float amb, diff, spec, rough, ior;
+	stringbuf buf;
+
+	a = Parse::ParseVector(Stream);
+
+	Stream.ignore(1, ',');
+
+	b = Parse::ParseVector(Stream);
+
+	Stream.ignore(1, ',');
+
+	c = Parse::ParseVector(Stream);
+
+	Stream.ignore(10, '{');
+    Stream.ignore(15, 'g');
+
+    color = Parse::ParseVector(Stream);
+
+	Parse::ParseFinish(Stream, amb, diff, spec, rough, ior);
+
+    SceneObject * obj = new Triangle(a, b, c, color);
+
+    obj->ambient = amb;
+    obj->diffuse = diff;
+    obj->specular = spec;
+    obj->roughness = rough;
+    obj->ior = ior;
+
+    obj->type = "Triangle";
+
+    return obj;
+
+}
+
 void Parse::ParseFinish(stringstream & Stream, float & a, float & d, float & s, float & r, float & ior){
 
 	string whole;
@@ -333,8 +373,10 @@ void Parse::parseString(std::stringstream & stream, vector <SceneObject *> & sce
 		} else if (token.compare("plane") == 0){
 			stream.ignore(3, '{');
 			scene.push_back(Parse::ParsePlane(stream));
-		} 
-		else if (token.substr(0, 2) == "//") { 
+		} else if (token.compare("triangle") == 0) {
+			stream.ignore(3, '{');
+			scene.push_back(Parse::ParseTriangle(stream));
+		} else if (token.substr(0, 2) == "//") { 
 			getline(stream, trash);
 		} else if (token.compare("camera") == 0){
 			stream.ignore(3, '{');
@@ -342,7 +384,7 @@ void Parse::parseString(std::stringstream & stream, vector <SceneObject *> & sce
 		} else if (token.compare("light_source") == 0){
 			stream.ignore(3, '{');
 			lights.push_back(Parse::ParseLight(stream));
-		}
+		} 
 	}
 }
 

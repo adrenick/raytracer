@@ -10,6 +10,7 @@
 #include "Plane.hpp"
 #include "Sphere.hpp"
 #include "Camera.hpp"
+#include "Triangle.hpp"
 #include "Light.hpp"
 
 class Parse
@@ -24,6 +25,8 @@ public:
 	static SceneObject * ParseSphere(std::stringstream & Stream);
 
 	static SceneObject * ParsePlane(std::stringstream & Stream);
+
+	static SceneObject * ParseTriangle(std::stringstream & Stream);
 
 	static Camera * ParseCamera(std::stringstream & Stream);
 
