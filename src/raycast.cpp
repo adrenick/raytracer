@@ -173,7 +173,15 @@ vec3 raycast::computeColor(vec3 hit, vector <SceneObject *> scene, int objIndex,
 		vec3 v = normalize(camera->location - hit);
 		vec3 h = normalize(l+v);
 		
-		ray * lRay = new ray(hit + (n*0.0001f), l);
+		ray * lRay = new ray(hit + (l*0.0001f), l); //ray * lRay = new ray(hit + (n*0.0001f), l);
+
+		/*cout << "=== jaccuse below ===" << endl;
+		cout << "n: " << n.x << " " << n.y << " " << n.z << endl;
+		cout << "l: " << l.x << " " << l.y << " " << l.z << endl;
+		cout << "v: " << v.x << " " << v.y << " " << v.z << endl;
+		cout << "h: " << h.x << " " << h.y << " " << h.z << endl;
+		cout << "lRay: <" << lRay->origin.x << " " << lRay->origin.y << " " << lRay->origin.z << "> -> <";
+		cout << lRay->direction.x << " " << lRay->direction.y << " " << lRay->direction.z << ">" << endl;*/
 
 		float lightHit = firstHit(lRay, scene, false);
 		
@@ -318,8 +326,8 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 
 	if (numRecurse > 0)
 	{
-		cout << "Ray: {" << r->origin.x << " " << r->origin.y << " " << r->origin.z << "} -> {";
-		cout << r->direction.x << " " << r->direction.y << " " << r->direction.z << "}" << endl;
+		//cout << "Ray: {" << r->origin.x << " " << r->origin.y << " " << r->origin.z << "} -> {";
+		//cout << r->direction.x << " " << r->direction.y << " " << r->direction.z << "}" << endl;
 	}
 	
 
@@ -351,12 +359,12 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 		vec3 P = r->origin+closestHit*r->direction;
 		vec3 color = (1.f-ref)*computeColor(P, scene, closestObjIndex, camera, lights, false, r, altbrdf);
 		//cout << "ref: " << ref << endl;
-		if ((ref > 0.f) && (numRecurse < 7)){
+		if ((ref > 0.f) && (numRecurse < 6)){
 			vec3 normal = scene[closestObjIndex]->computeNormal(P);
 			vec3 refDir = r->direction-2.f*dot(r->direction, normal)*normal;
 			ray refRay = ray(P+.0001f*refDir, refDir);
 			//vec3 refRay = r->direction-2.f*dot(r->direction, normal)*normal; //calcReflectionRay()
-			color += ref*getColorForRay(&refRay, scene, camera, lights, altbrdf, numRecurse++);
+			color += ref*getColorForRay(&refRay, scene, camera, lights, altbrdf, numRecurse+1);
 		}
 		
 		return color;
