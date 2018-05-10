@@ -55,6 +55,7 @@ void Triangle::print()
 	cout << "- Color: {" << color.x << " " << color.y << " " << color.z << "}" << endl;
 	cout << "- Material: \n  - Ambient: " << ambient << "\n  - Diffuse: " << diffuse << endl;
 	cout << "  - Specular: " << specular << "\n  - Roughness: " << roughness << endl;
+	cout << "  - Reflection: " << reflection << endl;
 	cout << endl;
 }
 

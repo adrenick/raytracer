@@ -26,6 +26,8 @@ public:
 
 	static glm::vec3 computeColor(glm::vec3 hit, std::vector <SceneObject *> scene, int objIndex, Camera * camera, std::vector <Light *> lights, bool print, ray * c,  bool altbrdf);
 
+	static glm::vec3 getColorForRay(ray * r, std::vector <SceneObject *> scene, Camera * camera, std::vector <Light *> lights, bool altbrdf);
+
 	static void render(std::vector <SceneObject *> & scene, Camera * camera, std::vector <Light *> lights, int width, int height, bool altbrdf);
 
 	static float calcG(glm::vec3 x, glm::vec3 h, glm::vec3 n, float r);

@@ -48,7 +48,7 @@ SceneObject * Parse::ParseSphere(stringstream & Stream)
 	vec3 v;
 	vec3 c;
 	float d;
-	float amb, diff, spec, rough, ior;
+	float amb, diff, spec, rough, ior, ref;
 	stringbuf buf;
 
 	v = Parse::ParseVector(Stream);
@@ -72,7 +72,7 @@ SceneObject * Parse::ParseSphere(stringstream & Stream)
 
     c = Parse::ParseVector(Stream);
 
-	Parse::ParseFinish(Stream, amb, diff, spec, rough, ior);
+	Parse::ParseFinish(Stream, amb, diff, spec, rough, ior, ref);
 
     SceneObject * obj = new Sphere(v, d, c);
 
@@ -81,6 +81,7 @@ SceneObject * Parse::ParseSphere(stringstream & Stream)
     obj->specular = spec;
     obj->roughness = rough;
     obj->ior = ior;
+    obj->reflection = ref;
 
     obj->type = "Sphere";
 
@@ -94,7 +95,7 @@ SceneObject * Parse::ParseTriangle(stringstream & Stream)
 	vec3 b;
 	vec3 c;
 	vec3 color;
-	float amb, diff, spec, rough, ior;
+	float amb, diff, spec, rough, ior, ref;
 	stringbuf buf;
 
 	a = Parse::ParseVector(Stream);
@@ -112,7 +113,7 @@ SceneObject * Parse::ParseTriangle(stringstream & Stream)
 
     color = Parse::ParseVector(Stream);
 
-	Parse::ParseFinish(Stream, amb, diff, spec, rough, ior);
+	Parse::ParseFinish(Stream, amb, diff, spec, rough, ior, ref);
 
     SceneObject * obj = new Triangle(a, b, c, color);
 
@@ -121,6 +122,7 @@ SceneObject * Parse::ParseTriangle(stringstream & Stream)
     obj->specular = spec;
     obj->roughness = rough;
     obj->ior = ior;
+    obj->reflection = ref;
 
     obj->type = "Triangle";
 
@@ -128,7 +130,7 @@ SceneObject * Parse::ParseTriangle(stringstream & Stream)
 
 }
 
-void Parse::ParseFinish(stringstream & Stream, float & a, float & d, float & s, float & r, float & ior){
+void Parse::ParseFinish(stringstream & Stream, float & a, float & d, float & s, float & r, float & ior, float & ref){
 
 	string whole;
 	stringbuf buf;
@@ -154,12 +156,50 @@ void Parse::ParseFinish(stringstream & Stream, float & a, float & d, float & s, 
 	stringstream newnewfinish;
 	newnewfinish.str(whole);
 
-	r = ParseRoughness(newnewfinish);
+	if (s == 0.f){
+		//cout << "parsing reflection" << endl;
 
-	stringstream newnewnewfinish;
-	newnewnewfinish.str(whole);
+		ref = ParseReflection(newnewfinish);
+		r = 0.f;
+		//ior = 0.f;
 
-	ior = ParseIOR(newnewnewfinish);
+	} else {
+		
+		r = ParseRoughness(newnewfinish);
+	}
+
+		stringstream newnewnewfinish;
+		newnewnewfinish.str(whole);
+
+		ior = ParseIOR(newnewnewfinish);
+	
+
+	
+
+}
+
+float Parse::ParseReflection(stringstream & Stream)
+{
+	float r;
+	stringbuf buf;
+
+	Stream.ignore(16, 'n');
+	Stream.ignore(32, 'n');
+	Stream.get(buf, '}');
+
+	string line = buf.str();
+	//cout << "string: " << line << endl;
+
+	int read = sscanf(line.c_str(), "%f", &r);
+
+	if (read != 1)
+	{
+		r = 0.f;
+	}
+
+	line = Stream.str();
+
+	return r;
 
 }
 
@@ -277,7 +317,7 @@ SceneObject * Parse::ParsePlane(stringstream & Stream)
 {
 	vec3 n;
 	vec3 c;
-	float d, amb, diff, spec, rough, ior;
+	float d, amb, diff, spec, rough, ior, ref;
 	stringbuf buf;
 
 	n = Parse::ParseVector(Stream);
@@ -301,7 +341,7 @@ SceneObject * Parse::ParsePlane(stringstream & Stream)
 
     c = Parse::ParseVector(Stream);
 
-	Parse::ParseFinish(Stream, amb, diff, spec, rough, ior);
+	Parse::ParseFinish(Stream, amb, diff, spec, rough, ior, ref);
 
     SceneObject * obj = new Plane(n, d, c);
 
@@ -310,6 +350,7 @@ SceneObject * Parse::ParsePlane(stringstream & Stream)
     obj->specular = spec;
     obj->roughness = rough;
     obj->ior = ior;
+    obj->reflection = ref;
 
     obj->type = "Plane";
     

@@ -266,14 +266,14 @@ void raycast::render(vector <SceneObject *> & scene, Camera * camera, vector <Li
 	    {
 	    	unsigned int red, green, blue = 0;
 
-			ray * r = createRay(camera, width, height, x, y);
+			ray * r = createRay(camera, width, height, x, y);/*
 			vec3 origin = r->origin;
 			vec3 dir = r->direction;
 
 			float closestHit = -1;
 			float closestObjIndex = -1;
 			for (int i = 0; i < scene.size(); i++){
-				float hit = scene[i]->intersect(ray(origin, dir));
+				float hit = scene[i]->intersect(*r); //WHY?
 				if ((hit > 0) && (closestHit == -1)){
 					closestHit = hit;
 					closestObjIndex = i;
@@ -294,7 +294,11 @@ void raycast::render(vector <SceneObject *> & scene, Camera * camera, vector <Li
 				red = (unsigned int) std::round(color.x * 255.f);
 				green = (unsigned int) std::round(color.y * 255.f);
 				blue = (unsigned int) std::round(color.z * 255.f);
-			} 
+			} */
+			vec3 color = getColorForRay(r, scene, camera, lights, altbrdf);
+			red = (unsigned int) std::round(color.x * 255.f);
+			green = (unsigned int) std::round(color.y * 255.f);
+			blue = (unsigned int) std::round(color.z * 255.f);
 
 	        data[(size.x * numChannels) * (size.y - 1 - y) + numChannels * x + 0] = red;
 	        data[(size.x * numChannels) * (size.y - 1 - y) + numChannels * x + 1] = green;
@@ -304,6 +308,43 @@ void raycast::render(vector <SceneObject *> & scene, Camera * camera, vector <Li
 
 	stbi_write_png(fileName.c_str(), size.x, size.y, numChannels, data, size.x * numChannels);
 	delete[] data;
+}
+
+vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * camera, vector <Light *> lights, bool altbrdf)
+{
+	//ray * r = createRay(camera, width, height, x, y);
+			//vec3 origin = r->origin;
+			//vec3 dir = r->direction;
+
+	float closestHit = -1;
+	float closestObjIndex = -1;
+			
+	for (int i = 0; i < scene.size(); i++){
+		float hit = scene[i]->intersect(*r); //WHY?
+		
+		if ((hit > 0) && (closestHit == -1)){
+			closestHit = hit;
+			closestObjIndex = i;
+		}
+		
+		if ((hit > 0) && (hit < closestHit)){
+			closestHit = hit;
+			closestObjIndex = i;
+		}
+	}
+
+
+	if (closestHit == -1){
+
+		vec3 color = vec3(0.0, 0.0, 0.0);
+		return color;
+	
+	} else {
+		float ref = scene[closestObjIndex]->reflection;
+		vec3 color = (1.f-ref)*computeColor(r->origin+closestHit*r->direction, scene, closestObjIndex, camera, lights, false, r, altbrdf);
+		return color;
+
+	}
 
 }
 

@@ -23,7 +23,8 @@ void Plane::print()
 	cout << "- Normal: {" << normal.x << " " << normal.y << " " << normal.z << "}" << endl;
 	cout << "- Distance: " << distance << endl;
 	cout << "- Color: {" << color.x << " " << color.y << " " << color.z << "}" << endl;
-	cout << "- Material: \n  -Ambient: " << ambient << "\n  -Diffuse: " << diffuse << endl;
+	cout << "- Material: \n  - Ambient: " << ambient << "\n  - Diffuse: " << diffuse << endl;
+	cout << "  - Reflection: " << reflection << endl;
 	cout << endl;
 }
 
