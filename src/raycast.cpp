@@ -221,7 +221,7 @@ vec3 raycast::computeColor(vec3 hit, vector <SceneObject *> scene, int objIndex,
 		cout << "Color: (" << r << ", " << g << ", " << b << ")" << endl;
 	}
 
-	color = vec3(clamp(color.x, 0.f, 1.f), clamp(color.y, 0.f, 1.f), clamp(color.z, 0.f, 1.f));
+	//color = vec3(clamp(color.x, 0.f, 1.f), clamp(color.y, 0.f, 1.f), clamp(color.z, 0.f, 1.f));
 
 	return color;
 }
@@ -304,9 +304,10 @@ void raycast::render(vector <SceneObject *> & scene, Camera * camera, vector <Li
 				blue = (unsigned int) std::round(color.z * 255.f);
 			} */
 			vec3 color = getColorForRay(r, scene, camera, lights, altbrdf, 0);
-			red = (unsigned int) std::round(color.x * 255.f);
-			green = (unsigned int) std::round(color.y * 255.f);
-			blue = (unsigned int) std::round(color.z * 255.f);
+			red = (unsigned int) std::round(clamp(color.x, 0.f, 1.f) * 255.f);
+			green = (unsigned int) std::round(clamp(color.y, 0.f, 1.f) * 255.f);
+			blue = (unsigned int) std::round(clamp(color.z, 0.f, 1.f) * 255.f);
+			//clamp(color.x, 0.f, 1.f)
 
 	        data[(size.x * numChannels) * (size.y - 1 - y) + numChannels * x + 0] = red;
 	        data[(size.x * numChannels) * (size.y - 1 - y) + numChannels * x + 1] = green;
@@ -365,7 +366,7 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 			ray refRay = ray(P+.0001f*refDir, refDir);
 			//vec3 refRay = r->direction-2.f*dot(r->direction, normal)*normal; //calcReflectionRay()
 			color += ref*(getColorForRay(&refRay, scene, camera, lights, altbrdf, numRecurse+1))*scene[closestObjIndex]->color;
-			color = vec3(clamp(color.x, 0.f, 1.f), clamp(color.y, 0.f, 1.f), clamp(color.z, 0.f, 1.f));
+			//color = vec3(clamp(color.x, 0.f, 1.f), clamp(color.y, 0.f, 1.f), clamp(color.z, 0.f, 1.f));
 		}
 		
 		return color;
