@@ -363,7 +363,7 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 		if ((ref > 0.f) && (numRecurse < 6)){
 			vec3 normal = scene[closestObjIndex]->computeNormal(P);
 			vec3 refDir = r->direction-2.f*dot(r->direction, normal)*normal;
-			ray refRay = ray(P+.0001f*refDir, refDir);
+			ray refRay = ray(P+.001f*refDir, refDir);
 			//vec3 refRay = r->direction-2.f*dot(r->direction, normal)*normal; //calcReflectionRay()
 			color += ref*(getColorForRay(&refRay, scene, camera, lights, altbrdf, numRecurse+1))*scene[closestObjIndex]->color;
 			//color = vec3(clamp(color.x, 0.f, 1.f), clamp(color.y, 0.f, 1.f), clamp(color.z, 0.f, 1.f));
