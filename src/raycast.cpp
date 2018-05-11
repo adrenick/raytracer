@@ -335,7 +335,7 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 	float closestObjIndex = -1;
 			
 	for (int i = 0; i < scene.size(); i++){
-		float hit = scene[i]->intersect(*r); //WHY?
+		float hit = scene[i]->intersect(*r);
 		
 		if ((hit > 0) && (closestHit == -1)){
 			closestHit = hit;
@@ -364,7 +364,8 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 			vec3 refDir = r->direction-2.f*dot(r->direction, normal)*normal;
 			ray refRay = ray(P+.0001f*refDir, refDir);
 			//vec3 refRay = r->direction-2.f*dot(r->direction, normal)*normal; //calcReflectionRay()
-			color += ref*getColorForRay(&refRay, scene, camera, lights, altbrdf, numRecurse+1);
+			color += ref*(getColorForRay(&refRay, scene, camera, lights, altbrdf, numRecurse+1))*scene[closestObjIndex]->color;
+			color = vec3(clamp(color.x, 0.f, 1.f), clamp(color.y, 0.f, 1.f), clamp(color.z, 0.f, 1.f));
 		}
 		
 		return color;
