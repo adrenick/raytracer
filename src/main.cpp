@@ -88,6 +88,7 @@ int main(int argc, char *argv[])
 	} else if (exec == "printrays") {
 		if (argc < 6) {
 			cerr << "Usage: ./raytrace printrays <input_filename> <width> <height> <x> <y>" << endl;
+			return -1;
 		}
 		Parse::parseFile(argv[2], scene, camera, lights);
 		cout << "----\nIteration type: Primary" << endl;
