@@ -375,7 +375,7 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 		if ((refrac > 0.f)){
 			vec3 dir = r->direction;
 			float dDotn = dot(dir, normal);
-			float objIor = scene[closestObjIndex]->reflection;
+			float objIor = scene[closestObjIndex]->ior;
 			float n1, n2;
 			if (dDotn < 0) {
 				n1 = 1.0f;
@@ -510,7 +510,7 @@ vec3 raycast::printRays(ray * r, vector <SceneObject *> scene, Camera * camera, 
 		}
 		if ((refrac > 0.f)){
 			vec3 dir = r->direction;
-			float objIor = scene[closestObjIndex]->reflection;
+			float objIor = scene[closestObjIndex]->ior;
 			float n1, n2;
 			float dDotn = dot(dir, normal);
 			if (dDotn < 0) {
@@ -523,9 +523,12 @@ vec3 raycast::printRays(ray * r, vector <SceneObject *> scene, Camera * camera, 
 				dDotn = dot(dir, normal);
 			}
 			float ratio = (n1/n2);
+			 cout << "objIOR: " << objIor << endl;
 			vec3 refracDir = ratio*(dir-dDotn*normal)-normal*(float)(sqrt(1-(pow(ratio, 2)*(1-pow(dDotn, 2)))));
 			ray refracRay = ray(P+0.001f*refracDir, refracDir);
 			cout << "----\nIteration type: Refraction" << endl;
+			cout << "Ray: {" << refracRay.origin.x << " " << refracRay.origin.y << " " << refracRay.origin.z << "} -> {";
+			cout << refracRay.direction.x << " " << refracRay.direction.y << " " << refracRay.direction.z << "}" << endl;
 			vec3 refracColor = refrac*(printRays(&refracRay, scene, camera, lights, altbrdf, numRecurse+1))*scene[closestObjIndex]->color;
 			color += refracColor;
 			cout << "Refraction: {" << refracColor.x << " " << refracColor.y << " " << refracColor.z << "}" << endl;
