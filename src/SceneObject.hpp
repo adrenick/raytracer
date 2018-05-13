@@ -27,6 +27,7 @@ public:
 
 	std::string type;
 	glm::vec3 color;
+	float filter;
 
 	virtual float intersect(const ray & r) = 0;
 

@@ -85,6 +85,14 @@ int main(int argc, char *argv[])
 		}
 		Parse::parseFile(argv[2], scene, camera, lights);
 		raycast::pixelColor(scene, camera, lights, stoi(argv[3]), stoi(argv[4]), stoi(argv[5]), stoi(argv[6]));
+	} else if (exec == "printrays") {
+		if (argc < 6) {
+			cerr << "Usage: ./raytrace printrays <input_filename> <width> <height> <x> <y>" << endl;
+		}
+		Parse::parseFile(argv[2], scene, camera, lights);
+		cout << "----\nIteration type: Primary" << endl;
+		ray * r = raycast::createRay(camera, stoi(argv[3]), stoi(argv[4]), stoi(argv[5]), stoi(argv[6]));
+		raycast::printRays(r, scene, camera, lights, false, 0);
 	} else {
 		cerr << "Unexpected usage" << endl;
 		return -1;

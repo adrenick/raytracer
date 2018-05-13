@@ -53,7 +53,7 @@ void Triangle::print()
 	cout << "- Point A: {" << A.x << " " << A.y << " " << A.z << "}" << endl;
 	cout << "- Point B: {" << B.x << " " << B.y << " " << B.z << "}" << endl;
 	cout << "- Point C: {" << C.x << " " << C.y << " " << C.z << "}" << endl;
-	cout << "- Color: {" << color.x << " " << color.y << " " << color.z << "}" << endl;
+	cout << "- Color: {" << color.x << " " << color.y << " " << color.z << " " << filter << "}" << endl;
 	cout << "- Material: \n  - Ambient: " << ambient << "\n  - Diffuse: " << diffuse << endl;
 	cout << "  - Specular: " << specular << "\n  - Roughness: " << roughness << endl;
 	cout << "  - Reflection: " << reflection << endl;

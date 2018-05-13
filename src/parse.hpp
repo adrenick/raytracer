@@ -44,6 +44,8 @@ public:
 
 	static float ParseRefraction(std::stringstream & Stream);
 
+	static glm::vec4 ParseColor(std::stringstream & Stream);
+
 	static float ParseIOR(std::stringstream & Stream);
 
 	static void ParseFinish(std::stringstream & Stream, float & a, float & d, float & s, float & r, float & ior, float & ref, float & refrac);

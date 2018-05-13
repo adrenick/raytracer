@@ -357,17 +357,184 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 	
 	} else {
 		float ref = scene[closestObjIndex]->reflection;
+		float refrac = scene[closestObjIndex]->refraction;
 		vec3 P = r->origin+closestHit*r->direction;
-		vec3 color = (1.f-ref)*computeColor(P, scene, closestObjIndex, camera, lights, false, r, altbrdf);
+		vec3 normal = scene[closestObjIndex]->computeNormal(P);
+		vec3 color = (1.f-ref)*(1.f-refrac)*computeColor(P, scene, closestObjIndex, camera, lights, false, r, altbrdf);
+		//vec3 color = (1.f-ref)*computeColor(P, scene, closestObjIndex, camera, lights, false, r, altbrdf);
+
 		//cout << "ref: " << ref << endl;
 		if ((ref > 0.f) && (numRecurse < 6)){
-			vec3 normal = scene[closestObjIndex]->computeNormal(P);
+			//vec3 normal = scene[closestObjIndex]->computeNormal(P);
 			vec3 refDir = r->direction-2.f*dot(r->direction, normal)*normal;
 			ray refRay = ray(P+.001f*refDir, refDir);
 			//vec3 refRay = r->direction-2.f*dot(r->direction, normal)*normal; //calcReflectionRay()
-			color += ref*(getColorForRay(&refRay, scene, camera, lights, altbrdf, numRecurse+1))*scene[closestObjIndex]->color;
+			color += ref*(1.f-refrac)*(getColorForRay(&refRay, scene, camera, lights, altbrdf, numRecurse+1))*scene[closestObjIndex]->color;
 			//color = vec3(clamp(color.x, 0.f, 1.f), clamp(color.y, 0.f, 1.f), clamp(color.z, 0.f, 1.f));
 		}
+		if ((refrac > 0.f)){
+			vec3 dir = r->direction;
+			float dDotn = dot(dir, normal);
+			float objIor = scene[closestObjIndex]->reflection;
+			float n1, n2;
+			if (dDotn < 0) {
+				n1 = 1.0f;
+				n2 = objIor;
+			} else {
+				n1 = objIor;
+				n2 = 1.0f;
+				normal = -1.f*normal;
+			}
+			float ratio = (n1/n2);
+			vec3 refracDir = ratio*(dir-dDotn*normal)-normal*(float)(sqrt(1-(pow(ratio, 2)*(1-pow(dDotn, 2)))));
+			ray refracRay = ray(P+0.001f*refracDir, refracDir);
+			color += refrac*(getColorForRay(&refracRay, scene, camera, lights, altbrdf, numRecurse+1))*scene[closestObjIndex]->color;
+
+		}
+
+		//dot normal and direction
+		
+		return color;
+
+	}
+
+}
+
+vec3 raycast::printShading(vec3 hit, vector <SceneObject *> scene, int objIndex, Camera * camera, vector <Light *> lights, ray * c)
+{
+	SceneObject * obj = scene[objIndex];
+
+	vec3 amb = obj->color * obj->ambient;
+	vec3 color = amb;
+
+	for (int i = 0; i < lights.size(); i++){
+		
+		vec3 n = obj->computeNormal(hit);
+		vec3 l = normalize(lights[i]->location - hit);
+		vec3 v = normalize(camera->location - hit);
+		vec3 h = normalize(l+v);
+		
+		ray * lRay = new ray(hit + (l*0.0001f), l); //ray * lRay = new ray(hit + (n*0.0001f), l);
+
+		float lightHit = firstHit(lRay, scene, false);
+		
+		if (!((lightHit) != -1 && (lightHit < length(lights[i]->location - hit)))) {
+
+			vec3 kd = obj->diffuse*obj->color;
+			vec3 ks = obj->specular*obj->color;
+
+			float alpha = 2/(pow(obj->roughness, 2))-2;
+			vec3 diff = ( lights[i]->color)*kd*dot(n, l);
+
+			color += diff;
+
+			vec3 spec = (lights[i]->color)*ks*(pow(dot(h, n), alpha));
+			color += spec;
+
+
+			cout << "Ambient: {" << amb.x << " " << amb.y << " " << amb.z << "}" << endl;
+			cout << "Diffuse: {" << diff.x << " " << diff.y << " " << diff.z << "}" << endl;
+			cout << "Specular: {" << spec.x << " " << spec.y << " " << spec.z << "}" << endl;
+		} 
+	}
+
+	return color;
+}
+
+vec3 raycast::printRays(ray * r, vector <SceneObject *> scene, Camera * camera, vector <Light *> lights, bool altbrdf, int numRecurse)
+{
+	//ray * r = createRay(camera, width, height, x, y);
+			//vec3 origin = r->origin;
+			//vec3 dir = r->direction;
+
+	if (numRecurse > 0)
+	{
+		//cout << "Ray: {" << r->origin.x << " " << r->origin.y << " " << r->origin.z << "} -> {";
+		//cout << r->direction.x << " " << r->direction.y << " " << r->direction.z << "}" << endl;
+	}
+	
+
+	float closestHit = -1;
+	float closestObjIndex = -1;
+			
+	for (int i = 0; i < scene.size(); i++){
+		float hit = scene[i]->intersect(*r);
+		
+		if ((hit > 0) && (closestHit == -1)){
+			closestHit = hit;
+			closestObjIndex = i;
+		}
+		
+		if ((hit > 0) && (hit < closestHit)){
+			closestHit = hit;
+			closestObjIndex = i;
+		}
+	}
+
+
+	if (closestHit == -1){
+
+		vec3 color = vec3(0.0, 0.0, 0.0);
+		cout << "no hit" << endl;
+		return color;
+	
+	} else {
+		float ref = scene[closestObjIndex]->reflection;
+		//float refrac = scene[closestObjIndex]->refraction;
+		float refrac = scene[closestObjIndex]->filter;
+		vec3 P = r->origin+closestHit*r->direction;
+		vec3 normal = scene[closestObjIndex]->computeNormal(P);
+		vec3 color = (1.f-ref)*(1.f-refrac)*computeColor(P, scene, closestObjIndex, camera, lights, false, r, altbrdf);
+		
+		cout << "Ray: {" << r->origin.x << " " << r->origin.y << " " << r->origin.z << "} -> {";
+		cout << r->direction.x << " " << r->direction.y << " " << r->direction.z << "}" << endl;
+		cout << "Hit Object: (ID #" << closestObjIndex+1 << " - " << scene[closestObjIndex]->type << endl;
+		cout << "Intersection: {" << P.x << " " << P.y << " " << P.z << "} at T = " << closestHit << endl;
+		cout << "Normal: {" << normal.x << " " << normal.y << " " << normal.z << "}" << endl;
+
+		printShading(P, scene, closestObjIndex, camera, lights, r);
+		
+		//vec3 color = (1.f-ref)*computeColor(P, scene, closestObjIndex, camera, lights, false, r, altbrdf);
+
+		//cout << "ref: " << ref << endl;
+		if ((ref > 0.f) && (numRecurse < 6)){
+			//vec3 normal = scene[closestObjIndex]->computeNormal(P);
+			vec3 refDir = r->direction-2.f*dot(r->direction, normal)*normal;
+			ray refRay = ray(P+.001f*refDir, refDir);
+			//vec3 refRay = r->direction-2.f*dot(r->direction, normal)*normal; //calcReflectionRay()
+			cout << "----\nIteration type: Reflection" << endl;
+			vec3 refColor = ref*(1.f-refrac)*(printRays(&refRay, scene, camera, lights, altbrdf, numRecurse+1))*scene[closestObjIndex]->color;
+			color += refColor;
+			cout << "Reflection: {" << refColor.x << " " << refColor.y << " " << refColor.z << "}" << endl;
+			//color = vec3(clamp(color.x, 0.f, 1.f), clamp(color.y, 0.f, 1.f), clamp(color.z, 0.f, 1.f));
+		}
+		if ((refrac > 0.f)){
+			vec3 dir = r->direction;
+			float objIor = scene[closestObjIndex]->reflection;
+			float n1, n2;
+			float dDotn = dot(dir, normal);
+			if (dDotn < 0) {
+				n1 = 1.0f;
+				n2 = objIor;
+			} else {
+				n1 = objIor;
+				n2 = 1.0f;
+				normal = -1.f*normal;
+				dDotn = dot(dir, normal);
+			}
+			float ratio = (n1/n2);
+			vec3 refracDir = ratio*(dir-dDotn*normal)-normal*(float)(sqrt(1-(pow(ratio, 2)*(1-pow(dDotn, 2)))));
+			ray refracRay = ray(P+0.001f*refracDir, refracDir);
+			cout << "----\nIteration type: Refraction" << endl;
+			vec3 refracColor = refrac*(printRays(&refracRay, scene, camera, lights, altbrdf, numRecurse+1))*scene[closestObjIndex]->color;
+			color += refracColor;
+			cout << "Refraction: {" << refracColor.x << " " << refracColor.y << " " << refracColor.z << "}" << endl;
+
+		}
+		cout << "Contributions: " << (1.f-ref)*(1.f-refrac) << " Local, " << ref << " Reflection, " << refrac << " Transmission" << endl;
+
+		//dot normal and direction
+		cout << "Final Color: {" << color.x << " " << color.y << " " << color.z << "}" << endl;
 		
 		return color;
 
