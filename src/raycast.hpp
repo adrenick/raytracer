@@ -28,10 +28,6 @@ public:
 
 	static glm::vec3 getColorForRay(ray * r, std::vector <SceneObject *> scene, Camera * camera, std::vector <Light *> lights, bool altbrdf, int numRecurse, bool print);
 
-	static glm::vec3 printRays(ray * r, std::vector <SceneObject *> scene, Camera * camera, std::vector <Light *> lights, bool altbrdf, int numRecurse);
-
-	static void getAmbDiffSpec(glm::vec3 hit, std::vector <SceneObject *> scene, int objIndex, glm::vec3 normal, Camera * camera, std::vector <Light *> lights, ray * c, glm::vec3 & a, glm::vec3 & d, glm::vec3 & s);
-
 	static void render(std::vector <SceneObject *> & scene, Camera * camera, std::vector <Light *> lights, int width, int height, bool altbrdf);
 
 	static float calcG(glm::vec3 x, glm::vec3 h, glm::vec3 n, float r);
