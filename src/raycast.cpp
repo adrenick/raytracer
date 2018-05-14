@@ -387,6 +387,7 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 			float ratio = (n1/n2);
 			vec3 refracDir = ratio*(dir-dDotn*normal)-normal*(float)(sqrt(1-(pow(ratio, 2)*(1-pow(dDotn, 2)))));
 			ray refracRay = ray(P+0.001f*refracDir, refracDir);
+			cout << "   Iteration Type: Refraction" << endl;
 			refracColor = (getColorForRay(&refracRay, scene, camera, lights, altbrdf, numRecurse+1, print))*scene[closestObjIndex]->color;
 		}
 
@@ -395,22 +396,31 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 		color = (1.f-refrac)*(1.f-ref)*localColor + (1.f-refrac)*(ref)*refColor+refrac*refracColor;
 
 		if (print) {
-			cout << "Ray: {" << r->origin.x << " " << r->origin.y << " " << r->origin.z << "} -> {";
+			a = a*(1.f-ref)*(1.f-refrac);
+			d = d*(1.f-ref)*(1.f-refrac);
+			s = s*(1.f-ref)*(1.f-refrac);
+			refracColor = refracColor*refrac;
+			refColor = (1.f-refrac)*(ref)*refColor;
+
+			cout << "              Ray: {" << r->origin.x << " " << r->origin.y << " " << r->origin.z << "} -> {";
 			cout << r->direction.x << " " << r->direction.y << " " << r->direction.z << "}" << endl;
-			cout << "Hit Object: (ID #" << closestObjIndex+1 << " - " << scene[closestObjIndex]->type << ")" << endl;
-			cout << "Intersection: {" << P.x << " " << P.y << " " << P.z << "} at T = " << closestHit << endl;
-			cout << "Normal: {" << normal.x << " " << normal.y << " " << normal.z << "}" << endl;
-			cout << "Final Color: {" << color.x << " " << color.y << " " << color.z << "}" << endl;
-			cout << "Ambient: {" << (1.f-ref)*(1.f-refrac)*a.x << " " << (1.f-ref)*(1.f-refrac)*a.y << " " << (1.f-ref)*(1.f-refrac)*a.z << "}" << endl;
-			cout << "Diffuse: {" << (1.f-ref)*(1.f-refrac)*d.x << " " << (1.f-ref)*(1.f-refrac)*d.y << " " << (1.f-ref)*(1.f-refrac)*d.z << "}" << endl;
-			cout << "Specular: {" << (1.f-ref)*(1.f-refrac)*s.x << " " << (1.f-ref)*(1.f-refrac)*s.y << " " << (1.f-ref)*(1.f-refrac)*s.z << "}" << endl;
-			cout << "Reflection: {" << refColor.x << " " << refColor.y << " " << refColor.z << "}" << endl;
-			cout << "Refraction: {" << refracColor.x << " " << refracColor.y << " " << refracColor.z << "}" << endl;
-			cout << "Contributions: " << (1.f-ref)*(1.f-refrac) << " Local, " << ref << " Reflection, " << refrac << " Transmission" << endl;
+			cout << "       Hit Object: (ID #" << closestObjIndex+1 << " - " << scene[closestObjIndex]->type << ")" << endl;
+			cout << "     Intersection: {" << P.x << " " << P.y << " " << P.z << "} at T = " << closestHit << endl;
+			cout << "           Normal: {" << normal.x << " " << normal.y << " " << normal.z << "}" << endl;
+			cout << "      Final Color: {" << color.x << " " << color.y << " " << color.z << "}" << endl;
+			//cout << "Ambient: {" << (1.f-ref)*(1.f-refrac)*a.x << " " << (1.f-ref)*(1.f-refrac)*a.y << " " << (1.f-ref)*(1.f-refrac)*a.z << "}" << endl;
+			//cout << "Diffuse: {" << (1.f-ref)*(1.f-refrac)*d.x << " " << (1.f-ref)*(1.f-refrac)*d.y << " " << (1.f-ref)*(1.f-refrac)*d.z << "}" << endl;
+			//cout << "Specular: {" << (1.f-ref)*(1.f-refrac)*s.x << " " << (1.f-ref)*(1.f-refrac)*s.y << " " << (1.f-ref)*(1.f-refrac)*s.z << "}" << endl;
+			cout << "          Ambient: {" << a.x << " " << a.y << " " << a.z << "}" << endl;
+			cout << "          Diffuse: {" << d.x << " " << d.y << " " << d.z << "}" << endl;
+			cout << "         Specular: {" << s.x << " " << s.y << " " << s.z << "}" << endl;
+			cout << "       Reflection: {" << refColor.x << " " << refColor.y << " " << refColor.z << "}" << endl;
+			cout << "       Refraction: {" << refracColor.x << " " << refracColor.y << " " << refracColor.z << "}" << endl;
+			cout << "    Contributions: " << (1.f-ref)*(1.f-refrac) << " Local, " << (1.f-refrac)*(ref) << " Reflection, " << refrac << " Transmission" << endl;
 			if (entering == 0) {
-				cout << "Extra Info: " << "into-air" << endl << endl;
+				cout << "       Extra Info: " << "into-air" << endl << endl;
 			} else if (entering == 1) {
-				cout << "Extra Info: " << "into-object" << endl << endl;
+				cout << "       Extra Info: " << "into-object" << endl << endl;
 			} else {
 				cout << endl;
 			}

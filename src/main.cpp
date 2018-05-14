@@ -91,9 +91,11 @@ int main(int argc, char *argv[])
 			return -1;
 		}
 		Parse::parseFile(argv[2], scene, camera, lights);
-		cout << "----\nIteration type: Primary" << endl;
+		cout << "Pixel: [" << argv[5] << ", " << argv[6] << "]" << endl;
+		cout << "----\n   Iteration type: Primary" << endl;
 		ray * r = raycast::createRay(camera, stoi(argv[3]), stoi(argv[4]), stoi(argv[5]), stoi(argv[6]));
-		raycast::getColorForRay(r, scene, camera, lights, false, 0, true);
+		vec3 color = raycast::getColorForRay(r, scene, camera, lights, false, 0, true);
+		cout << "Color: (" << (uint)round(color.x*255) << ", " << (uint)round(color.y*255) << ", " << (uint)round(color.z*255) << ")" << endl;
 		//raycast::printRays(r, scene, camera, lights, false, 0);
 	} else {
 		cerr << "Unexpected usage" << endl;
