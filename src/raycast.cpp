@@ -161,7 +161,6 @@ void raycast::pixelColor(vector <SceneObject *> scene, Camera * camera, vector <
 		vec3 a, d, s;
 		vec3 P = origin+closestHit*dir;
 		vec3 normal = scene[closestObjIndex]->computeNormal(P);
-		//computeColor(origin+closestHit*dir, scene, closestObjIndex, camera, lights, true, r, false, a, d, s);
 		computeColor(P, scene, closestObjIndex, normal, camera, lights, true, r, false, a, d, s);
 	} 
 }
@@ -171,12 +170,10 @@ vec3 raycast::computeColor(vec3 hit, vector <SceneObject *> scene, int objIndex,
 	SceneObject * obj = scene[objIndex];
 
 	vec3 amb = obj->color * obj->ambient;
-	//vec3 color = obj->color * obj->ambient;
 	vec3 color = amb;
 	a = amb;
 
 	for (int i = 0; i < lights.size(); i++){
-		//vec3 n = obj->computeNormal(hit);
 		vec3 n = normal;
 		vec3 l = normalize(lights[i]->location - hit);
 		vec3 v = normalize(camera->location - hit);
@@ -207,16 +204,14 @@ vec3 raycast::computeColor(vec3 hit, vector <SceneObject *> scene, int objIndex,
 			} else {
 
 				float alpha = 2/(pow(obj->roughness, 2))-2;
-				//vec3 diff = ( lights[i]->color)*kd*dot(n, l);
+
 				vec3 diff = (lights[i]->color)*kd*clamp(dot(n, l), 0.f, 1.f);
-				//color += ( lights[i]->color)*kd*dot(n, l);
 				d = diff;
 				color += diff;
-				//vec3 spec = (lights[i]->color)*ks*(pow(dot(h, n), alpha));
+
 				vec3 spec =  (lights[i]->color)*ks*(pow(clamp(dot(h, n), 0.f, 1.f), alpha));
 				s = spec;
 				color += spec;
-				//color += (lights[i]->color)*ks*(pow(dot(h, n), alpha));
 			}
 		} 
 	}
@@ -280,40 +275,11 @@ void raycast::render(vector <SceneObject *> & scene, Camera * camera, vector <Li
 	    {
 	    	unsigned int red, green, blue = 0;
 
-			ray * r = createRay(camera, width, height, x, y);/*
-			vec3 origin = r->origin;
-			vec3 dir = r->direction;
-
-			float closestHit = -1;
-			float closestObjIndex = -1;
-			for (int i = 0; i < scene.size(); i++){
-				float hit = scene[i]->intersect(*r); //WHY?
-				if ((hit > 0) && (closestHit == -1)){
-					closestHit = hit;
-					closestObjIndex = i;
-				}
-				if ((hit > 0) && (hit < closestHit)){
-					closestHit = hit;
-					closestObjIndex = i;
-				}
-			}
-
-			if (closestHit == -1){
-				red = (unsigned int) std::round(0.0 * 255.f);
-				green = (unsigned int) std::round(0.0 * 255.f);
-				blue = (unsigned int) std::round(0.0 * 255.f);
-			} else {
-				vec3 color = computeColor(origin+closestHit*dir, scene, closestObjIndex, camera, lights, false, r, altbrdf);
-
-				red = (unsigned int) std::round(color.x * 255.f);
-				green = (unsigned int) std::round(color.y * 255.f);
-				blue = (unsigned int) std::round(color.z * 255.f);
-			} */
+			ray * r = createRay(camera, width, height, x, y);
 			vec3 color = getColorForRay(r, scene, camera, lights, altbrdf, 0, false);
 			red = (unsigned int) std::round(clamp(color.x, 0.f, 1.f) * 255.f);
 			green = (unsigned int) std::round(clamp(color.y, 0.f, 1.f) * 255.f);
 			blue = (unsigned int) std::round(clamp(color.z, 0.f, 1.f) * 255.f);
-			//clamp(color.x, 0.f, 1.f)
 
 	        data[(size.x * numChannels) * (size.y - 1 - y) + numChannels * x + 0] = red;
 	        data[(size.x * numChannels) * (size.y - 1 - y) + numChannels * x + 1] = green;
@@ -387,7 +353,10 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 			float ratio = (n1/n2);
 			vec3 refracDir = ratio*(dir-dDotn*normal)-normal*(float)(sqrt(1-(pow(ratio, 2)*(1-pow(dDotn, 2)))));
 			ray refracRay = ray(P+0.001f*refracDir, refracDir);
-			cout << "   Iteration Type: Refraction" << endl;
+			if (print){
+				cout << "   Iteration Type: Refraction" << endl;
+			}
+			
 			refracColor = (getColorForRay(&refracRay, scene, camera, lights, altbrdf, numRecurse+1, print))*scene[closestObjIndex]->color;
 		}
 
@@ -408,9 +377,6 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 			cout << "     Intersection: {" << P.x << " " << P.y << " " << P.z << "} at T = " << closestHit << endl;
 			cout << "           Normal: {" << normal.x << " " << normal.y << " " << normal.z << "}" << endl;
 			cout << "      Final Color: {" << color.x << " " << color.y << " " << color.z << "}" << endl;
-			//cout << "Ambient: {" << (1.f-ref)*(1.f-refrac)*a.x << " " << (1.f-ref)*(1.f-refrac)*a.y << " " << (1.f-ref)*(1.f-refrac)*a.z << "}" << endl;
-			//cout << "Diffuse: {" << (1.f-ref)*(1.f-refrac)*d.x << " " << (1.f-ref)*(1.f-refrac)*d.y << " " << (1.f-ref)*(1.f-refrac)*d.z << "}" << endl;
-			//cout << "Specular: {" << (1.f-ref)*(1.f-refrac)*s.x << " " << (1.f-ref)*(1.f-refrac)*s.y << " " << (1.f-ref)*(1.f-refrac)*s.z << "}" << endl;
 			cout << "          Ambient: {" << a.x << " " << a.y << " " << a.z << "}" << endl;
 			cout << "          Diffuse: {" << d.x << " " << d.y << " " << d.z << "}" << endl;
 			cout << "         Specular: {" << s.x << " " << s.y << " " << s.z << "}" << endl;

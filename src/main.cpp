@@ -71,7 +71,6 @@ int main(int argc, char *argv[])
 			return -1;
 		}
 		bool altbrdf = false;
-		//if ((argc == 6)&&(argv[5] == "-altbrdf")){
 		if (argc == 6){
 			altbrdf = true;
 		}
@@ -96,7 +95,6 @@ int main(int argc, char *argv[])
 		ray * r = raycast::createRay(camera, stoi(argv[3]), stoi(argv[4]), stoi(argv[5]), stoi(argv[6]));
 		vec3 color = raycast::getColorForRay(r, scene, camera, lights, false, 0, true);
 		cout << "Color: (" << (uint)round(color.x*255) << ", " << (uint)round(color.y*255) << ", " << (uint)round(color.z*255) << ")" << endl;
-		//raycast::printRays(r, scene, camera, lights, false, 0);
 	} else {
 		cerr << "Unexpected usage" << endl;
 		return -1;
