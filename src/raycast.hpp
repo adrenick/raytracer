@@ -20,13 +20,13 @@ public:
 
 	static void pixelRay(Camera * camera, int width, int height, int x, int y);
 
-	static float firstHit(ray * r, std::vector <SceneObject *> scene, bool print);
+	static float firstHit(ray * r, std::vector <SceneObject *> scene, bool print, int index);
 
 	static void pixelColor(std::vector <SceneObject *> scene, Camera * camera, std::vector <Light *> lights, int width, int height, int x, int y);
 
-	static glm::vec3 computeColor(glm::vec3 hit, std::vector <SceneObject *> scene, int objIndex, Camera * camera, std::vector <Light *> lights, bool print, ray * c,  bool altbrdf, bool shadow);
+	static glm::vec3 computeColor(glm::vec3 hit, std::vector <SceneObject *> scene, int objIndex, glm::vec3 normal, Camera * camera, std::vector <Light *> lights, bool print, ray * c,  bool altbrdf, glm::vec3 & a, glm::vec3 & d, glm::vec3 & s);
 
-	static glm::vec3 getColorForRay(ray * r, std::vector <SceneObject *> scene, Camera * camera, std::vector <Light *> lights, bool altbrdf, int numRecurse, bool shadow);
+	static glm::vec3 getColorForRay(ray * r, std::vector <SceneObject *> scene, Camera * camera, std::vector <Light *> lights, bool altbrdf, int numRecurse, bool print);
 
 	static glm::vec3 printRays(ray * r, std::vector <SceneObject *> scene, Camera * camera, std::vector <Light *> lights, bool altbrdf, int numRecurse);
 

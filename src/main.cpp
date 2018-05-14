@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
 		Parse::parseFile(argv[2], scene, camera, lights);
 
 		ray * pRay = raycast::createRay(camera, stoi(argv[3]), stoi(argv[4]), stoi(argv[5]), stoi(argv[6]));
-		raycast::firstHit(pRay, scene, true);
+		raycast::firstHit(pRay, scene, true, -1);
 
 
 	} else if (exec == "render") {
@@ -93,7 +93,8 @@ int main(int argc, char *argv[])
 		Parse::parseFile(argv[2], scene, camera, lights);
 		cout << "----\nIteration type: Primary" << endl;
 		ray * r = raycast::createRay(camera, stoi(argv[3]), stoi(argv[4]), stoi(argv[5]), stoi(argv[6]));
-		raycast::printRays(r, scene, camera, lights, false, 0);
+		raycast::getColorForRay(r, scene, camera, lights, false, 0, true);
+		//raycast::printRays(r, scene, camera, lights, false, 0);
 	} else {
 		cerr << "Unexpected usage" << endl;
 		return -1;
