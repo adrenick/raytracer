@@ -112,9 +112,9 @@ float raycast::firstHit(ray * r, vector <SceneObject *> scene, bool print, int i
 			closestObjIndex = i;
 		}
 	}
-	if (closestObjIndex == index){
+	/*if (closestObjIndex == index){
 		return -1;
-	}
+	}*/
 
 	if (print){
 		if (closestHit == -1){
