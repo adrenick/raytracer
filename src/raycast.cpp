@@ -359,7 +359,9 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 		float fresnel_ref = 0.f;
 		vec3 attenuation = vec3(1);
 		float ref = scene[closestObjIndex]->reflection;
+		//cout << "ref: " << ref << endl;
 		float refrac = scene[closestObjIndex]->filter;
+		//cout << "refrac: " << refrac << endl;
 		vec3 P = r->origin+closestHit*r->direction;
 		vec3 normal = scene[closestObjIndex]->computeNormal(P);
 		vec3 color = vec3(0);
@@ -406,7 +408,7 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 			}
 			if (beers){
 				//cout << "beers" << endl;
-				vec3 d = P - r->origin;
+				vec3 d = P - r->origin; //get t value back
 				vec3 absorbance = (vec3(1)-scene[closestObjIndex]->color)*0.15f*-d;
 				attenuation = vec3(exp(absorbance.x), exp(absorbance.y), exp(absorbance.z));
 				//cout << "attenutation calculated" << endl;

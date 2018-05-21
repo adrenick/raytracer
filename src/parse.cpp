@@ -76,7 +76,7 @@ SceneObject * Parse::ParseSphere(stringstream & Stream)
 	vec3 v;
 	vec4 color;
 	vec3 c;
-	float d;
+	float d = 0.f;
 	float amb, diff, spec, rough, ior, ref, refrac = 0.f;
 	stringbuf buf;
 
@@ -211,7 +211,7 @@ void Parse::ParseFinish(stringstream & Stream, float & a, float & d, float & s, 
 
 	finish.str(whole);
 
-	a = d = s = refrac = 0.f;
+	a = d = s = r = refrac = ref = ior = 0.f;
 
 	//a = ParseAmbient(finish);
 
@@ -286,7 +286,7 @@ float Parse::ParseRefraction(stringstream & Stream)
 
 	//stringstream Stream;
 	//Stream.str(finish);
-	float r;
+	float r = 0.f;
 	stringbuf buf;
 
 	/*Stream.ignore(16, 'n');
@@ -332,7 +332,7 @@ float Parse::ParseIOR(stringstream & Stream)
 	//stringstream Stream;
 	//Stream.str(finish);
 
-	float i;
+	float i = 0.f;
 	stringbuf buf;
    
 	/*Stream.ignore(40, 'r');
@@ -364,7 +364,7 @@ float Parse::ParseReflection(stringstream & Stream)
 {
 	//stringstream Stream;
 	//Stream.str(finish);
-	float r;
+	float r = 0.f;
 	stringbuf buf;
 
 	/*Stream.ignore(16, 'n');
@@ -398,7 +398,7 @@ float Parse::ParseSpecular(stringstream & Stream)
 {
 	//stringstream Stream;
 	//Stream.str(finish);
-	float s;
+	float s = 0.f;
 	stringbuf buf;
 
 	/*Stream.ignore(40, 'r');
@@ -425,7 +425,7 @@ float Parse::ParseRoughness(stringstream & Stream)
 {
 	//stringstream Stream;
 	//Stream.str(finish);
-	float r;
+	float r = 0.f;
 	stringbuf buf;
    
 	/*Stream.ignore(40, 'r');
@@ -449,7 +449,7 @@ float Parse::ParseRoughness(stringstream & Stream)
 
 float Parse::ParseAmbient(stringstream & Stream)
 {
-	float a;
+	float a = 0.f;
 	stringbuf buf;
 
 	/*Stream.ignore(2, '{');
@@ -473,7 +473,7 @@ float Parse::ParseAmbient(stringstream & Stream)
 
 float Parse::ParseDiffuse(stringstream & Stream)
 {
-	float d;
+	float d = 0.f;
 	stringbuf buf;
 
 	/*Stream.get(buf, 'e');
