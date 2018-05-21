@@ -60,7 +60,7 @@ void raycast::doRaycast(vector <SceneObject *> & scene, Camera * camera, int wid
 
 			float closestHit = -1;
 			float closestObjIndex = -1;
-			for (int i = 0; i < scene.size(); i++){
+			for (uint i = 0; i < scene.size(); i++){
 				float hit = scene[i]->intersect(ray(origin, dir));
 				if ((hit > 0) && (closestHit == -1)){
 					closestHit = hit;
@@ -115,7 +115,7 @@ float raycast::firstHit(ray * r, vector <SceneObject *> scene, bool print, int i
 
 	float closestHit = -1;
 	int closestObjIndex = -1;
-	for (int i = 0; i < scene.size(); i++){
+	for (uint i = 0; i < scene.size(); i++){
 		float hit = scene[i]->intersect(ray(origin, dir));
 		if ((hit > 0) && (closestHit == -1)){
 			closestHit = hit;
@@ -155,7 +155,7 @@ void raycast::pixelColor(vector <SceneObject *> scene, Camera * camera, vector <
 
 	float closestHit = -1;
 	float closestObjIndex = -1;
-	for (int i = 0; i < scene.size(); i++){
+	for (uint i = 0; i < scene.size(); i++){
 		float hit = scene[i]->intersect(ray(origin, dir));
 		if ((hit > 0) && (closestHit == -1)){
 			closestHit = hit;
@@ -187,7 +187,7 @@ vec3 raycast::computeColor(vec3 hit, vector <SceneObject *> scene, int objIndex,
 	vec3 color = amb;
 	a = amb;
 
-	for (int i = 0; i < lights.size(); i++){
+	for (uint i = 0; i < lights.size(); i++){
 		vec3 n = normal;
 		vec3 l = normalize(lights[i]->location - hit);
 		vec3 v = normalize(camera->location - hit);
@@ -321,11 +321,11 @@ void raycast::render(vector <SceneObject *> & scene, Camera * camera, vector <Li
 	delete[] data;
 }
 
-float raycast::schlicks_approx(float n, vec3 normal, Camera * camera, vec3 hit)
+float raycast::schlicks_approx(float n, vec3 normal, vec3 d)
 {	
-	vec3 v = normalize(camera->location - hit);
+	//vec3 v = normalize(camera->location - hit);
 	float Fo = (pow(n - 1.f, 2.f))/(pow(n + 1.f, 2.f));
-	float F = Fo + (1.f - Fo)*(pow(1.f - abs(dot(normal, v)), 5.f));
+	float F = Fo + (1.f - Fo)*(pow(1.f - abs(dot(normal, -d)), 5.f));
 
 	return F;
 }
@@ -336,7 +336,7 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 	float closestHit = -1;
 	int closestObjIndex = -1;
 			
-	for (int i = 0; i < scene.size(); i++){
+	for (uint i = 0; i < scene.size(); i++){
 		float hit = scene[i]->intersect(*r);
 		
 		if ((hit > 0) && (closestHit == -1)){
@@ -401,12 +401,13 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 			refracColor = (getColorForRay(&refracRay, scene, camera, lights, altbrdf, numRecurse+1, print, fresnel, beers))*scene[closestObjIndex]->color;
 			
 			if (fresnel){
-				//fresnel_ref = schlicks_approx(n1, normal, camera, P);
-				fresnel_ref = schlicks_approx(objIor, normal, camera, P);
+				//fresnel_ref = schlicks_approx(objIor, scene[closestObjIndex]->computeNormal(P), camera, P);
+				fresnel_ref = schlicks_approx(objIor, normal, r->direction);
 			}
 			if (beers){
-				vec3 absorbance = (vec3(1)-scene[closestObjIndex]->color)*0.15f*(P - r->origin)*-1.f;
-				attenuation = exp(absorbance);
+				vec3 d = P - r->origin;
+				vec3 absorbance = (vec3(1)-scene[closestObjIndex]->color)*0.15f*-d;
+				attenuation = vec3(exp(absorbance.x), exp(absorbance.y), exp(absorbance.z));
 			}
 		}
 

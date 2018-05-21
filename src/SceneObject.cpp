@@ -21,7 +21,7 @@ void SceneObject::printScene(std::vector <SceneObject *> scene, Camera * camera,
 	std::cout << "\n --- \n\n" << std::endl;
 
 	std::cout << scene.size() << " object(s)\n" << std::endl;
-	for (int i = 0; i < scene.size(); i++){
+	for (uint i = 0; i < scene.size(); i++){
 		std::cout << "Object[" << i << "]:" << std::endl;
 		std::cout << "- Type: " << scene[i]->type << std::endl;
 
