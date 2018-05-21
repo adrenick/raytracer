@@ -77,7 +77,7 @@ SceneObject * Parse::ParseSphere(stringstream & Stream)
 	vec4 color;
 	vec3 c;
 	float d;
-	float amb, diff, spec, rough, ior, ref, refrac;
+	float amb, diff, spec, rough, ior, ref, refrac = 0.f;
 	stringbuf buf;
 
 	v = Parse::ParseVector(Stream);
@@ -104,6 +104,13 @@ SceneObject * Parse::ParseSphere(stringstream & Stream)
     c = vec3(color.x, color.y, color.z);
 
 	Parse::ParseFinish(Stream, amb, diff, spec, rough, ior, ref, refrac);
+
+	Stream.ignore(2, '}');
+	std::string token;
+	Stream >> token;
+	if ((token == "scale") || (token == "rotate") || (token == "translate")){
+		vec3 v = Parse::ParseVector(Stream);
+	}
 
     SceneObject * obj = new Sphere(v, d, c);
 
@@ -182,14 +189,44 @@ void Parse::ParseFinish(stringstream & Stream, float & a, float & d, float & s, 
 
 	finish.str(whole);
 
+	s = refrac = 0.f;
+
 	a = ParseAmbient(finish);
 
 	d = ParseDiffuse(finish);
 
 	stringstream newfinish;
 	newfinish.str(whole);
+	//newfinish.ignore(10, 't');
+	//newfinish.ignore(14, 'e');
 
-	s = ParseSpecular(newfinish);
+	
+	string token;
+	finish >> token;
+	//newfinish >> token;
+
+	//while(!newfinish.eof())
+	while (!finish.eof())
+	{
+		//cout << "token: " << token << endl;
+		if (token == "specular"){
+			s = ParseSpecular(finish);
+		} else if (token == "roughness"){
+			r = ParseRoughness(finish);
+		} else if (token == "reflection"){
+			ref = ParseReflection(finish);
+		} else if (token == "refraction"){
+			refrac = ParseRefraction(finish);
+		} else if (token == "ior"){
+			ior = ParseIOR(finish);
+		}
+
+		finish >> token;
+		//newfinish >> token;
+	}
+	//cout << "token after: " << token << endl;
+
+	/*s = ParseSpecular(newfinish);
 
 	stringstream newnewfinish;
 	newnewfinish.str(whole);
@@ -211,12 +248,17 @@ void Parse::ParseFinish(stringstream & Stream, float & a, float & d, float & s, 
 
 		refrac = ParseRefraction(newnewnewfinish);
 
-		ior = ParseIOR(newnewnewfinish);
+		ior = ParseIOR(newnewnewfinish);*/
 
 }
 
 float Parse::ParseRefraction(stringstream & Stream)
+//float Parse::ParseRefraction(string finish)
 {
+
+
+	//stringstream Stream;
+	//Stream.str(finish);
 	float r;
 	stringbuf buf;
 
@@ -225,17 +267,20 @@ float Parse::ParseRefraction(stringstream & Stream)
 	Stream.ignore(16, 'n');
 	Stream.get(buf, 'r');*/
 
-	Stream.ignore(18, 'f');
+	/*Stream.ignore(18, 'f');
 	Stream.ignore(1, 'f');
 	Stream.ignore(14, 'f');
 	Stream.ignore(100, 'r');
 
 
 	Stream.ignore(10, 'n');
-	Stream.get(buf, 'i');
+	Stream.get(buf, 'i');*/
 	//Stream.ignore(1, 'i');
 	//Stream.ignore(1, 'o');
 	//Stream.ignore(1, 'r');
+
+	Stream.ignore (1, ' ');
+	Stream.get(buf, ' ');
 
 
 	string line = buf.str();
@@ -253,8 +298,13 @@ float Parse::ParseRefraction(stringstream & Stream)
 	return r;
 }
 
+
+//float Parse::ParseIOR(string finish)
 float Parse::ParseIOR(stringstream & Stream)
 {
+	//stringstream Stream;
+	//Stream.str(finish);
+
 	float i;
 	stringbuf buf;
    
@@ -263,10 +313,13 @@ float Parse::ParseIOR(stringstream & Stream)
 	Stream.ignore(10, 'r');
 	Stream.ignore(1, 'r');*/
 
-	Stream.ignore(3, 'r');
-	Stream.get(buf, EOF);
+	/*Stream.ignore(3, 'r');
+	Stream.get(buf, '}');*/
+	Stream.ignore(1, ' ');
+	Stream.get(buf, ' ');
 
 	string line = buf.str();
+	//cout << line << endl;
 
 	int read = sscanf(line.c_str(), "%f", &i);
 
@@ -278,8 +331,12 @@ float Parse::ParseIOR(stringstream & Stream)
 	return i;
 }
 
+
+//float Parse::ParseReflection(string finish)
 float Parse::ParseReflection(stringstream & Stream)
 {
+	//stringstream Stream;
+	//Stream.str(finish);
 	float r;
 	stringbuf buf;
 
@@ -287,9 +344,11 @@ float Parse::ParseReflection(stringstream & Stream)
 	Stream.ignore(32, 'n');
 	Stream.get(buf, '}');*/
 
-	Stream.ignore(100, 'l');
+	/*Stream.ignore(100, 'l');
 	Stream.ignore(8, 'n');
-	Stream.get(buf, '}');
+	Stream.get(buf, '}');*/
+	Stream.ignore (1, ' ');
+	Stream.get(buf, ' ');
 
 	string line = buf.str();
 	//cout << "reflection string: " << line << endl;
@@ -307,13 +366,18 @@ float Parse::ParseReflection(stringstream & Stream)
 
 }
 
+//float Parse::ParseSpecular(string finish)
 float Parse::ParseSpecular(stringstream & Stream)
 {
+	//stringstream Stream;
+	//Stream.str(finish);
 	float s;
 	stringbuf buf;
 
-	Stream.ignore(40, 'r');
-	Stream.get(buf, 'r');
+	/*Stream.ignore(40, 'r');
+	Stream.get(buf, 'r');*/
+	Stream.ignore(1, ' ');
+	Stream.get(buf, ' ');
 
 	string line = buf.str();
 
@@ -330,14 +394,19 @@ float Parse::ParseSpecular(stringstream & Stream)
 }
 
 float Parse::ParseRoughness(stringstream & Stream)
+//float Parse::ParseRoughness(string finish)
 {
+	//stringstream Stream;
+	//Stream.str(finish);
 	float r;
 	stringbuf buf;
    
-	Stream.ignore(40, 'r');
+	/*Stream.ignore(40, 'r');
 	Stream.ignore(15, 's');
 	Stream.ignore(1, 's');
-	Stream.get(buf, EOF);
+	Stream.get(buf, EOF);*/
+	Stream.ignore(1, ' ');
+	Stream.get(buf, ' ');
 
 	string line = buf.str();
 
@@ -380,8 +449,9 @@ float Parse::ParseDiffuse(stringstream & Stream)
 
 	Stream.get(buf, 'e');
     Stream.ignore(1, 'e');
+    Stream.ignore(1, ' ');
     buf.str("");
-    Stream.get(buf, '}');
+    Stream.get(buf, ' ');
 
     string line = buf.str();
 
