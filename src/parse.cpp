@@ -105,12 +105,34 @@ SceneObject * Parse::ParseSphere(stringstream & Stream)
 
 	Parse::ParseFinish(Stream, amb, diff, spec, rough, ior, ref, refrac);
 
-	Stream.ignore(2, '}');
+	/*Stream.ignore(2, '}');
 	std::string token;
 	Stream >> token;
 	if ((token == "scale") || (token == "rotate") || (token == "translate")){
 		vec3 v = Parse::ParseVector(Stream);
-	}
+	}*/
+	/*string token;
+	Stream >> token;
+	vec3 t;
+	//while (!finish.eof())
+	//while (!Stream.eof())
+	while (token != "{")
+	{
+		//cout << "token: " << token << endl;
+		if (token == "scale"){
+			t = ParseVector(Stream);
+			cout << t.x << " " << t.y << " " << t.z << endl;
+		} else if (token == "rotate"){
+			t = ParseVector(Stream);
+			cout << t.x << " " << t.y << " " << t.z << endl;
+		} else if (token == "translate"){
+			t = ParseVector(Stream);
+			cout << t.x << " " << t.y << " " << t.z << endl;
+		}
+
+		Stream >> token;
+		//newfinish >> token;
+	}*/
 
     SceneObject * obj = new Sphere(v, d, c);
 
