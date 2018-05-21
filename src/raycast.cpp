@@ -405,16 +405,20 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 				fresnel_ref = schlicks_approx(objIor, normal, r->direction);
 			}
 			if (beers){
+				//cout << "beers" << endl;
 				vec3 d = P - r->origin;
 				vec3 absorbance = (vec3(1)-scene[closestObjIndex]->color)*0.15f*-d;
 				attenuation = vec3(exp(absorbance.x), exp(absorbance.y), exp(absorbance.z));
+				//cout << "attenutation calculated" << endl;
 			}
+			//cout << "****" << endl;
 		}
 
 		vec3 a, d, s;
 		vec3 localColor = computeColor(P, scene, closestObjIndex, normal, camera, lights, false, r, altbrdf, a, d, s);
 
 		color = (1.f-refrac)*(1.f-ref)*localColor + ((1.f-refrac)*(ref)+(refrac)*(fresnel_ref))*refColor+(refrac)*(1.f-fresnel_ref)*(attenuation)*refracColor;
+		//color = (1.f-refrac)*(1.f-ref)*localColor + ((1.f-refrac)*(ref))*refColor+(refrac)*refracColor;
 
 		if (print) {
 			a = a*(1.f-ref)*(1.f-refrac);
