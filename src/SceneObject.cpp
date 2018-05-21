@@ -14,7 +14,7 @@ void SceneObject::printScene(std::vector <SceneObject *> scene, Camera * camera,
 	std::cout << "\n --- \n\n" << std::endl;
 
 	std::cout << lights.size() << " light(s)\n" << std::endl;
-	for (int i = 0; i < lights.size(); i++){
+	for (uint i = 0; i < lights.size(); i++){
 		std::cout << "Light[" << i << "]:" << std::endl;
 		(lights[i])->print();
 	}

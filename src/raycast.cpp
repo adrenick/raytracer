@@ -402,7 +402,7 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 			
 			if (fresnel){
 				//fresnel_ref = schlicks_approx(n1, normal, camera, P);
-				fresnel_ref = schlicks_approx(n1, scene[closestObjIndex]->computeNormal(P), camera, P);
+				fresnel_ref = schlicks_approx(objIor, normal, camera, P);
 			}
 			if (beers){
 				vec3 absorbance = (vec3(1)-scene[closestObjIndex]->color)*0.15f*(P - r->origin)*-1.f;
