@@ -193,7 +193,7 @@ vec3 raycast::computeColor(vec3 hit, vector <SceneObject *> scene, int objIndex,
 		vec3 v = normalize(camera->location - hit);
 		vec3 h = normalize(l+v);
 		
-		ray * lRay = new ray(hit + (l*0.0001f), l); 
+		ray * lRay = new ray(hit + (n*0.0001f), l); 
 
 		float lightHit = firstHit(lRay, scene, false, objIndex);
 		
@@ -292,13 +292,15 @@ void raycast::render(vector <SceneObject *> & scene, Camera * camera, vector <Li
 			ray * r;
 			vec3 color = vec3(0);
 			if (ssN == 0){
+				float f;
 				r = createRay(camera, width, height, x, y);
-				color = getColorForRay(r, scene, camera, lights, altbrdf, 0, false, fresnel, beers);
+				color = getColorForRay(r, scene, camera, lights, altbrdf, 0, false, fresnel, beers, f);
 			} else {
 				for (int m = 0; m < ssN; ++m){
 					for (int n = 0; n < ssN; ++n){
+						float f;
 						r = createSuperSampledRay(camera, width, height, x, y, m, n, ssN);
-						color += getColorForRay(r, scene, camera, lights, altbrdf, 0, false, fresnel, beers);
+						color += getColorForRay(r, scene, camera, lights, altbrdf, 0, false, fresnel, beers, f);
 					}
 				}
 				color = color/((float)ssN*ssN);
@@ -321,16 +323,16 @@ void raycast::render(vector <SceneObject *> & scene, Camera * camera, vector <Li
 	delete[] data;
 }
 
-float raycast::schlicks_approx(float n, vec3 normal, vec3 d)
+float raycast::schlicks_approx(float n, vec3 normal, vec3 v)
 {	
 	//vec3 v = normalize(camera->location - hit);
-	float Fo = (pow(n - 1.f, 2.f))/(pow(n + 1.f, 2.f));
-	float F = Fo + (1.f - Fo)*(pow(1.f - abs(dot(normal, -d)), 5.f));
+	float Fo = pow((n-1.f)/(n+1.f), 2.0f);//(pow(n - 1.f, 2.f))/(pow(n + 1.f, 2.f));
+	float F = Fo + (1.f - Fo)*(pow(1.f - (abs(dot(normal, v))), 5.f));
 
 	return F;
 }
 
-vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * camera, vector <Light *> lights, bool altbrdf, int numRecurse, bool print, bool fresnel, bool beers)
+vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * camera, vector <Light *> lights, bool altbrdf, int numRecurse, bool print, bool fresnel, bool beers, float & distanceHit)
 {
 
 	float closestHit = -1;
@@ -356,6 +358,7 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 		return color;
 	
 	} else {
+		float distance;
 		float fresnel_ref = 0.f;
 		vec3 attenuation = vec3(1);
 		float ref = scene[closestObjIndex]->reflection;
@@ -364,6 +367,7 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 		//cout << "refrac: " << refrac << endl;
 		vec3 P = r->origin+closestHit*r->direction;
 		vec3 normal = scene[closestObjIndex]->computeNormal(P);
+		const vec3 OGNormal = normal;
 		vec3 color = vec3(0);
 		vec3 refracColor = vec3(0);
 		vec3 refColor = vec3(0);
@@ -371,8 +375,8 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 
 		if ((ref > 0.f) && (numRecurse < 6)){
 			vec3 refDir = r->direction-2.f*dot(r->direction, normal)*normal;
-			ray refRay = ray(P+.001f*refDir, refDir);
-			refColor = getColorForRay(&refRay, scene, camera, lights, altbrdf, numRecurse+1, print, fresnel, beers)*scene[closestObjIndex]->color;
+			ray refRay = ray(P+.001f*normal, refDir);
+			refColor = getColorForRay(&refRay, scene, camera, lights, altbrdf, numRecurse+1, print, fresnel, beers, distance)*scene[closestObjIndex]->color;
 		}
 
 		if ((refrac > 0.f)){
@@ -385,41 +389,58 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 				n1 = 1.0f;
 				n2 = objIor;
 				entering = 1;
+				
 			} else {
 				n1 = objIor;
 				n2 = 1.0f;
 				normal = -1.f*normal;
 				dDotn = dot(dir, normal);
 				entering = 0;
+				distanceHit = closestHit;
+				//cout << "distanceHit: " << distanceHit << endl; 7, 8, 4
 			}
 
 			float ratio = (n1/n2);
 			vec3 refracDir = ratio*(dir-dDotn*normal)-normal*(float)(sqrt(1-(pow(ratio, 2)*(1-pow(dDotn, 2)))));
-			ray refracRay = ray(P+0.001f*refracDir, refracDir);
+			ray refracRay = ray(P+0.001f*refracDir, refracDir); //SEGFAULTS WHEN I CHANGE THIS TO NORMAL WHYYYYY
+
 			if (print){
 				cout << "   Iteration Type: Refraction" << endl;
 			}
 			
-			refracColor = (getColorForRay(&refracRay, scene, camera, lights, altbrdf, numRecurse+1, print, fresnel, beers))*scene[closestObjIndex]->color;
-			
-			if (fresnel){
-				//fresnel_ref = schlicks_approx(objIor, scene[closestObjIndex]->computeNormal(P), camera, P);
-				fresnel_ref = schlicks_approx(objIor, normal, r->direction);
-			}
-			if (beers){
-				//cout << "beers" << endl;
-				vec3 d = P - r->origin; //get t value back
+			refracColor = (getColorForRay(&refracRay, scene, camera, lights, altbrdf, numRecurse+1, print, fresnel, beers, distance))*scene[closestObjIndex]->color;
+			if (entering){
+				if (beers){
+
+				cout << "beers" << endl;
+				//vec3 d = P - r->origin; //get t value back
+
+				//vec3 P = r->origin+closestHit*r->direction;
+				
+				vec3 d = distanceHit*refracDir; 
 				vec3 absorbance = (vec3(1)-scene[closestObjIndex]->color)*0.15f*-d;
 				attenuation = vec3(exp(absorbance.x), exp(absorbance.y), exp(absorbance.z));
 				//cout << "attenutation calculated" << endl;
+				}
 			}
+			if (fresnel){
+				//cout << "fresnel" << endl;
+				//fresnel_ref = schlicks_approx(objIor, scene[closestObjIndex]->computeNormal(P), camera, P);
+				vec3 v = normalize(camera->location - P);
+				fresnel_ref = schlicks_approx(n1, OGNormal, v);
+				//fresnel_ref = schlicks_approx(objIor, normal, r->direction);
+				//fresnel_ref = schlicks_approx(objIor, normal, refracDir); //WHICH DIRECTION?!
+			}
+	
 			//cout << "****" << endl;
 		}
 
 		vec3 a, d, s;
 		vec3 localColor = computeColor(P, scene, closestObjIndex, normal, camera, lights, false, r, altbrdf, a, d, s);
 
-		color = (1.f-refrac)*(1.f-ref)*localColor + ((1.f-refrac)*(ref)+(refrac)*(fresnel_ref))*refColor+(refrac)*(1.f-fresnel_ref)*(attenuation)*refracColor;
+		color = (1.f-refrac)*(1.f-ref)*localColor + 
+				((1.f-refrac)*(ref)+(refrac)*(fresnel_ref))*refColor + 
+				(refrac)*(1.f-fresnel_ref)*(attenuation)*refracColor;
 		//color = (1.f-refrac)*(1.f-ref)*localColor + ((1.f-refrac)*(ref))*refColor+(refrac)*refracColor;
 
 		if (print) {

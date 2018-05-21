@@ -119,7 +119,8 @@ int main(int argc, char *argv[])
 		cout << "Pixel: [" << argv[5] << ", " << argv[6] << "]" << endl;
 		cout << "----\n   Iteration type: Primary" << endl;
 		ray * r = raycast::createRay(camera, stoi(argv[3]), stoi(argv[4]), stoi(argv[5]), stoi(argv[6]));
-		vec3 color = raycast::getColorForRay(r, scene, camera, lights, false, 0, true, false, false);
+		float f;
+		vec3 color = raycast::getColorForRay(r, scene, camera, lights, false, 0, true, false, false, f);
 		cout << "Color: (" << (uint)round(color.x*255) << ", " << (uint)round(color.y*255) << ", " << (uint)round(color.z*255) << ")" << endl;
 	} else {
 		cerr << "Unexpected usage" << endl;
