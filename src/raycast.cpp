@@ -179,15 +179,6 @@ void raycast::pixelColor(vector <SceneObject *> scene, Camera * camera, vector <
 	} 
 }
 
-float raycast::schlicks_approx(float n, vec3 normal, Camera * camera, vec3 hit)
-{	
-	vec3 v = normalize(camera->location - hit);
-	float Fo = (pow(n - 1.f, 2.f))/(pow(n + 1.f, 2.f));
-	float F = Fo + (1.f - Fo)*(pow(1.f - clamp(abs(dot(normal, v)), 0.f, 1.f), 5.f));
-
-	return F;
-}
-
 vec3 raycast::computeColor(vec3 hit, vector <SceneObject *> scene, int objIndex, vec3 normal, Camera * camera, vector <Light *> lights, bool print, ray * c, bool altbrdf, glm::vec3 & a, glm::vec3 & d, glm::vec3 & s)
 {
 	SceneObject * obj = scene[objIndex];
@@ -330,6 +321,15 @@ void raycast::render(vector <SceneObject *> & scene, Camera * camera, vector <Li
 	delete[] data;
 }
 
+float raycast::schlicks_approx(float n, vec3 normal, Camera * camera, vec3 hit)
+{	
+	vec3 v = normalize(camera->location - hit);
+	float Fo = (pow(n - 1.f, 2.f))/(pow(n + 1.f, 2.f));
+	float F = Fo + (1.f - Fo)*(pow(1.f - abs(dot(normal, v)), 5.f));
+
+	return F;
+}
+
 vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * camera, vector <Light *> lights, bool altbrdf, int numRecurse, bool print, bool fresnel, bool beers)
 {
 
@@ -401,7 +401,8 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 			refracColor = (getColorForRay(&refracRay, scene, camera, lights, altbrdf, numRecurse+1, print, fresnel, beers))*scene[closestObjIndex]->color;
 			
 			if (fresnel){
-				fresnel_ref = schlicks_approx(n1, normal, camera, P);
+				//fresnel_ref = schlicks_approx(n1, normal, camera, P);
+				fresnel_ref = schlicks_approx(n1, scene[closestObjIndex]->computeNormal(P), camera, P);
 			}
 			if (beers){
 				vec3 absorbance = (vec3(1)-scene[closestObjIndex]->color)*0.15f*(P - r->origin)*-1.f;
