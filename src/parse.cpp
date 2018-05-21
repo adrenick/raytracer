@@ -211,11 +211,11 @@ void Parse::ParseFinish(stringstream & Stream, float & a, float & d, float & s, 
 
 	finish.str(whole);
 
-	s = refrac = 0.f;
+	a = d = s = refrac = 0.f;
 
-	a = ParseAmbient(finish);
+	//a = ParseAmbient(finish);
 
-	d = ParseDiffuse(finish);
+	//d = ParseDiffuse(finish);
 
 	stringstream newfinish;
 	newfinish.str(whole);
@@ -224,6 +224,7 @@ void Parse::ParseFinish(stringstream & Stream, float & a, float & d, float & s, 
 
 	
 	string token;
+	finish.ignore(1, '{');
 	finish >> token;
 	//newfinish >> token;
 
@@ -231,7 +232,11 @@ void Parse::ParseFinish(stringstream & Stream, float & a, float & d, float & s, 
 	while (!finish.eof())
 	{
 		//cout << "token: " << token << endl;
-		if (token == "specular"){
+		if (token == "ambient"){
+			a = ParseAmbient(finish);
+		} else if (token == "diffuse") {
+			d = ParseDiffuse(finish);
+		} else if (token == "specular"){
 			s = ParseSpecular(finish);
 		} else if (token == "roughness"){
 			r = ParseRoughness(finish);
@@ -447,12 +452,14 @@ float Parse::ParseAmbient(stringstream & Stream)
 	float a;
 	stringbuf buf;
 
-	Stream.ignore(2, '{');
+	/*Stream.ignore(2, '{');
     Stream.get(buf, 't');
     Stream.ignore(1, 't');
 
     buf.str("");
-    Stream.get(buf, 'd');
+    Stream.get(buf, 'd');*/
+    Stream.ignore(1, ' ');
+    Stream.get(buf, ' ');
     string line = buf.str();
 
     int read = sscanf(line.c_str(), "%f", &a);
@@ -469,10 +476,13 @@ float Parse::ParseDiffuse(stringstream & Stream)
 	float d;
 	stringbuf buf;
 
-	Stream.get(buf, 'e');
+	/*Stream.get(buf, 'e');
     Stream.ignore(1, 'e');
     Stream.ignore(1, ' ');
     buf.str("");
+    Stream.get(buf, ' ');*/
+
+    Stream.ignore(1, ' ');
     Stream.get(buf, ' ');
 
     string line = buf.str();
