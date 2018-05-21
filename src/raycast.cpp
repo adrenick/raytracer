@@ -26,6 +26,20 @@ ray * raycast::createRay(Camera * camera, int width, int height, int x, int y)
 	return r;
 }
 
+ray * raycast::createSuperSampledRay(Camera * camera, int width, int height, int x, int y, int m, int n, int ssN)
+{
+	float Us = (-0.5f)+(((float)x+((m+0.5f)/ssN))/width);
+	float Vs = (-0.5f)+(((float)y+((n+0.5f)/ssN))/height);
+	float Ws = -1.0;
+
+	vec3 origin = camera->location;
+	vec3 dir = normalize((Us * camera->right)+(Vs * camera->up)+(Ws * normalize(camera->location-camera->look_at)));
+
+	ray * r = new ray(origin, dir);
+
+	return r;
+}
+
 void raycast::doRaycast(vector <SceneObject *> & scene, Camera * camera, int width, int height)
 {
 	const int numChannels = 3;
@@ -165,6 +179,15 @@ void raycast::pixelColor(vector <SceneObject *> scene, Camera * camera, vector <
 	} 
 }
 
+float raycast::schlicks_approx(float n, vec3 normal, Camera * camera, vec3 hit)
+{	
+	vec3 v = normalize(camera->location - hit);
+	float Fo = (pow(n - 1.f, 2.f))/(pow(n + 1.f, 2.f));
+	float F = Fo + (1.f - Fo)*(pow(1.f - clamp(abs(dot(normal, v)), 0.f, 1.f), 5.f));
+
+	return F;
+}
+
 vec3 raycast::computeColor(vec3 hit, vector <SceneObject *> scene, int objIndex, vec3 normal, Camera * camera, vector <Light *> lights, bool print, ray * c, bool altbrdf, glm::vec3 & a, glm::vec3 & d, glm::vec3 & s)
 {
 	SceneObject * obj = scene[objIndex];
@@ -261,7 +284,7 @@ float raycast::calcG(vec3 x, vec3 h, vec3 n, float r)
 	return chi * (2 / (1 + sqrt(quant)));
 }
 
-void raycast::render(vector <SceneObject *> & scene, Camera * camera, vector <Light *> lights, int width, int height, bool altbrdf)
+void raycast::render(vector <SceneObject *> & scene, Camera * camera, vector <Light *> lights, int width, int height, bool altbrdf, bool beers, bool fresnel, int ssN)
 {
 	const int numChannels = 3;
 	const string fileName = "output.png";
@@ -275,8 +298,24 @@ void raycast::render(vector <SceneObject *> & scene, Camera * camera, vector <Li
 	    {
 	    	unsigned int red, green, blue = 0;
 
-			ray * r = createRay(camera, width, height, x, y);
-			vec3 color = getColorForRay(r, scene, camera, lights, altbrdf, 0, false);
+			ray * r;
+			vec3 color = vec3(0);
+			if (ssN == 0){
+				r = createRay(camera, width, height, x, y);
+				color = getColorForRay(r, scene, camera, lights, altbrdf, 0, false, fresnel, beers);
+			} else {
+				for (int m = 0; m < ssN; ++m){
+					for (int n = 0; n < ssN; ++n){
+						r = createSuperSampledRay(camera, width, height, x, y, m, n, ssN);
+						color += getColorForRay(r, scene, camera, lights, altbrdf, 0, false, fresnel, beers);
+					}
+				}
+				color = color/((float)ssN*ssN);
+				
+			}
+			
+			
+			//vec3 color = getColorForRay(r, scene, camera, lights, altbrdf, 0, false, fresnel, beers);
 			red = (unsigned int) std::round(clamp(color.x, 0.f, 1.f) * 255.f);
 			green = (unsigned int) std::round(clamp(color.y, 0.f, 1.f) * 255.f);
 			blue = (unsigned int) std::round(clamp(color.z, 0.f, 1.f) * 255.f);
@@ -291,7 +330,7 @@ void raycast::render(vector <SceneObject *> & scene, Camera * camera, vector <Li
 	delete[] data;
 }
 
-vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * camera, vector <Light *> lights, bool altbrdf, int numRecurse, bool print)
+vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * camera, vector <Light *> lights, bool altbrdf, int numRecurse, bool print, bool fresnel, bool beers)
 {
 
 	float closestHit = -1;
@@ -317,6 +356,8 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 		return color;
 	
 	} else {
+		float fresnel_ref = 0.f;
+		vec3 attenuation = vec3(1);
 		float ref = scene[closestObjIndex]->reflection;
 		float refrac = scene[closestObjIndex]->filter;
 		vec3 P = r->origin+closestHit*r->direction;
@@ -329,7 +370,7 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 		if ((ref > 0.f) && (numRecurse < 6)){
 			vec3 refDir = r->direction-2.f*dot(r->direction, normal)*normal;
 			ray refRay = ray(P+.001f*refDir, refDir);
-			refColor = getColorForRay(&refRay, scene, camera, lights, altbrdf, numRecurse+1, print)*scene[closestObjIndex]->color;
+			refColor = getColorForRay(&refRay, scene, camera, lights, altbrdf, numRecurse+1, print, fresnel, beers)*scene[closestObjIndex]->color;
 		}
 
 		if ((refrac > 0.f)){
@@ -357,12 +398,21 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 				cout << "   Iteration Type: Refraction" << endl;
 			}
 			
-			refracColor = (getColorForRay(&refracRay, scene, camera, lights, altbrdf, numRecurse+1, print))*scene[closestObjIndex]->color;
+			refracColor = (getColorForRay(&refracRay, scene, camera, lights, altbrdf, numRecurse+1, print, fresnel, beers))*scene[closestObjIndex]->color;
+			
+			if (fresnel){
+				fresnel_ref = schlicks_approx(n1, normal, camera, P);
+			}
+			if (beers){
+				vec3 absorbance = (vec3(1)-scene[closestObjIndex]->color)*0.15f*(P - r->origin)*-1.f;
+				attenuation = exp(absorbance);
+			}
 		}
 
 		vec3 a, d, s;
 		vec3 localColor = computeColor(P, scene, closestObjIndex, normal, camera, lights, false, r, altbrdf, a, d, s);
-		color = (1.f-refrac)*(1.f-ref)*localColor + (1.f-refrac)*(ref)*refColor+refrac*refracColor;
+
+		color = (1.f-refrac)*(1.f-ref)*localColor + ((1.f-refrac)*(ref)+(refrac)*(fresnel_ref))*refColor+(refrac)*(1.f-fresnel_ref)*(attenuation)*refracColor;
 
 		if (print) {
 			a = a*(1.f-ref)*(1.f-refrac);
