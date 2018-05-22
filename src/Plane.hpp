@@ -22,12 +22,14 @@ public:
 			normal = n;
 			distance = d;
 			color = c;
+			glm::mat4 itransforms (1.0f);
 		}
 		Plane()
 		{
 			normal = glm::vec3(0., 0., 0.);
 			distance = 0.;
 			color = glm::vec3(1., 1., 1.);
+			glm::mat4 itransforms (1.0f);
 		}
 		
 };

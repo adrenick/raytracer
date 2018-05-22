@@ -25,6 +25,8 @@ public:
 	float reflection;
 	float refraction;
 
+	glm::mat4 itransforms; 
+
 	std::string type;
 	glm::vec3 color;
 	float filter;
