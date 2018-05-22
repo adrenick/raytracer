@@ -110,13 +110,22 @@ void raycast::pixelRay(Camera * camera, int width, int height, int x, int y)
 
 float raycast::firstHit(ray * r, vector <SceneObject *> scene, bool print, int index)
 {
-	vec3 origin = r->origin;
-	vec3 dir = r->direction;
+	//vec3 origin = r->origin;
+	//vec3 dir = r->direction;
 
 	float closestHit = -1;
 	int closestObjIndex = -1;
 	for (uint i = 0; i < scene.size(); i++){
-		float hit = scene[i]->intersect(ray(origin, dir));
+
+		mat4 M = scene[i]->itransforms;
+		vec4 Oprime = M*vec4(r->origin, 1.0);
+		vec4 Dprime = M*vec4(r->direction, 0.0);
+
+		ray tr = ray(vec3(Oprime), vec3(Dprime));
+
+		float hit = scene[i]->intersect(tr);
+
+		//float hit = scene[i]->intersect(ray(origin, dir));
 		if ((hit > 0) && (closestHit == -1)){
 			closestHit = hit;
 			closestObjIndex = i;
@@ -389,13 +398,15 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 		int entering = -1;
 
 		if ((ref > 0.f) && (numRecurse < 6)){
-			vec3 refDir = r->direction-2.f*dot(r->direction, normal)*normal;
+			//vec3 refDir = r->direction-2.f*dot(r->direction, normal)*normal;
+			vec3 refDir = tRay.direction-2.f*dot(tRay.direction, normal)*normal;
 			ray refRay = ray(P+.001f*normal, refDir);
 			refColor = getColorForRay(&refRay, scene, camera, lights, altbrdf, numRecurse+1, print, fresnel, beers, distance)*obj->color;
 		}
 
 		if ((refrac > 0.f)){
-			vec3 dir = r->direction;
+			//vec3 dir = r->direction;
+			vec3 dir = tRay.direction;
 			float dDotn = dot(dir, normal);
 			float objIor = obj->ior;
 			float n1, n2;
@@ -451,7 +462,7 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 		}
 
 		vec3 a, d, s;
-		vec3 localColor = computeColor(P, scene, closestObjIndex, normal, camera, lights, false, r, altbrdf, a, d, s);
+		vec3 localColor = computeColor(P, scene, closestObjIndex, normal, camera, lights, false, &tRay, altbrdf, a, d, s);
 
 		color = (1.f-refrac)*(1.f-ref)*localColor + 
 				((1.f-refrac)*(ref)+(refrac)*(fresnel_ref))*refColor + 
