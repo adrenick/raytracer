@@ -345,7 +345,7 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 		vec4 Oprime = M*vec4(r->origin, 1.0);//vec4(r->origin, 1.0)*obj->itransforms;
 		vec4 Dprime = M*vec4(r->direction, 0.0);
 
-		ray tr = ray(Oprime, Dprime);
+		ray tr = ray(vec3(Oprime), vec3(Dprime));
 
 		float hit = scene[i]->intersect(tr);
 		
