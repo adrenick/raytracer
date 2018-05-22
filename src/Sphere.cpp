@@ -45,5 +45,10 @@ void Sphere::print()
 }
 
 glm::vec3 Sphere::computeNormal(glm::vec3 p) {
-	return glm::normalize(p - origin);
+	glm::vec3 norm = glm::normalize(p - origin);
+	glm::vec4 preTnorm = glm::vec4(norm, 0.f);
+	return glm::normalize(glm::vec3((glm::transpose(itransforms))*preTnorm));
+
+	//return glm::normalize(p - origin);
+
 }
