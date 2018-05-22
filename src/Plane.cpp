@@ -34,5 +34,8 @@ void Plane::print()
 }
 
 glm::vec3 Plane::computeNormal(glm::vec3 p) {
-	return normal;
+	
+	//return normal;
+	glm::vec4 norm = glm::vec4(normal, 0.f);
+	return glm::normalize(glm::vec3((glm::transpose(itransforms))*norm));
 }

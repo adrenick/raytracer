@@ -76,6 +76,11 @@ glm::vec3 Triangle::computeNormal(glm::vec3 p) {
 	float yNorm = BAz*CAx - BAx*CAz;
 	float zNorm = BAx*CAy - BAy*CAx;
 
-	return glm::normalize(glm::vec3(xNorm, yNorm, zNorm));
+	glm::vec4 norm = glm::vec4(xNorm, yNorm, zNorm, 0.f);
+
+	return glm::normalize(glm::vec3((glm::transpose(itransforms))*norm));
+
+	//(glm::normalize(glm::vec3(xNorm, yNorm, zNorm)));
+
 
 }

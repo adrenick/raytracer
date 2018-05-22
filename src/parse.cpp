@@ -149,7 +149,7 @@ SceneObject * Parse::ParseSphere(stringstream & Stream)
 			t = ParseVector(Stream);
 			//obj->itransforms = scale(obj->itransforms, t);
 			obj->itransforms = scale(mat4(1.f), t)*obj->itransforms;
-			//cout << "scale: " << t.x << " " << t.y << " " << t.z << endl;
+			cout << "scale: " << t.x << " " << t.y << " " << t.z << endl;
 		} else if (token == "rotate"){
 			t = ParseVector(Stream);
 			obj->itransforms = rotate(mat4(1.f), radians(t.z), vec3(0, 0, 1))*obj->itransforms;
@@ -158,16 +158,17 @@ SceneObject * Parse::ParseSphere(stringstream & Stream)
 			// obj->itransforms = rotate(obj->itransforms, radians(t.z), vec3(0, 0, 1));
 			// obj->itransforms = rotate(obj->itransforms, radians(t.y), vec3(0, 1, 0));
 			// obj->itransforms = rotate(obj->itransforms, radians(t.x), vec3(1, 0, 0));
-			//cout << "rotate: " << t.x << " " << t.y << " " << t.z << endl;
+			cout << "rotate: " << t.x << " " << t.y << " " << t.z << endl;
 		} else if (token == "translate"){
 			t = ParseVector(Stream);
 			//obj->itransforms = translate(obj->itransforms, t);
 			obj->itransforms = translate(mat4(1.f), t)*obj->itransforms;
-			//cout << "translate: " << t.x << " " << t.y << " " << t.z << endl;
+			cout << "translate: " << t.x << " " << t.y << " " << t.z << endl;
 		}
 
 		Stream >> token;
     }
+    cout << "\n";
     obj->itransforms = inverse(obj->itransforms);
 
     obj->ambient = amb;
@@ -215,6 +216,38 @@ SceneObject * Parse::ParseTriangle(stringstream & Stream)
 	Parse::ParseFinish(Stream, amb, diff, spec, rough, ior, ref, refrac);
 
     SceneObject * obj = new Triangle(a, b, c, col);
+
+    Stream.ignore(2, '}');
+    string token;
+    Stream >> token;
+    vec3 t;
+    while (token != "}")
+    {
+    	//cout << "token: " << token << endl;
+		if (token == "scale"){
+			t = ParseVector(Stream);
+			//obj->itransforms = scale(obj->itransforms, t);
+			obj->itransforms = scale(mat4(1.f), t)*obj->itransforms;
+			cout << "scale: " << t.x << " " << t.y << " " << t.z << endl;
+		} else if (token == "rotate"){
+			t = ParseVector(Stream);
+			obj->itransforms = rotate(mat4(1.f), radians(t.z), vec3(0, 0, 1))*obj->itransforms;
+			obj->itransforms = rotate(mat4(1.f), radians(t.y), vec3(0, 1, 0))*obj->itransforms;
+			obj->itransforms = rotate(mat4(1.f), radians(t.x), vec3(1, 0, 0))*obj->itransforms;
+			// obj->itransforms = rotate(obj->itransforms, radians(t.z), vec3(0, 0, 1));
+			// obj->itransforms = rotate(obj->itransforms, radians(t.y), vec3(0, 1, 0));
+			// obj->itransforms = rotate(obj->itransforms, radians(t.x), vec3(1, 0, 0));
+			cout << "rotate: " << t.x << " " << t.y << " " << t.z << endl;
+		} else if (token == "translate"){
+			t = ParseVector(Stream);
+			//obj->itransforms = translate(obj->itransforms, t);
+			obj->itransforms = translate(mat4(1.f), t)*obj->itransforms;
+			cout << "translate: " << t.x << " " << t.y << " " << t.z << endl;
+		}
+
+		Stream >> token;
+    }
+    cout << "\n";
 
     obj->ambient = amb;
     obj->diffuse = diff;
@@ -538,6 +571,7 @@ SceneObject * Parse::ParsePlane(stringstream & Stream)
 	float d, amb, diff, spec, rough, ior, ref, refrac;
 	stringbuf buf;
 
+	//cout << "before n\n";
 	n = Parse::ParseVector(Stream);
 
 	Stream.ignore(1, ',');
@@ -558,12 +592,49 @@ SceneObject * Parse::ParsePlane(stringstream & Stream)
     Stream.ignore(15, 'g');
 
     //c = Parse::ParseVector(Stream);
+    //cout << "before color\n";
     color = Parse::ParseColor(Stream);
     c = vec3(color.x, color.y, color.z);
+
+    //cout << "before finish\n";
 
 	Parse::ParseFinish(Stream, amb, diff, spec, rough, ior, ref, refrac);
 
     SceneObject * obj = new Plane(n, d, c);
+
+    Stream.ignore(1, '}');
+    string token;
+    Stream >> token;
+    //cout << "token****: " << token << endl;
+    vec3 t;
+    while ((token != "}") && (!Stream.eof()))
+    {
+    	//cout << "token: " << token << endl;
+		if (token == "scale"){
+			t = ParseVector(Stream);
+			//obj->itransforms = scale(obj->itransforms, t);
+			obj->itransforms = scale(mat4(1.f), t)*obj->itransforms;
+			cout << "scale: " << t.x << " " << t.y << " " << t.z << endl;
+		} else if (token == "rotate"){
+			t = ParseVector(Stream);
+			obj->itransforms = rotate(mat4(1.f), radians(t.z), vec3(0, 0, 1))*obj->itransforms;
+			obj->itransforms = rotate(mat4(1.f), radians(t.y), vec3(0, 1, 0))*obj->itransforms;
+			obj->itransforms = rotate(mat4(1.f), radians(t.x), vec3(1, 0, 0))*obj->itransforms;
+			// obj->itransforms = rotate(obj->itransforms, radians(t.z), vec3(0, 0, 1));
+			// obj->itransforms = rotate(obj->itransforms, radians(t.y), vec3(0, 1, 0));
+			// obj->itransforms = rotate(obj->itransforms, radians(t.x), vec3(1, 0, 0));
+			cout << "rotate: " << t.x << " " << t.y << " " << t.z << endl;
+		} else if (token == "translate"){
+			t = ParseVector(Stream);
+			//obj->itransforms = translate(obj->itransforms, t);
+			obj->itransforms = translate(mat4(1.f), t)*obj->itransforms;
+			cout << "translate: " << t.x << " " << t.y << " " << t.z << endl;
+		}
+
+		Stream >> token;
+    }
+    Stream.get(buf, ' ');
+    cout << "\n";
 
     obj->ambient = amb;
     obj->diffuse = diff;
