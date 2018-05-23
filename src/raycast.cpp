@@ -429,7 +429,7 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 				dDotn = dot(dir, normal);
 				entering = 0;
 				distanceHit = closestHit;
-				//cout << "distanceHit: " << distanceHit << endl; 7, 8, 4
+				//cout << "distanceHit: " << distanceHit << endl; //7, 8, 4
 			}
 
 			float ratio = (n1/n2);
@@ -452,8 +452,14 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 
 					//vec3 P = r->origin+closestHit*r->direction;
 					
-					vec3 d = distanceHit;//*refracDir;  //P minus this?
-					vec3 absorbance = (vec3(1)-obj->color)*0.15f*-d;
+					//vec3 d = vec3(distanceHit);//*refracDir;  //P minus this?
+					//float d = distanceHit;
+
+					float d = distance;
+					if (d == 0.f) {
+						//cout << "distance is 0\n";
+					}
+					vec3 absorbance = (vec3(1.f)-obj->color)*0.15f*-d;
 					attenuation = vec3(exp(absorbance.x), exp(absorbance.y), exp(absorbance.z));
 					//cout << "attenutation calculated" << endl;
 				}
@@ -462,13 +468,18 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 				//cout << "fresnel" << endl;
 				//fresnel_ref = schlicks_approx(objIor, scene[closestObjIndex]->computeNormal(P), camera, P);
 				vec3 v = normalize(camera->location - P);
-				fresnel_ref = schlicks_approx(n1, OGNormal, v);
+				//fresnel_ref = schlicks_approx(n1, OGNormal, v);
+				//fresnel_ref = schlicks_approx(n1, normal, v);
+				fresnel_ref = schlicks_approx(objIor, normal, v);
+
 				//fresnel_ref = schlicks_approx(objIor, normal, r->direction);
 				//fresnel_ref = schlicks_approx(objIor, normal, refracDir); //WHICH DIRECTION?!
 				if (numRecurse < 6){
 				//vec3 refDir = r->direction-2.f*dot(r->direction, normal)*normal;
+					//vec3 refDir = tRay.direction-2.f*dot(tRay.direction, OGNormal)*OGNormal;
 					vec3 refDir = tRay.direction-2.f*dot(tRay.direction, normal)*normal;
-					ray refRay = ray(P+.001f*OGNormal, refDir);
+					//ray refRay = ray(P+.001f*OGNormal, refDir);
+					ray refRay = ray(P+.001f*normal, refDir);
 					refColor = getColorForRay(&refRay, scene, camera, lights, altbrdf, numRecurse+1, print, fresnel, beers, distance)*obj->color;
 				}
 			}
