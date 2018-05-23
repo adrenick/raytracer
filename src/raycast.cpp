@@ -390,6 +390,7 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 		float refrac = obj->filter;
 
 		vec3 P = tRay.origin+closestHit*tRay.direction; //r->origin+closestHit*r->direction; //vec3(tRayOrigin)+closestHit*vec3(tRayDir); 
+		//vec3 normal = obj->computeNormal(r->origin+closestHit*r->direction);
 		vec3 normal = obj->computeNormal(P);
 		const vec3 OGNormal = normal;
 		vec3 color = vec3(0);
@@ -397,7 +398,7 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 		vec3 refColor = vec3(0);
 		int entering = -1;
 
-		if ((ref > 0.f) && (numRecurse < 6)){
+		if (((ref > 0.f) && (numRecurse < 6)) ){//|| ((fresnel) && (refrac > 0.f))){
 			//vec3 refDir = r->direction-2.f*dot(r->direction, normal)*normal;
 			vec3 refDir = tRay.direction-2.f*dot(tRay.direction, normal)*normal;
 			ray refRay = ray(P+.001f*normal, refDir);
@@ -434,8 +435,11 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 				cout << "   Iteration Type: Refraction" << endl;
 			}
 			
-			refracColor = (getColorForRay(&refracRay, scene, camera, lights, altbrdf, numRecurse+1, print, fresnel, beers, distance))*obj->color;
+			//refracColor = (getColorForRay(&refracRay, scene, camera, lights, altbrdf, numRecurse+1, print, fresnel, beers, distance))*obj->color;
+			refracColor = (getColorForRay(&refracRay, scene, camera, lights, altbrdf, numRecurse+1, print, fresnel, beers, distance));
+
 			if (entering){
+				refracColor *= obj->color;
 				if (beers){
 
 				cout << "beers" << endl;
@@ -458,9 +462,9 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 				//fresnel_ref = schlicks_approx(objIor, normal, refracDir); //WHICH DIRECTION?!
 				if (numRecurse < 6){
 				//vec3 refDir = r->direction-2.f*dot(r->direction, normal)*normal;
-				vec3 refDir = tRay.direction-2.f*dot(tRay.direction, normal)*normal;
-				ray refRay = ray(P+.001f*normal, refDir);
-				refColor = getColorForRay(&refRay, scene, camera, lights, altbrdf, numRecurse+1, print, fresnel, beers, distance)*obj->color;
+					vec3 refDir = tRay.direction-2.f*dot(tRay.direction, normal)*normal;
+					ray refRay = ray(P+.001f*OGNormal, refDir);
+					refColor = getColorForRay(&refRay, scene, camera, lights, altbrdf, numRecurse+1, print, fresnel, beers, distance)*obj->color;
 				}
 			}
 	
