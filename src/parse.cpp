@@ -138,7 +138,7 @@ SceneObject * Parse::ParseSphere(stringstream & Stream)
 
     SceneObject * obj = new Sphere(v, d, c);
 
-    Stream.ignore(2, '}');
+    Stream.ignore(1, '}');
     string token;
     Stream >> token;
     vec3 t;
