@@ -389,6 +389,7 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 		float ref = obj->reflection;
 		float refrac = obj->filter;
 
+		vec3 OGP = r->origin+closestHit*r->direction;
 		vec3 P = tRay.origin+closestHit*tRay.direction; //r->origin+closestHit*r->direction; //vec3(tRayOrigin)+closestHit*vec3(tRayDir); 
 		//vec3 normal = obj->computeNormal(r->origin+closestHit*r->direction);
 		vec3 normal = obj->computeNormal(P);
@@ -472,7 +473,8 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 		}
 
 		vec3 a, d, s;
-		vec3 localColor = computeColor(P, scene, closestObjIndex, normal, camera, lights, false, &tRay, altbrdf, a, d, s);
+		//vec3 localColor = computeColor(P, scene, closestObjIndex, normal, camera, lights, false, &tRay, altbrdf, a, d, s);
+		vec3 localColor = computeColor(OGP, scene, closestObjIndex, normal, camera, lights, false, &tRay, altbrdf, a, d, s);
 
 		color = (1.f-refrac)*(1.f-ref)*localColor + 
 				((1.f-refrac)*(ref)+(refrac)*(fresnel_ref))*refColor + 
