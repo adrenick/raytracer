@@ -452,7 +452,7 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 
 					//vec3 P = r->origin+closestHit*r->direction;
 					
-					vec3 d = distanceHit*refracDir;  //P minus this?
+					vec3 d = distanceHit;//*refracDir;  //P minus this?
 					vec3 absorbance = (vec3(1)-obj->color)*0.15f*-d;
 					attenuation = vec3(exp(absorbance.x), exp(absorbance.y), exp(absorbance.z));
 					//cout << "attenutation calculated" << endl;
