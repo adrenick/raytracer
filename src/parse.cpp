@@ -142,7 +142,7 @@ SceneObject * Parse::ParseSphere(stringstream & Stream)
     string token;
     Stream >> token;
     vec3 t;
-    while (token != "}")
+    while ((token != "}") && (!Stream.eof()))
     {
     	//cout << "token: " << token << endl;
 		if (token == "scale"){
@@ -221,7 +221,7 @@ SceneObject * Parse::ParseTriangle(stringstream & Stream)
     string token;
     Stream >> token;
     vec3 t;
-    while (token != "}")
+    while ((token != "}") && (!Stream.eof()))
     {
     	//cout << "token: " << token << endl;
 		if (token == "scale"){

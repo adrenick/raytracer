@@ -85,6 +85,8 @@ void raycast::doRaycast(vector <SceneObject *> & scene, Camera * camera, int wid
 	        data[(size.x * numChannels) * (size.y - 1 - y) + numChannels * x + 0] = red;
 	        data[(size.x * numChannels) * (size.y - 1 - y) + numChannels * x + 1] = green;
 	        data[(size.x * numChannels) * (size.y - 1 - y) + numChannels * x + 2] = blue;
+
+	        delete r;
 	    }
 	}
 
@@ -236,7 +238,8 @@ vec3 raycast::computeColor(vec3 hit, vector <SceneObject *> scene, int objIndex,
 				s = spec;
 				color += spec;
 			}
-		} 
+		}
+		delete lRay; 
 	}
 
 	if (print) {
@@ -315,7 +318,7 @@ void raycast::render(vector <SceneObject *> & scene, Camera * camera, vector <Li
 				color = color/((float)ssN*ssN);
 				
 			}
-			
+			delete r;
 			
 			//vec3 color = getColorForRay(r, scene, camera, lights, altbrdf, 0, false, fresnel, beers);
 			red = (unsigned int) std::round(clamp(color.x, 0.f, 1.f) * 255.f);
@@ -444,15 +447,15 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 				refracColor *= obj->color;
 				if (beers){
 
-				cout << "beers" << endl;
-				//vec3 d = P - r->origin; //get t value back
+					//cout << "beers" << endl;
+					//vec3 d = P - r->origin; //get t value back
 
-				//vec3 P = r->origin+closestHit*r->direction;
-				
-				vec3 d = distanceHit*refracDir;  //P minus this?
-				vec3 absorbance = (vec3(1)-obj->color)*0.15f*-d;
-				attenuation = vec3(exp(absorbance.x), exp(absorbance.y), exp(absorbance.z));
-				//cout << "attenutation calculated" << endl;
+					//vec3 P = r->origin+closestHit*r->direction;
+					
+					vec3 d = distanceHit*refracDir;  //P minus this?
+					vec3 absorbance = (vec3(1)-obj->color)*0.15f*-d;
+					attenuation = vec3(exp(absorbance.x), exp(absorbance.y), exp(absorbance.z));
+					//cout << "attenutation calculated" << endl;
 				}
 			}
 			if (fresnel){
@@ -491,8 +494,11 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 
 			cout << "              Ray: {" << r->origin.x << " " << r->origin.y << " " << r->origin.z << "} -> {";
 			cout << r->direction.x << " " << r->direction.y << " " << r->direction.z << "}" << endl;
+			cout << "  Transformed Ray: {" << tRay.origin.x << " " << tRay.origin.y << " " << tRay.origin.z << "} -> {";
+			cout << tRay.direction.x << " " << tRay.direction.y << " " << tRay.direction.z << "}" << endl;
 			cout << "       Hit Object: (ID #" << closestObjIndex+1 << " - " << scene[closestObjIndex]->type << ")" << endl;
-			cout << "     Intersection: {" << P.x << " " << P.y << " " << P.z << "} at T = " << closestHit << endl;
+			cout << "Transformed Intersection: {" << P.x << " " << P.y << " " << P.z << "} at T = " << closestHit << endl;
+			cout << "     Intersection: {" << OGP.x << " " << OGP.y << " " << OGP.z << "} at T = " << closestHit << endl;
 			cout << "           Normal: {" << normal.x << " " << normal.y << " " << normal.z << "}" << endl;
 			cout << "      Final Color: {" << color.x << " " << color.y << " " << color.z << "}" << endl;
 			cout << "          Ambient: {" << a.x << " " << a.y << " " << a.z << "}" << endl;
