@@ -383,7 +383,7 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 		//vec4 tRayDir = obj->itransforms*vec4(r->direction, 0.0);//*obj->itransforms;
 		//r = ray(tRayOrigin, tRayDir);
 
-		float distance;
+		float distance = 0.f;
 		float fresnel_ref = 0.f;
 		vec3 attenuation = vec3(1);
 		float ref = obj->reflection;
@@ -399,10 +399,11 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 		vec3 refColor = vec3(0);
 		int entering = -1;
 
-		if (((ref > 0.f) && (numRecurse < 6)) ){//|| ((fresnel) && (refrac > 0.f))){
+		if (((ref > 0.f) && (numRecurse < 6)) ) {//|| ((fresnel) && (refrac > 0.f))){
 			//vec3 refDir = r->direction-2.f*dot(r->direction, normal)*normal;
 			vec3 refDir = tRay.direction-2.f*dot(tRay.direction, normal)*normal;
 			ray refRay = ray(P+.001f*normal, refDir);
+			//ray refRay = ray(P+.001f*refDir, refDir);
 			refColor = getColorForRay(&refRay, scene, camera, lights, altbrdf, numRecurse+1, print, fresnel, beers, distance)*obj->color;
 		}
 

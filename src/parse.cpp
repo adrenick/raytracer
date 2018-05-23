@@ -226,7 +226,6 @@ SceneObject * Parse::ParseTriangle(stringstream & Stream)
     	//cout << "token: " << token << endl;
 		if (token == "scale"){
 			t = ParseVector(Stream);
-			//obj->itransforms = scale(obj->itransforms, t);
 			obj->itransforms = scale(mat4(1.f), t)*obj->itransforms;
 			cout << "scale: " << t.x << " " << t.y << " " << t.z << endl;
 		} else if (token == "rotate"){
@@ -234,13 +233,9 @@ SceneObject * Parse::ParseTriangle(stringstream & Stream)
 			obj->itransforms = rotate(mat4(1.f), radians(t.z), vec3(0, 0, 1))*obj->itransforms;
 			obj->itransforms = rotate(mat4(1.f), radians(t.y), vec3(0, 1, 0))*obj->itransforms;
 			obj->itransforms = rotate(mat4(1.f), radians(t.x), vec3(1, 0, 0))*obj->itransforms;
-			// obj->itransforms = rotate(obj->itransforms, radians(t.z), vec3(0, 0, 1));
-			// obj->itransforms = rotate(obj->itransforms, radians(t.y), vec3(0, 1, 0));
-			// obj->itransforms = rotate(obj->itransforms, radians(t.x), vec3(1, 0, 0));
 			cout << "rotate: " << t.x << " " << t.y << " " << t.z << endl;
 		} else if (token == "translate"){
 			t = ParseVector(Stream);
-			//obj->itransforms = translate(obj->itransforms, t);
 			obj->itransforms = translate(mat4(1.f), t)*obj->itransforms;
 			cout << "translate: " << t.x << " " << t.y << " " << t.z << endl;
 		}
@@ -613,11 +608,11 @@ SceneObject * Parse::ParsePlane(stringstream & Stream)
     string token;
     //cout << token << endl;
     rest >> token;
-    cout << "token****: " << token << endl;
+    cout << "token before loop: " << token << endl;
     vec3 t;
     while ((token != "}") && (!rest.eof()))
     {
-    	//cout << "token: " << token << endl;
+    	cout << "token in plane: " << token << endl;
 		if (token == "scale"){
 			t = ParseVector(rest);
 			//obj->itransforms = scale(obj->itransforms, t);
@@ -641,7 +636,7 @@ SceneObject * Parse::ParsePlane(stringstream & Stream)
 
 		rest >> token;
     }
-    cout << token << endl;
+    cout << "token after loop: " << token << endl;
     //Stream.ignore(1, '}');
     //Stream.get(buf, ' ');
     cout << "\n";
