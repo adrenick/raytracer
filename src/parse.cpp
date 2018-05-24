@@ -218,6 +218,7 @@ SceneObject * Parse::ParseTriangle(stringstream & Stream)
 
 		rest >> token;
     }
+    obj->itransforms = inverse(obj->itransforms);
     cout << "\n";
 
     obj->ambient = amb;
@@ -438,7 +439,6 @@ SceneObject * Parse::ParsePlane(stringstream & Stream)
 	float d, amb, diff, spec, rough, ior, ref, refrac;
 	stringbuf buf;
 
-	//cout << "before n\n";
 	n = Parse::ParseVector(Stream);
 
 	Stream.ignore(1, ',');
@@ -474,13 +474,10 @@ SceneObject * Parse::ParsePlane(stringstream & Stream)
 	rest.str(whole);
 
     string token;
-    //cout << token << endl;
     rest >> token;
-    //cout << "token before loop: " << token << endl;
     vec3 t;
     while ((token != "}") && (!rest.eof()))
     {
-    	//cout << "token in plane: " << token << endl;
 		if (token == "scale"){
 			t = ParseVector(rest);
 			obj->itransforms = scale(mat4(1.f), t)*obj->itransforms;
@@ -499,9 +496,7 @@ SceneObject * Parse::ParsePlane(stringstream & Stream)
 
 		rest >> token;
     }
-    //cout << "token after loop: " << token << endl;
-    //Stream.ignore(1, '}');
-    //Stream.get(buf, ' ');
+    obj->itransforms = inverse(obj->itransforms);
     cout << "\n";
 
     obj->ambient = amb;
