@@ -411,7 +411,8 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 
 			if ( ((fresnel) && (refrac > 0.f)) || (ref > 0.f) )
 			{
-				vec3 refDir = tRay.direction-2.f*dot(tRay.direction, normal)*normal;
+				vec3 refDir = r->direction - 2.f*dot(r->direction, normal)*normal;
+				//vec3 refDir = tRay.direction-2.f*dot(tRay.direction, normal)*normal;
 				//ray refRay = ray(P+.001f*normal, refDir);
 				ray refRay = ray(OGP+.001f*normal, refDir);
 				refColor = getColorForRay(&refRay, scene, camera, lights, altbrdf, numRecurse+1, print, fresnel, beers, distance)*obj->color;
@@ -420,7 +421,8 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 		}
 
 		if ((refrac > 0.f)){
-			vec3 dir = tRay.direction;
+			//vec3 dir = tRay.direction;
+			vec3 dir = r->direction;
 			float dDotn = dot(dir, normal);
 			float objIor = obj->ior;
 			float n1, n2;
@@ -449,7 +451,7 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 			}
 			
 			//refracColor = (getColorForRay(&refracRay, scene, camera, lights, altbrdf, numRecurse+1, print, fresnel, beers, distance))*obj->color;
-			refracColor = (getColorForRay(&refracRay, scene, camera, lights, altbrdf, numRecurse, print, fresnel, beers, distance));
+			refracColor = (getColorForRay(&refracRay, scene, camera, lights, altbrdf, numRecurse+1, print, fresnel, beers, distance));
 
 			if (entering){
 				if (beers){
