@@ -496,6 +496,7 @@ SceneObject * Parse::ParsePlane(stringstream & Stream)
 
 		rest >> token;
     }
+    cout << "t: " << t.x << " " << t.y << " " << t.z << endl;
     obj->itransforms = inverse(obj->itransforms);
     cout << "\n";
 

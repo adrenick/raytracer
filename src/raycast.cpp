@@ -454,7 +454,7 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 			refracColor = (getColorForRay(&refracRay, scene, camera, lights, altbrdf, numRecurse, print, fresnel, beers, distance));
 
 			if (entering){
-				refracColor *= obj->color;
+				//refracColor *= obj->color;
 				if (beers){
 
 					//cout << "beers" << endl;
@@ -472,6 +472,8 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 					vec3 absorbance = (vec3(1.f)-obj->color)*0.15f*-d;
 					attenuation = vec3(exp(absorbance.x), exp(absorbance.y), exp(absorbance.z));
 					//cout << "attenutation calculated" << endl;
+				} else {
+					refracColor *= obj->color;
 				}
 			}
 			if (fresnel){
