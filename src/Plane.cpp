@@ -8,8 +8,6 @@ using namespace std;
 
 float Plane::intersect(const ray & r)
 {
-	//cout << "intersect in plane" << endl;
-
 	float top = distance-dot(r.origin, normal);
 	float bottom = dot(r.direction, normal);
 
@@ -18,7 +16,6 @@ float Plane::intersect(const ray & r)
 	} else {
 		return top/bottom;
 	}
-	
 }
 
 void Plane::print()
@@ -33,9 +30,8 @@ void Plane::print()
 	cout << endl;
 }
 
-glm::vec3 Plane::computeNormal(glm::vec3 p) {
-	
-	//return normal;
+glm::vec3 Plane::computeNormal(glm::vec3 p) 
+{
 	glm::vec4 norm = glm::vec4(normal, 0.f);
 	return glm::normalize(glm::vec3((glm::transpose(itransforms))*norm));
 }

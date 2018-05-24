@@ -78,26 +78,20 @@ int main(int argc, char *argv[])
 			string opt = argv[5];
 			if (opt == "-altbrdf"){
 				altbrdf = true;
-				//cout << "altbrdf" << endl;
 			} else if (opt == "-fresnel") {
 				fresnel = true;
-				//cout << "fresnel" << endl;
 			} else if (opt == "-beers") {
 				beers = true;
-				//cout << "beers" << endl;
 			} else {
 				int pos = opt.find("ss=");
 				if (pos != std::string::npos){
 					ssN = (opt[4]) - '0';
-					//cout << "ssN = " << ssN << endl;
 				} else {
 					cerr << "Unrecognized option: " << opt << endl;
 					return -1;
 				}
 			}
 		}
-		
-		
 		
 		Parse::parseFile(argv[2], scene, camera, lights);
 		raycast::render(scene, camera, lights, atoi(argv[3]), atoi(argv[4]), altbrdf, beers, fresnel, ssN);

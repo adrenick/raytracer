@@ -30,7 +30,5 @@ public:
 			radius = 0.;
 			color = glm::vec3(1., 1., 1.);
 			itransforms = glm::mat4(1.0f);
-		}
-
-		
+		}	
 };

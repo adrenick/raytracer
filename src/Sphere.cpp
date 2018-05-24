@@ -8,8 +8,6 @@ using namespace std;
 
 float Sphere::intersect(const ray & r)
 {
-	//cout << "intersect in sphere" << endl;
-
 	float A = dot(r.direction, r.direction);
 	float B = 2*dot((r.origin-origin), r.direction);
 	float C = (dot((r.origin-origin), (r.origin-origin)) - pow(radius, 2));
@@ -28,7 +26,6 @@ float Sphere::intersect(const ray & r)
 		return -B/(2*A);
 	}
 	return -1;
-
 } 
 
 void Sphere::print()
@@ -45,10 +42,9 @@ void Sphere::print()
 }
 
 glm::vec3 Sphere::computeNormal(glm::vec3 p) {
+
 	glm::vec3 norm = (p - origin);
 	glm::vec4 preTnorm = glm::vec4(norm, 0.f);
 	return glm::normalize(glm::vec3((glm::transpose(itransforms))*preTnorm));
-
-	//return glm::normalize(p - origin);
 
 }

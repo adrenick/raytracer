@@ -33,7 +33,6 @@ public:
 	static void render(std::vector <SceneObject *> & scene, Camera * camera, std::vector <Light *> lights, int width, int height, bool altbrdf, bool beers, bool fresnel, int ssN);
 
 	static float schlicks_approx(float n, glm::vec3 normal, glm::vec3 d);
-	//static float schlicks_approx(float n, glm::vec3 normal, Camera * camera, glm::vec3 hit);
 
 	static float calcG(glm::vec3 x, glm::vec3 h, glm::vec3 n, float r);
 

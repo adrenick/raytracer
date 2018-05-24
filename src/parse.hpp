@@ -37,21 +37,16 @@ public:
 	static float ParseDiffuse(std::stringstream & Stream);
 
 	static float ParseSpecular(std::stringstream & Stream);
-	//static float ParseSpecular(std::string line);
 
 	static float ParseRoughness(std::stringstream & Stream);
-	//static float ParseRoughness(std::string line);
 
 	static float ParseReflection(std::stringstream & Stream);
-	//static float ParseReflection(std::string line);
 
 	static float ParseRefraction(std::stringstream & Stream);
-	//static float ParseRefraction(std::string line);
 
 	static glm::vec4 ParseColor(std::stringstream & Stream);
 
 	static float ParseIOR(std::stringstream & Stream);
-	//static float ParseIOR(std::string line);
 
 	static void ParseFinish(std::stringstream & Stream, float & a, float & d, float & s, float & r, float & ior, float & ref, float & refrac);
 

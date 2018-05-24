@@ -8,7 +8,6 @@ using namespace std;
 
 float Triangle::intersect(const ray & r)
 {
-	//cout << "intersect in triangle" << endl;
 	float a = A.x - B.x;
 	float b = A.y - B.y;
 	float c = A.z - B.z;
@@ -79,8 +78,5 @@ glm::vec3 Triangle::computeNormal(glm::vec3 p) {
 	glm::vec4 norm = glm::vec4(xNorm, yNorm, zNorm, 0.f);
 
 	return glm::normalize(glm::vec3((glm::transpose(itransforms))*norm));
-
-	//(glm::normalize(glm::vec3(xNorm, yNorm, zNorm)));
-
 
 }

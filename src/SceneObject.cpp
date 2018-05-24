@@ -8,7 +8,6 @@ using namespace glm;
 
 void SceneObject::printScene(std::vector <SceneObject *> scene, Camera * camera, std::vector <Light *> lights)
 {
-
 	std::cout << "Camera: " << std::endl;
 	(camera)->print();
 	std::cout << "\n --- \n\n" << std::endl;
@@ -33,6 +32,5 @@ void SceneObject::printScene(std::vector <SceneObject *> scene, Camera * camera,
 
 		scene[i]->print();
 	}
-
 }
 

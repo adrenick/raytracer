@@ -390,7 +390,6 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 		vec3 OGP = r->origin+closestHit*r->direction;
 		vec3 P = tRay.origin+closestHit*tRay.direction; 
 		vec3 normal = obj->computeNormal(P);
-		//const vec3 OGNormal = normal;
 		vec3 color = vec3(0);
 		vec3 refracColor = vec3(0);
 		vec3 refColor = vec3(0);
