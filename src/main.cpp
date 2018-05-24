@@ -78,19 +78,18 @@ int main(int argc, char *argv[])
 			string opt = argv[5];
 			if (opt == "-altbrdf"){
 				altbrdf = true;
-				cout << "altbrdf" << endl;
+				//cout << "altbrdf" << endl;
 			} else if (opt == "-fresnel") {
 				fresnel = true;
-				cout << "fresnel" << endl;
+				//cout << "fresnel" << endl;
 			} else if (opt == "-beers") {
 				beers = true;
-				cout << "beers" << endl;
+				//cout << "beers" << endl;
 			} else {
 				int pos = opt.find("ss=");
 				if (pos != std::string::npos){
-					//cout << opt[4] << endl;
 					ssN = (opt[4]) - '0';
-					cout << "ssN = " << ssN << endl;
+					//cout << "ssN = " << ssN << endl;
 				} else {
 					cerr << "Unrecognized option: " << opt << endl;
 					return -1;

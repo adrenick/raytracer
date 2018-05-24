@@ -33,7 +33,7 @@ vec4 Parse::ParseColor(stringstream & Stream)
     }
 	Stream.ignore(numeric_limits<streamsize>::max(), '>');
 
-	std::string line = buf.str(); // be careful...
+	std::string line = buf.str();
 	int read = sscanf(line.c_str(), "%f, %f, %f, %f", &x, &y, &z, &f);
 	
 	if (read == 4){
@@ -61,7 +61,7 @@ vec3 Parse::ParseVector(stringstream & Stream)
     }
 	Stream.ignore(numeric_limits<streamsize>::max(), '>');
 
-	std::string line = buf.str(); // be careful...
+	std::string line = buf.str(); 
 	int read = sscanf(line.c_str(), "%f, %f, %f", &x, &y, &z);
 	v = vec3(x, y, z);
 
@@ -126,22 +126,21 @@ SceneObject * Parse::ParseSphere(stringstream & Stream)
 		if (token == "scale"){
 			t = ParseVector(rest);
 			Model = scale(mat4(1.f), t)*Model;
-			cout << "scale: " << t.x << " " << t.y << " " << t.z << endl;
+			//cout << "scale: " << t.x << " " << t.y << " " << t.z << endl;
 		} else if (token == "rotate"){
 			t = ParseVector(rest);
 			Model = rotate(mat4(1.f), radians(t.z), vec3(0, 0, 1))*Model;
 			Model = rotate(mat4(1.f), radians(t.y), vec3(0, 1, 0))*Model;
 			Model = rotate(mat4(1.f), radians(t.x), vec3(1, 0, 0))*Model;
-			cout << "rotate: " << t.x << " " << t.y << " " << t.z << endl;
+			//cout << "rotate: " << t.x << " " << t.y << " " << t.z << endl;
 		} else if (token == "translate"){
 			t = ParseVector(rest);
 			Model = translate(mat4(1.f), t)*Model;
-			cout << "translate: " << t.x << " " << t.y << " " << t.z << endl;
+			//cout << "translate: " << t.x << " " << t.y << " " << t.z << endl;
 		}
-
 		rest >> token;
     }
-    cout << "\n";
+    //cout << "\n";
     obj->itransforms = inverse(Model);
 
     obj->ambient = amb;
@@ -207,17 +206,17 @@ SceneObject * Parse::ParseTriangle(stringstream & Stream)
 		if (token == "scale"){
 			t = ParseVector(rest);
 			Model = scale(mat4(1.f), t)*Model;
-			cout << "scale: " << t.x << " " << t.y << " " << t.z << endl;
+			//cout << "scale: " << t.x << " " << t.y << " " << t.z << endl;
 		} else if (token == "rotate"){
 			t = ParseVector(rest);
 			Model = rotate(mat4(1.f), radians(t.z), vec3(0, 0, 1))*Model;
 			Model = rotate(mat4(1.f), radians(t.y), vec3(0, 1, 0))*Model;
 			Model = rotate(mat4(1.f), radians(t.x), vec3(1, 0, 0))*Model;
-			cout << "rotate: " << t.x << " " << t.y << " " << t.z << endl;
+			//cout << "rotate: " << t.x << " " << t.y << " " << t.z << endl;
 		} else if (token == "translate"){
 			t = ParseVector(rest);
 			Model = translate(mat4(1.f), t)*Model;
-			cout << "translate: " << t.x << " " << t.y << " " << t.z << endl;
+			//cout << "translate: " << t.x << " " << t.y << " " << t.z << endl;
 		}
 
 		rest >> token;
@@ -487,24 +486,24 @@ SceneObject * Parse::ParsePlane(stringstream & Stream)
 		if (token == "scale"){
 			t = ParseVector(rest);
 			Model = scale(mat4(1.f), t)*Model;
-			cout << "scale: " << t.x << " " << t.y << " " << t.z << endl;
+			//cout << "scale: " << t.x << " " << t.y << " " << t.z << endl;
 		} else if (token == "rotate"){
 			t = ParseVector(rest);
 			Model = rotate(mat4(1.f), radians(t.z), vec3(0, 0, 1))*Model;
 			Model = rotate(mat4(1.f), radians(t.y), vec3(0, 1, 0))*Model;
 			Model = rotate(mat4(1.f), radians(t.x), vec3(1, 0, 0))*Model;
-			cout << "rotate: " << t.x << " " << t.y << " " << t.z << endl;
+			//cout << "rotate: " << t.x << " " << t.y << " " << t.z << endl;
 		} else if (token == "translate"){
 			t = ParseVector(rest);
 			Model = translate(mat4(1.f), t)*Model;
-			cout << "translate: " << t.x << " " << t.y << " " << t.z << endl;
+			//cout << "translate: " << t.x << " " << t.y << " " << t.z << endl;
 		}
 
 		rest >> token;
     }
-    cout << "t: " << t.x << " " << t.y << " " << t.z << endl;
+    //cout << "t: " << t.x << " " << t.y << " " << t.z << endl;
     obj->itransforms = inverse(Model);
-    cout << "\n";
+    //cout << "\n";
 
     obj->ambient = amb;
     obj->diffuse = diff;

@@ -20,6 +20,11 @@ public:
 		origin = o;
 		direction = d;
 	}
+	ray ()
+	{
+		origin = glm::vec3(0);
+		direction = glm::vec3(0);
+	}
 };
 
 #endif
