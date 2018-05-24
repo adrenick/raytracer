@@ -399,7 +399,6 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 		vec3 OGP = r->origin+closestHit*r->direction;
 		vec3 P = tRay.origin+closestHit*tRay.direction; 
 		//P = vec3(vec4(OGP, 1.f) * obj->itransforms);
-		//r->origin+closestHit*r->direction; //vec3(tRayOrigin)+closestHit*vec3(tRayDir); 
 		//vec3 normal = obj->computeNormal(r->origin+closestHit*r->direction);
 		vec3 normal = obj->computeNormal(P);
 		const vec3 OGNormal = normal;
@@ -415,7 +414,6 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 			{
 				//vec3 refDir = r->direction-2.f*dot(r->direction, normal)*normal;
 				vec3 refDir = tRay.direction-2.f*dot(tRay.direction, normal)*normal;
-				//ray refRay = ray(P+.001f*normal, refDir);
 				ray refRay = ray(P+.001f*normal, refDir);
 				refColor = getColorForRay(&refRay, scene, camera, lights, altbrdf, numRecurse+1, print, fresnel, beers, distance)*obj->color;
 			}
@@ -432,7 +430,6 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 			if (dDotn < 0) {
 				n1 = 1.0f;
 				n2 = objIor;
-				//entering = 1;
 				entering = true;
 				
 			} else {
@@ -440,7 +437,6 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 				n2 = 1.0f;
 				normal = -1.f*normal;
 				dDotn = dot(dir, normal);
-				//entering = 0;
 				entering = false;
 				distanceHit = closestHit;
 				//cout << "distanceHit: " << distanceHit << endl; //7, 8, 4
@@ -479,8 +475,9 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 				}
 			}
 			if (fresnel){
-				vec3 v = normalize(camera->location - P);
-				fresnel_ref = schlicks_approx(objIor, normal, v);
+				//vec3 v = normalize(camera->location - P);
+				vec3 d = -r->direction;
+				fresnel_ref = schlicks_approx(objIor, normal, d);
 			}
 		}
 
