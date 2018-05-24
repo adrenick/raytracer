@@ -116,6 +116,8 @@ SceneObject * Parse::ParseSphere(stringstream & Stream)
     stringstream rest;
     rest.str(whole);
 
+    mat4 Model = glm::mat4(1.0f);
+
     string token;
     rest >> token;
     vec3 t;
@@ -123,24 +125,24 @@ SceneObject * Parse::ParseSphere(stringstream & Stream)
     {
 		if (token == "scale"){
 			t = ParseVector(rest);
-			obj->itransforms = scale(mat4(1.f), t)*obj->itransforms;
+			Model = scale(mat4(1.f), t)*Model;
 			cout << "scale: " << t.x << " " << t.y << " " << t.z << endl;
 		} else if (token == "rotate"){
 			t = ParseVector(rest);
-			obj->itransforms = rotate(mat4(1.f), radians(t.z), vec3(0, 0, 1))*obj->itransforms;
-			obj->itransforms = rotate(mat4(1.f), radians(t.y), vec3(0, 1, 0))*obj->itransforms;
-			obj->itransforms = rotate(mat4(1.f), radians(t.x), vec3(1, 0, 0))*obj->itransforms;
+			Model = rotate(mat4(1.f), radians(t.z), vec3(0, 0, 1))*Model;
+			Model = rotate(mat4(1.f), radians(t.y), vec3(0, 1, 0))*Model;
+			Model = rotate(mat4(1.f), radians(t.x), vec3(1, 0, 0))*Model;
 			cout << "rotate: " << t.x << " " << t.y << " " << t.z << endl;
 		} else if (token == "translate"){
 			t = ParseVector(rest);
-			obj->itransforms = translate(mat4(1.f), t)*obj->itransforms;
+			Model = translate(mat4(1.f), t)*Model;
 			cout << "translate: " << t.x << " " << t.y << " " << t.z << endl;
 		}
 
 		rest >> token;
     }
     cout << "\n";
-    obj->itransforms = inverse(obj->itransforms);
+    obj->itransforms = inverse(Model);
 
     obj->ambient = amb;
     obj->diffuse = diff;

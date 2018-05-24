@@ -110,48 +110,6 @@ void raycast::pixelRay(Camera * camera, int width, int height, int x, int y)
 	printPixelRay(x, y, r);
 }
 
-float raycast::firstHit(ray * r, vector <SceneObject *> scene, bool print, int index)
-{
-
-	float closestHit = -1;
-	int closestObjIndex = -1;
-	for (uint i = 0; i < scene.size(); i++){
-
-		mat4 M = scene[i]->itransforms;
-		vec4 Oprime = M*vec4(r->origin, 1.0);
-		vec4 Dprime = M*vec4(r->direction, 0.0);
-
-		ray tr = ray(vec3(Oprime), vec3(Dprime));
-
-		float hit = scene[i]->intersect(tr);
-
-		//float hit = scene[i]->intersect(ray(origin, dir));
-		if ((hit > 0) && (closestHit == -1)){
-			closestHit = hit;
-			closestObjIndex = i;
-		}
-		if ((hit > 0) && (hit < closestHit)){
-			closestHit = hit;
-			closestObjIndex = i;
-		}
-	}
-	/*if (closestObjIndex == index){
-		return -1;
-	}*/
-
-	if (print){
-		if (closestHit == -1){
-			cout << "No Hit" << endl;
-		} else {
-			cout << "T = " << closestHit << endl;
-			cout << "Object Type: " << scene[closestObjIndex]->type << endl;
-			cout << "Color: " << scene[closestObjIndex]->color.x << " " << scene[closestObjIndex]->color.y << " " << scene[closestObjIndex]->color.z << endl;
-
-		} 
-	}
-
-	return closestHit;
-}
 
 void raycast::pixelColor(vector <SceneObject *> scene, Camera * camera, vector <Light *> lights, int width, int height, int x, int y)
 {
@@ -188,6 +146,50 @@ void raycast::pixelColor(vector <SceneObject *> scene, Camera * camera, vector <
 	} 
 }
 
+float raycast::firstHit(ray * r, vector <SceneObject *> scene, bool print, int index)
+{
+
+	float closestHit = -1;
+	int closestObjIndex = -1;
+	for (uint i = 0; i < scene.size(); i++){
+
+		mat4 M = scene[i]->itransforms;
+		vec4 Oprime = M*vec4(r->origin, 1.0);
+		vec4 Dprime = M*vec4(r->direction, 0.0);
+
+		ray tr = ray(vec3(Oprime), vec3(Dprime));
+		//ray tr = ray(r->origin, vec3(Dprime));
+
+		float hit = scene[i]->intersect(tr);
+
+		//float hit = scene[i]->intersect(ray(origin, dir));
+		if ((hit > 0) && (closestHit == -1)){
+			closestHit = hit;
+			closestObjIndex = i;
+		}
+		if ((hit > 0) && (hit < closestHit)){
+			closestHit = hit;
+			closestObjIndex = i;
+		}
+	}
+	/*if (closestObjIndex == index){
+		return -1;
+	}*/
+
+	if (print){
+		if (closestHit == -1){
+			cout << "No Hit" << endl;
+		} else {
+			cout << "T = " << closestHit << endl;
+			cout << "Object Type: " << scene[closestObjIndex]->type << endl;
+			cout << "Color: " << scene[closestObjIndex]->color.x << " " << scene[closestObjIndex]->color.y << " " << scene[closestObjIndex]->color.z << endl;
+
+		} 
+	}
+
+	return closestHit;
+}
+
 vec3 raycast::computeColor(vec3 hit, vector <SceneObject *> scene, int objIndex, vec3 normal, Camera * camera, vector <Light *> lights, bool print, ray * c, bool altbrdf, glm::vec3 & a, glm::vec3 & d, glm::vec3 & s)
 {
 	SceneObject * obj = scene[objIndex];
@@ -199,12 +201,14 @@ vec3 raycast::computeColor(vec3 hit, vector <SceneObject *> scene, int objIndex,
 	//hit = vec3(obj->itransforms * vec4(hit, 0.f));
 
 	for (uint i = 0; i < lights.size(); i++){
+		//hit = vec3(obj->itransforms * vec4(hit, 1.f));
+
 		vec3 n = normal;
 		vec3 l = normalize(lights[i]->location - hit);
 		vec3 v = normalize(camera->location - hit);
 		vec3 h = normalize(l+v);
 
-		//hit = vec3(obj->itransforms * vec4(hit, 0.f));
+		
 		
 		ray * lRay = new ray(hit + (n*0.001f), l); 
 

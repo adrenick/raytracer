@@ -26,7 +26,7 @@ public:
 
 			color = c;
 
-			glm::mat4 itransforms (1.0f);
+			itransforms = glm::mat4(1.0f);
 		}
 
 		Triangle()
@@ -37,6 +37,6 @@ public:
 
 			color = glm::vec3(1., 1., 1.);
 
-			glm::mat4 itransforms (1.0f);
+			itransforms = glm::mat4(1.0f);
 		}
 };

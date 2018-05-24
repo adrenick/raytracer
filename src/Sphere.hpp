@@ -22,14 +22,14 @@ public:
 			origin = o;
 			radius = r;
 			color = c;
-			glm::mat4 itransforms (1.0f);
+			itransforms = glm::mat4(1.0f);
 		}
 		Sphere()
 		{
 			origin = glm::vec3(0., 0., 0.);
 			radius = 0.;
 			color = glm::vec3(1., 1., 1.);
-			glm::mat4 itransforms (1.0f);
+			itransforms = glm::mat4(1.0f);
 		}
 
 		
