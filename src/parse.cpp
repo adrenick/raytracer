@@ -101,72 +101,43 @@ SceneObject * Parse::ParseSphere(stringstream & Stream)
 	Stream.ignore(10, '{');
     Stream.ignore(15, 'g');
 
-    //c = Parse::ParseVector(Stream);
     color = Parse::ParseColor(Stream);
     c = vec3(color.x, color.y, color.z);
 
 	Parse::ParseFinish(Stream, amb, diff, spec, rough, ior, ref, refrac);
 
-	/*Stream.ignore(2, '}');
-	std::string token;
-	Stream >> token;
-	if ((token == "scale") || (token == "rotate") || (token == "translate")){
-		vec3 v = Parse::ParseVector(Stream);
-	}*/
-	/*string token;
-	Stream >> token;
-	vec3 t;
-	//while (!finish.eof())
-	//while (!Stream.eof())
-	while (token != "{")
-	{
-		//cout << "token: " << token << endl;
-		if (token == "scale"){
-			t = ParseVector(Stream);
-			cout << t.x << " " << t.y << " " << t.z << endl;
-		} else if (token == "rotate"){
-			t = ParseVector(Stream);
-			cout << t.x << " " << t.y << " " << t.z << endl;
-		} else if (token == "translate"){
-			t = ParseVector(Stream);
-			cout << t.x << " " << t.y << " " << t.z << endl;
-		}
-
-		Stream >> token;
-		//newfinish >> token;
-	}*/
-
     SceneObject * obj = new Sphere(v, d, c);
 
     Stream.ignore(1, '}');
+
+    buf.str("");
+    Stream.get(buf, '}');
+    string whole = buf.str();
+    stringstream rest;
+    rest.str(whole);
+
     string token;
-    Stream >> token;
+    rest >> token;
     vec3 t;
-    while ((token != "}") && (!Stream.eof()))
+    while ((token != "}") && (!rest.eof()))
     {
-    	//cout << "token: " << token << endl;
 		if (token == "scale"){
-			t = ParseVector(Stream);
-			//obj->itransforms = scale(obj->itransforms, t);
+			t = ParseVector(rest);
 			obj->itransforms = scale(mat4(1.f), t)*obj->itransforms;
 			cout << "scale: " << t.x << " " << t.y << " " << t.z << endl;
 		} else if (token == "rotate"){
-			t = ParseVector(Stream);
+			t = ParseVector(rest);
 			obj->itransforms = rotate(mat4(1.f), radians(t.z), vec3(0, 0, 1))*obj->itransforms;
 			obj->itransforms = rotate(mat4(1.f), radians(t.y), vec3(0, 1, 0))*obj->itransforms;
 			obj->itransforms = rotate(mat4(1.f), radians(t.x), vec3(1, 0, 0))*obj->itransforms;
-			// obj->itransforms = rotate(obj->itransforms, radians(t.z), vec3(0, 0, 1));
-			// obj->itransforms = rotate(obj->itransforms, radians(t.y), vec3(0, 1, 0));
-			// obj->itransforms = rotate(obj->itransforms, radians(t.x), vec3(1, 0, 0));
 			cout << "rotate: " << t.x << " " << t.y << " " << t.z << endl;
 		} else if (token == "translate"){
-			t = ParseVector(Stream);
-			//obj->itransforms = translate(obj->itransforms, t);
+			t = ParseVector(rest);
 			obj->itransforms = translate(mat4(1.f), t)*obj->itransforms;
 			cout << "translate: " << t.x << " " << t.y << " " << t.z << endl;
 		}
 
-		Stream >> token;
+		rest >> token;
     }
     cout << "\n";
     obj->itransforms = inverse(obj->itransforms);
@@ -209,7 +180,6 @@ SceneObject * Parse::ParseTriangle(stringstream & Stream)
 	Stream.ignore(10, '{');
     Stream.ignore(15, 'g');
 
-    //color = Parse::ParseVector(Stream);
     color = Parse::ParseColor(Stream);
     col = vec3(color.x, color.y, color.z);
 
@@ -217,30 +187,36 @@ SceneObject * Parse::ParseTriangle(stringstream & Stream)
 
     SceneObject * obj = new Triangle(a, b, c, col);
 
-    Stream.ignore(2, '}');
+    Stream.ignore(1, '}');
+    buf.str("");
+    Stream.get(buf, '}');
+    string whole = buf.str();
+    stringstream rest;
+    rest.str(whole);
+
     string token;
-    Stream >> token;
+    rest >> token;
     vec3 t;
-    while ((token != "}") && (!Stream.eof()))
+    while ((token != "}") && (!rest.eof()))
     {
     	//cout << "token: " << token << endl;
 		if (token == "scale"){
-			t = ParseVector(Stream);
+			t = ParseVector(rest);
 			obj->itransforms = scale(mat4(1.f), t)*obj->itransforms;
 			cout << "scale: " << t.x << " " << t.y << " " << t.z << endl;
 		} else if (token == "rotate"){
-			t = ParseVector(Stream);
+			t = ParseVector(rest);
 			obj->itransforms = rotate(mat4(1.f), radians(t.z), vec3(0, 0, 1))*obj->itransforms;
 			obj->itransforms = rotate(mat4(1.f), radians(t.y), vec3(0, 1, 0))*obj->itransforms;
 			obj->itransforms = rotate(mat4(1.f), radians(t.x), vec3(1, 0, 0))*obj->itransforms;
 			cout << "rotate: " << t.x << " " << t.y << " " << t.z << endl;
 		} else if (token == "translate"){
-			t = ParseVector(Stream);
+			t = ParseVector(rest);
 			obj->itransforms = translate(mat4(1.f), t)*obj->itransforms;
 			cout << "translate: " << t.x << " " << t.y << " " << t.z << endl;
 		}
 
-		Stream >> token;
+		rest >> token;
     }
     cout << "\n";
 
@@ -275,25 +251,15 @@ void Parse::ParseFinish(stringstream & Stream, float & a, float & d, float & s, 
 
 	a = d = s = r = refrac = ref = ior = 0.f;
 
-	//a = ParseAmbient(finish);
-
-	//d = ParseDiffuse(finish);
-
 	stringstream newfinish;
 	newfinish.str(whole);
-	//newfinish.ignore(10, 't');
-	//newfinish.ignore(14, 'e');
-
 	
 	string token;
 	finish.ignore(1, '{');
 	finish >> token;
-	//newfinish >> token;
 
-	//while(!newfinish.eof())
 	while (!finish.eof())
 	{
-		//cout << "token: " << token << endl;
 		if (token == "ambient"){
 			a = ParseAmbient(finish);
 		} else if (token == "diffuse") {
@@ -311,69 +277,20 @@ void Parse::ParseFinish(stringstream & Stream, float & a, float & d, float & s, 
 		}
 
 		finish >> token;
-		//newfinish >> token;
-	}
-	//cout << "token after: " << token << endl;
-
-	/*s = ParseSpecular(newfinish);
-
-	stringstream newnewfinish;
-	newnewfinish.str(whole);
-
-	if (s == 0.f){
-		//cout << "parsing reflection" << endl;
-
-		ref = ParseReflection(newnewfinish);
-		r = 0.f;
-		//ior = 0.f;
-
-	} else {
-		
-		r = ParseRoughness(newnewfinish);
 	}
 
-		stringstream newnewnewfinish;
-		newnewnewfinish.str(whole);
-
-		refrac = ParseRefraction(newnewnewfinish);
-
-		ior = ParseIOR(newnewnewfinish);*/
 
 }
 
 float Parse::ParseRefraction(stringstream & Stream)
-//float Parse::ParseRefraction(string finish)
 {
-
-
-	//stringstream Stream;
-	//Stream.str(finish);
 	float r = 0.f;
 	stringbuf buf;
-
-	/*Stream.ignore(16, 'n');
-	Stream.ignore(32, 'n');
-	Stream.ignore(16, 'n');
-	Stream.get(buf, 'r');*/
-
-	/*Stream.ignore(18, 'f');
-	Stream.ignore(1, 'f');
-	Stream.ignore(14, 'f');
-	Stream.ignore(100, 'r');
-
-
-	Stream.ignore(10, 'n');
-	Stream.get(buf, 'i');*/
-	//Stream.ignore(1, 'i');
-	//Stream.ignore(1, 'o');
-	//Stream.ignore(1, 'r');
 
 	Stream.ignore (1, ' ');
 	Stream.get(buf, ' ');
 
-
 	string line = buf.str();
-	//cout << "string: " << line << endl;
 
 	int read = sscanf(line.c_str(), "%f", &r);
 
@@ -388,27 +305,15 @@ float Parse::ParseRefraction(stringstream & Stream)
 }
 
 
-//float Parse::ParseIOR(string finish)
 float Parse::ParseIOR(stringstream & Stream)
 {
-	//stringstream Stream;
-	//Stream.str(finish);
-
 	float i = 0.f;
 	stringbuf buf;
    
-	/*Stream.ignore(40, 'r');
-	Stream.ignore(15, 's');
-	Stream.ignore(10, 'r');
-	Stream.ignore(1, 'r');*/
-
-	/*Stream.ignore(3, 'r');
-	Stream.get(buf, '}');*/
 	Stream.ignore(1, ' ');
 	Stream.get(buf, ' ');
 
 	string line = buf.str();
-	//cout << line << endl;
 
 	int read = sscanf(line.c_str(), "%f", &i);
 
@@ -421,26 +326,15 @@ float Parse::ParseIOR(stringstream & Stream)
 }
 
 
-//float Parse::ParseReflection(string finish)
 float Parse::ParseReflection(stringstream & Stream)
 {
-	//stringstream Stream;
-	//Stream.str(finish);
 	float r = 0.f;
 	stringbuf buf;
 
-	/*Stream.ignore(16, 'n');
-	Stream.ignore(32, 'n');
-	Stream.get(buf, '}');*/
-
-	/*Stream.ignore(100, 'l');
-	Stream.ignore(8, 'n');
-	Stream.get(buf, '}');*/
 	Stream.ignore (1, ' ');
 	Stream.get(buf, ' ');
 
 	string line = buf.str();
-	//cout << "reflection string: " << line << endl;
 
 	int read = sscanf(line.c_str(), "%f", &r);
 
@@ -455,16 +349,12 @@ float Parse::ParseReflection(stringstream & Stream)
 
 }
 
-//float Parse::ParseSpecular(string finish)
+
 float Parse::ParseSpecular(stringstream & Stream)
 {
-	//stringstream Stream;
-	//Stream.str(finish);
 	float s = 0.f;
 	stringbuf buf;
 
-	/*Stream.ignore(40, 'r');
-	Stream.get(buf, 'r');*/
 	Stream.ignore(1, ' ');
 	Stream.get(buf, ' ');
 
@@ -483,17 +373,11 @@ float Parse::ParseSpecular(stringstream & Stream)
 }
 
 float Parse::ParseRoughness(stringstream & Stream)
-//float Parse::ParseRoughness(string finish)
 {
-	//stringstream Stream;
-	//Stream.str(finish);
+
 	float r = 0.f;
 	stringbuf buf;
    
-	/*Stream.ignore(40, 'r');
-	Stream.ignore(15, 's');
-	Stream.ignore(1, 's');
-	Stream.get(buf, EOF);*/
 	Stream.ignore(1, ' ');
 	Stream.get(buf, ' ');
 
@@ -514,12 +398,6 @@ float Parse::ParseAmbient(stringstream & Stream)
 	float a = 0.f;
 	stringbuf buf;
 
-	/*Stream.ignore(2, '{');
-    Stream.get(buf, 't');
-    Stream.ignore(1, 't');
-
-    buf.str("");
-    Stream.get(buf, 'd');*/
     Stream.ignore(1, ' ');
     Stream.get(buf, ' ');
     string line = buf.str();
@@ -537,12 +415,6 @@ float Parse::ParseDiffuse(stringstream & Stream)
 {
 	float d = 0.f;
 	stringbuf buf;
-
-	/*Stream.get(buf, 'e');
-    Stream.ignore(1, 'e');
-    Stream.ignore(1, ' ');
-    buf.str("");
-    Stream.get(buf, ' ');*/
 
     Stream.ignore(1, ' ');
     Stream.get(buf, ' ');
@@ -586,12 +458,8 @@ SceneObject * Parse::ParsePlane(stringstream & Stream)
 	Stream.ignore(10, '{');
     Stream.ignore(15, 'g');
 
-    //c = Parse::ParseVector(Stream);
-    //cout << "before color\n";
     color = Parse::ParseColor(Stream);
     c = vec3(color.x, color.y, color.z);
-
-    //cout << "before finish\n";
 
 	Parse::ParseFinish(Stream, amb, diff, spec, rough, ior, ref, refrac);
 
@@ -608,14 +476,13 @@ SceneObject * Parse::ParsePlane(stringstream & Stream)
     string token;
     //cout << token << endl;
     rest >> token;
-    cout << "token before loop: " << token << endl;
+    //cout << "token before loop: " << token << endl;
     vec3 t;
     while ((token != "}") && (!rest.eof()))
     {
-    	cout << "token in plane: " << token << endl;
+    	//cout << "token in plane: " << token << endl;
 		if (token == "scale"){
 			t = ParseVector(rest);
-			//obj->itransforms = scale(obj->itransforms, t);
 			obj->itransforms = scale(mat4(1.f), t)*obj->itransforms;
 			cout << "scale: " << t.x << " " << t.y << " " << t.z << endl;
 		} else if (token == "rotate"){
@@ -623,20 +490,16 @@ SceneObject * Parse::ParsePlane(stringstream & Stream)
 			obj->itransforms = rotate(mat4(1.f), radians(t.z), vec3(0, 0, 1))*obj->itransforms;
 			obj->itransforms = rotate(mat4(1.f), radians(t.y), vec3(0, 1, 0))*obj->itransforms;
 			obj->itransforms = rotate(mat4(1.f), radians(t.x), vec3(1, 0, 0))*obj->itransforms;
-			// obj->itransforms = rotate(obj->itransforms, radians(t.z), vec3(0, 0, 1));
-			// obj->itransforms = rotate(obj->itransforms, radians(t.y), vec3(0, 1, 0));
-			// obj->itransforms = rotate(obj->itransforms, radians(t.x), vec3(1, 0, 0));
 			cout << "rotate: " << t.x << " " << t.y << " " << t.z << endl;
 		} else if (token == "translate"){
 			t = ParseVector(rest);
-			//obj->itransforms = translate(obj->itransforms, t);
 			obj->itransforms = translate(mat4(1.f), t)*obj->itransforms;
 			cout << "translate: " << t.x << " " << t.y << " " << t.z << endl;
 		}
 
 		rest >> token;
     }
-    cout << "token after loop: " << token << endl;
+    //cout << "token after loop: " << token << endl;
     //Stream.ignore(1, '}');
     //Stream.get(buf, ' ');
     cout << "\n";
