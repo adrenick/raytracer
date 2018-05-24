@@ -196,6 +196,8 @@ SceneObject * Parse::ParseTriangle(stringstream & Stream)
     stringstream rest;
     rest.str(whole);
 
+    mat4 Model = glm::mat4(1.0f);
+
     string token;
     rest >> token;
     vec3 t;
@@ -204,23 +206,23 @@ SceneObject * Parse::ParseTriangle(stringstream & Stream)
     	//cout << "token: " << token << endl;
 		if (token == "scale"){
 			t = ParseVector(rest);
-			obj->itransforms = scale(mat4(1.f), t)*obj->itransforms;
+			Model = scale(mat4(1.f), t)*Model;
 			cout << "scale: " << t.x << " " << t.y << " " << t.z << endl;
 		} else if (token == "rotate"){
 			t = ParseVector(rest);
-			obj->itransforms = rotate(mat4(1.f), radians(t.z), vec3(0, 0, 1))*obj->itransforms;
-			obj->itransforms = rotate(mat4(1.f), radians(t.y), vec3(0, 1, 0))*obj->itransforms;
-			obj->itransforms = rotate(mat4(1.f), radians(t.x), vec3(1, 0, 0))*obj->itransforms;
+			Model = rotate(mat4(1.f), radians(t.z), vec3(0, 0, 1))*Model;
+			Model = rotate(mat4(1.f), radians(t.y), vec3(0, 1, 0))*Model;
+			Model = rotate(mat4(1.f), radians(t.x), vec3(1, 0, 0))*Model;
 			cout << "rotate: " << t.x << " " << t.y << " " << t.z << endl;
 		} else if (token == "translate"){
 			t = ParseVector(rest);
-			obj->itransforms = translate(mat4(1.f), t)*obj->itransforms;
+			Model = translate(mat4(1.f), t)*Model;
 			cout << "translate: " << t.x << " " << t.y << " " << t.z << endl;
 		}
 
 		rest >> token;
     }
-    obj->itransforms = inverse(obj->itransforms);
+    obj->itransforms = inverse(Model);
     cout << "\n";
 
     obj->ambient = amb;
@@ -475,6 +477,8 @@ SceneObject * Parse::ParsePlane(stringstream & Stream)
     stringstream rest;
 	rest.str(whole);
 
+	mat4 Model = glm::mat4(1.0f);
+
     string token;
     rest >> token;
     vec3 t;
@@ -482,24 +486,24 @@ SceneObject * Parse::ParsePlane(stringstream & Stream)
     {
 		if (token == "scale"){
 			t = ParseVector(rest);
-			obj->itransforms = scale(mat4(1.f), t)*obj->itransforms;
+			Model = scale(mat4(1.f), t)*Model;
 			cout << "scale: " << t.x << " " << t.y << " " << t.z << endl;
 		} else if (token == "rotate"){
 			t = ParseVector(rest);
-			obj->itransforms = rotate(mat4(1.f), radians(t.z), vec3(0, 0, 1))*obj->itransforms;
-			obj->itransforms = rotate(mat4(1.f), radians(t.y), vec3(0, 1, 0))*obj->itransforms;
-			obj->itransforms = rotate(mat4(1.f), radians(t.x), vec3(1, 0, 0))*obj->itransforms;
+			Model = rotate(mat4(1.f), radians(t.z), vec3(0, 0, 1))*Model;
+			Model = rotate(mat4(1.f), radians(t.y), vec3(0, 1, 0))*Model;
+			Model = rotate(mat4(1.f), radians(t.x), vec3(1, 0, 0))*Model;
 			cout << "rotate: " << t.x << " " << t.y << " " << t.z << endl;
 		} else if (token == "translate"){
 			t = ParseVector(rest);
-			obj->itransforms = translate(mat4(1.f), t)*obj->itransforms;
+			Model = translate(mat4(1.f), t)*Model;
 			cout << "translate: " << t.x << " " << t.y << " " << t.z << endl;
 		}
 
 		rest >> token;
     }
     cout << "t: " << t.x << " " << t.y << " " << t.z << endl;
-    obj->itransforms = inverse(obj->itransforms);
+    obj->itransforms = inverse(Model);
     cout << "\n";
 
     obj->ambient = amb;

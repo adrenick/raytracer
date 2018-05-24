@@ -207,8 +207,6 @@ vec3 raycast::computeColor(vec3 hit, vector <SceneObject *> scene, int objIndex,
 		vec3 l = normalize(lights[i]->location - hit);
 		vec3 v = normalize(camera->location - hit);
 		vec3 h = normalize(l+v);
-
-		
 		
 		ray * lRay = new ray(hit + (n*0.001f), l); 
 
@@ -414,7 +412,8 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 			if ( ((fresnel) && (refrac > 0.f)) || (ref > 0.f) )
 			{
 				vec3 refDir = tRay.direction-2.f*dot(tRay.direction, normal)*normal;
-				ray refRay = ray(P+.001f*normal, refDir);
+				//ray refRay = ray(P+.001f*normal, refDir);
+				ray refRay = ray(OGP+.001f*normal, refDir);
 				refColor = getColorForRay(&refRay, scene, camera, lights, altbrdf, numRecurse+1, print, fresnel, beers, distance)*obj->color;
 			}
 			
@@ -442,7 +441,8 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 
 			float ratio = (n1/n2);
 			vec3 refracDir = ratio*(dir-dDotn*normal)-normal*(float)(sqrt(1-(pow(ratio, 2)*(1-pow(dDotn, 2)))));
-			ray refracRay = ray(P+0.001f*refracDir, refracDir); //SEGFAULTS WHEN I CHANGE THIS TO NORMAL WHYYYYY
+			ray refracRay = ray(OGP+0.001f*refracDir, refracDir);
+			//ray refracRay = ray(P+0.001f*refracDir, refracDir); //SEGFAULTS WHEN I CHANGE THIS TO NORMAL WHYYYYY
 
 			if (print){
 				cout << "   Iteration Type: Refraction" << endl;
