@@ -22,11 +22,12 @@ public:
 
 	void printTree() {
 		if (children.empty()) {
-			std::cout << "leaf: " << objects[0]->type << std::endl;
+			std::cout << "leaf: " << objects[0]->type << " min: " << volume->min.x << " " << volume->min.y << " " << volume->min.z << " max: " << volume->max.x << " " << volume->max.y << " " << volume->max.z << std::endl;
+
 		} else {
-			std::cout << "left: " << std::endl;
+			std::cout << "left: " << " min: " << volume->min.x << " " << volume->min.y << " " << volume->min.z << " max: " << volume->max.x << " " << volume->max.y << " " << volume->max.z << std::endl;
 			children[0]->printTree();
-			std::cout<< "right: " << std::endl;
+			std::cout<< "right: " << " min: " << volume->min.x << " " << volume->min.y << " " << volume->min.z << " max: " << volume->max.x << " " << volume->max.y << " " << volume->max.z << std::endl;
 			children[1]->printTree(); 
 		}
 	}
@@ -37,7 +38,7 @@ public:
 		if (objs.size() <= 1) {
 			newNode->objects = objs;
 			newNode->volume = BoundingBox::calculateBBox(objs);
-			std::cout << "returning node" << std::endl;
+			//std::cout << "returning node" << std::endl;
 			return newNode;
 		}
 

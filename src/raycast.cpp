@@ -372,7 +372,7 @@ float raycast::schlicks_approx(float n, vec3 normal, vec3 v)
 	return F;
 }
 
-SceneObject * raycast::recurseDownTree(ray * r, BVH_Node * tree, float & closesthit)
+void raycast::recurseDownTree(ray * r, BVH_Node * tree, float & closesthit, SceneObject * & closestObj)
 {
 	Box box = Box(tree->volume->min, tree->volume->max, vec3(0));
 	float hit = box.intersect(*r);
@@ -383,41 +383,69 @@ SceneObject * raycast::recurseDownTree(ray * r, BVH_Node * tree, float & closest
 			// 	cout << tree->objects.size() << endl;
 			// }
 			hit = tree->objects[0]->intersect(*r);
-			if ((closesthit == -1) || (hit < closesthit)) {
-				//cout << "hit: " << hit << endl; 
-				closesthit = hit;
+			if (hit > 0){
+				if ((closesthit == -1) || (hit < closesthit)) {
+					if (hit != -1) {
+						//cout << "~~~hit: " << hit << endl; 
+					}
+					closesthit = hit;
+					closestObj = tree->objects[0];
+					if (closestObj == nullptr) {
+						//cout << "basewhy" << endl;
+					} else {
+						//cout << tree->objects[0]->type << endl;
+					}
+				}
 			}
-			return tree->objects[0];
+			//return tree->objects[0];
 
 		} else {
+			//cout << "in else" << endl;
 			float rhit, lhit;
-			SceneObject * robj;
-			SceneObject * lobj;
+			SceneObject * robj = nullptr;
+			SceneObject * lobj = nullptr;
 
-			robj = recurseDownTree(r, tree->children[0], rhit);
+			//recurseDownTree(r, tree->children[0], rhit, robj);
+			//recurseDownTree(r, tree->children[1], lhit, lobj);
 
-			lobj = recurseDownTree(r, tree->children[1], lhit);
+			//cout << "recurse right" << endl;
+			recurseDownTree(r, tree->children[0], closesthit, closestObj);
+			//cout << "recurse left" << endl;
+			recurseDownTree(r, tree->children[1], closesthit, closestObj);
 
-			if ((lhit < 0) && (rhit < 0)){
-				closesthit = -1;
-				return nullptr;
-			} else if ((lhit > 0) && (lhit < rhit)) {
-				closesthit = lhit;
-				cout << "lhit: " << lhit << endl;
-				return lobj;
-			} else if ((rhit > 0) && (rhit < lhit)){
-				closesthit = rhit;
-				cout << "rhit: " << rhit << endl;
-				return robj;
-			} else {
-				closesthit = -1;
-				return nullptr;
-			}
+			// if ((lhit < 0) && (rhit < 0)){
+			// 	//closesthit = -1;
+			// 	//return nullptr;
+			// } else if ((lhit > 0) && (lhit < rhit)) {
+			// 	if ((closesthit == -1) || (lhit <= closesthit)) {
+			// 		closesthit = lhit;
+			// 		cout << "lhit: " << lhit << endl;
+			// 		closestObj = lobj;
+			// 		if (closestObj == nullptr) {
+			// 			cout << "lwhy" << endl;
+			// 		}
+			// 	}
+				
+			// 	//return lobj;
+			// } else if ((rhit > 0) && (rhit < lhit)){
+			// 	if ((closesthit == -1) || (rhit <= closesthit)) {
+			// 		closesthit = rhit;
+			// 		closestObj = robj;
+			// 		cout << "rhit: " << rhit << endl;
+			// 		if (closestObj == nullptr) {
+			// 			cout << "rwhy" << endl;
+			// 		}
+			// 	}
+			// 	//return robj;
+			// } else {
+			// 	//closesthit = -1;
+			// 	//return nullptr;
+			// }
 		}
 		
 	} else {
-		closesthit = -1;
-		return nullptr;
+		//closesthit = -1;
+		//return nullptr;
 	}		
 
 	// Box box = Box(tree->volume->min, tree->volume->max, vec3(0));
@@ -480,11 +508,16 @@ SceneObject * raycast::getIntersect(ray * r, BVH_Node * tree, vector <SceneObjec
 	// 	BVH_Node * tree = BVH_Node::buildTree(objs, 0);
 	// 	tree->printTree();
 	// 	//cout << "tree built" << endl;
-		cout << "tree" << endl;
+		//cout << "tree" << endl;
 		SceneObject * obj = nullptr;
 		//cout << "about to recurseDownTree" << endl;
-		obj = recurseDownTree(r, tree, closestHit);
-		//cout << "made it" << endl;
+		recurseDownTree(r, tree, closestHit, obj);
+		//cout << "bout to seg fault: " << endl;
+		//cout << obj->type << endl;
+		//cout << "made it " << closestHit << endl;
+		if (obj != nullptr) {
+			//cout << "YASSSS" << endl;
+		}
 		tRay = *r;
 	// 	//cout << "made it " << endl;
 
@@ -563,6 +596,9 @@ vec3 raycast::getColorForRay(ray * r, BVH_Node * tree, vector <SceneObject *> sc
 	
 	} else {
 		//cout << "***hit***" << endl;
+		if (obj == nullptr) {
+			//cout << "why is the object uninitialized" << endl;
+		}
 		//cout << "obj type: " << obj->type << endl;
 		//SceneObject * obj = scene[closestObjIndex];
 

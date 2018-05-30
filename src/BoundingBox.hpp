@@ -12,7 +12,7 @@ class BoundingBox
 	
 public:
 	glm::vec3 min, max;
-	
+
 	BoundingBox() {
 
 		min = glm::vec3(std::numeric_limits<float>::max());
@@ -53,15 +53,18 @@ public:
 				Sphere * obj = dynamic_cast<Sphere *> (objs[i]);
 				box.Reset(obj->origin - glm::vec3(obj->radius));
 				box.AddPoint(obj->origin + glm::vec3(obj->radius));
+				total->AddBox(box);
 			} else if (objs[i]->type == "Triangle") {
 				Triangle * obj = dynamic_cast<Triangle *> (objs[i]);
 				box.Reset(obj->A);
 				box.AddPoint(obj->B);
 				box.AddPoint(obj->C);
+				total->AddBox(box);
 			} else if (objs[i]->type == "Box") {
 				Box * obj = dynamic_cast<Box *> (objs[i]);
 				box.Reset(obj->min);
 				box.AddPoint(obj->max);
+				total->AddBox(box);
 			} else {
 				std::cerr << "snakes on a plane" << std::endl;
 			}
