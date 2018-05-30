@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
 		Parse::parseFile(argv[2], scene, camera, lights);
 
 		ray * pRay = raycast::createRay(camera, stoi(argv[3]), stoi(argv[4]), stoi(argv[5]), stoi(argv[6]));
-		raycast::firstHit(pRay, scene, true, -1);
+		raycast::firstHit(pRay, scene, true);
 
 
 	} else if (exec == "render") {
