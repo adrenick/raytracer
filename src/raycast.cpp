@@ -400,7 +400,7 @@ SceneObject * raycast::getIntersect(ray * r, vector <SceneObject *> scene, float
 		BVH_Node * tree = BVH_Node::buildTree(objs, 0);
 		//cout << "tree built" << endl;
 		SceneObject * obj = nullptr;
-		recurseDownTree(r, tree, obj);
+		closestHit = recurseDownTree(r, tree, obj);
 
 		return obj;
 	} 
