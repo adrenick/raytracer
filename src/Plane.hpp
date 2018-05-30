@@ -15,6 +15,8 @@ public:
 
 	glm::vec3 computeNormal(glm::vec3 p);
 
+	glm::vec3 computeCenter();
+
 	void print();
 
 		Plane(glm::vec3 n, float d, glm::vec3 c)

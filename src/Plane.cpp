@@ -6,6 +6,10 @@
 using namespace std;
 #include <iostream>
 
+glm::vec3 Plane::computeCenter() {
+	return glm::vec3(0, 0, 0);
+}
+
 float Plane::intersect(const ray & r)
 {
 	float top = distance-dot(r.origin, normal);

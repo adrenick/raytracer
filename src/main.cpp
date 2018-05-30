@@ -74,6 +74,7 @@ int main(int argc, char *argv[])
 		bool beers = false;
 		bool fresnel = false;
 		int ssN = 0;
+		bool sds = false;
 		if (argc == 6){
 			string opt = argv[5];
 			if (opt == "-altbrdf"){
@@ -82,6 +83,8 @@ int main(int argc, char *argv[])
 				fresnel = true;
 			} else if (opt == "-beers") {
 				beers = true;
+			} else if (opt == "-sds") {
+				sds = true;
 			} else {
 				int pos = opt.find("ss=");
 				if (pos != std::string::npos){
@@ -94,7 +97,7 @@ int main(int argc, char *argv[])
 		}
 		
 		Parse::parseFile(argv[2], scene, camera, lights);
-		raycast::render(scene, camera, lights, atoi(argv[3]), atoi(argv[4]), altbrdf, beers, fresnel, ssN);
+		raycast::render(scene, camera, lights, atoi(argv[3]), atoi(argv[4]), altbrdf, beers, fresnel, sds, ssN);
 
 	} else if (exec == "pixelcolor"){
 		if (argc < 7 || argc > 8){
@@ -113,7 +116,7 @@ int main(int argc, char *argv[])
 		cout << "----\n   Iteration type: Primary" << endl;
 		ray * r = raycast::createRay(camera, stoi(argv[3]), stoi(argv[4]), stoi(argv[5]), stoi(argv[6]));
 		float f;
-		vec3 color = raycast::getColorForRay(r, scene, camera, lights, false, 0, true, false, false, f);
+		vec3 color = raycast::getColorForRay(r, scene, camera, lights, false, 0, true, false, false, false, f);
 		cout << "Color: (" << (uint)round(color.x*255) << ", " << (uint)round(color.y*255) << ", " << (uint)round(color.z*255) << ")" << endl;
 	} else {
 		cerr << "Unexpected usage" << endl;

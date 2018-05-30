@@ -2,8 +2,10 @@
 	CSC 473
 	Raytracer Project */
 
+#ifndef BOX_H
+#define BOX_H
+
 #include "SceneObject.hpp"
-#include <algorithm>
 
 class Box : public SceneObject
 {
@@ -15,6 +17,8 @@ public:
 	float intersect(const ray & r);
 
 	void print();
+
+	glm::vec3 computeCenter();
 
 	void calcGminmax(float & min, float & max, float & gmin, float & gmax);
 
@@ -35,3 +39,5 @@ public:
 			itransforms = glm::mat4(1.0f);
 		}	
 };
+
+#endif

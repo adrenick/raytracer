@@ -8,6 +8,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/epsilon.hpp>
 #include <iostream>
+#include <algorithm>
 #include "Camera.hpp"
 
 class ray

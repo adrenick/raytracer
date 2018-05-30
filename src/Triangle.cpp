@@ -6,6 +6,14 @@
 #include <iostream>
 using namespace std;
 
+glm::vec3 Triangle::computeCenter() {
+	float x = (A.x + B.x + C.x)/3.f;
+	float y = (A.y + B.y + C.y)/3.f;;
+	float z = (A.z + B.z + C.z)/3.f;;
+
+	return glm::vec3(x, y, z);
+}
+
 float Triangle::intersect(const ray & r)
 {
 	float a = A.x - B.x;

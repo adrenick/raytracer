@@ -6,6 +6,10 @@
 #include <iostream>
 using namespace std;
 
+glm::vec3 Sphere::computeCenter() {
+	return origin;
+}
+
 float Sphere::intersect(const ray & r)
 {
 	float A = dot(r.direction, r.direction);

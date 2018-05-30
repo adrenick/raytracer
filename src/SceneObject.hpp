@@ -37,6 +37,8 @@ public:
 
 	virtual glm::vec3 computeNormal(glm::vec3 hit) = 0;
 
+	virtual glm::vec3 computeCenter() = 0;
+
 	static void printScene(std::vector <SceneObject *> scene, Camera * camera, std::vector <Light *> lights);
 };
 

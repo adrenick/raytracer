@@ -287,7 +287,7 @@ float raycast::calcG(vec3 x, vec3 h, vec3 n, float r)
 	return chi * (2 / (1 + sqrt(quant)));
 }
 
-void raycast::render(vector <SceneObject *> & scene, Camera * camera, vector <Light *> lights, int width, int height, bool altbrdf, bool beers, bool fresnel, int ssN)
+void raycast::render(vector <SceneObject *> & scene, Camera * camera, vector <Light *> lights, int width, int height, bool altbrdf, bool beers, bool fresnel, bool sds, int ssN)
 {
 	const int numChannels = 3;
 	const string fileName = "output.png";
@@ -306,13 +306,13 @@ void raycast::render(vector <SceneObject *> & scene, Camera * camera, vector <Li
 			if (ssN == 0){
 				float f;
 				r = createRay(camera, width, height, x, y);
-				color = getColorForRay(r, scene, camera, lights, altbrdf, 0, false, fresnel, beers, f);
+				color = getColorForRay(r, scene, camera, lights, altbrdf, 0, false, fresnel, beers, sds, f);
 			} else {
 				for (int m = 0; m < ssN; ++m){
 					for (int n = 0; n < ssN; ++n){
 						float f;
 						r = createSuperSampledRay(camera, width, height, x, y, m, n, ssN);
-						color += getColorForRay(r, scene, camera, lights, altbrdf, 0, false, fresnel, beers, f);
+						color += getColorForRay(r, scene, camera, lights, altbrdf, 0, false, fresnel, beers, sds, f);
 					}
 				}
 				color = color/((float)ssN*ssN);
@@ -342,37 +342,128 @@ float raycast::schlicks_approx(float n, vec3 normal, vec3 v)
 	return F;
 }
 
-vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * camera, vector <Light *> lights, bool altbrdf, int numRecurse, bool print, bool fresnel, bool beers, float & distanceHit)
+float raycast::recurseDownTree(ray * r, BVH_Node * tree, SceneObject * obj)
+{
+	Box box = Box(tree->volume->min, tree->volume->max, vec3(0));
+	float hit = box.intersect(*r);
+
+	if (hit > 0) {
+		if (tree->children.empty()) {
+
+			obj = tree->objects[0];
+			return tree->objects[0]->intersect(*r);
+
+		} else {
+			float rhit, lhit;
+			SceneObject * robj;
+			SceneObject * lobj;
+
+			rhit = recurseDownTree(r, tree->children[0], obj);
+			robj = obj;
+
+			lhit = recurseDownTree(r, tree->children[1], obj);
+			lobj = obj;
+
+			if ((rhit < 0) || (lhit < rhit)) {
+				obj = lobj;
+				return lhit;
+			} else if ((lhit < 0) || (rhit < lhit)){
+				obj = robj;
+				return rhit;
+			} else {
+				return -1;
+			}
+		}
+		
+	} else {
+		return -1;
+	}		
+
+}
+
+SceneObject * raycast::getIntersect(ray * r, vector <SceneObject *> scene, float & closestHit, int & closestObjIndex, ray & tRay, bool sds)
+{
+
+	if (sds){
+		
+		std::vector <SceneObject *> objs;
+		std::vector <SceneObject *> planes;
+
+		for (uint i = 0; i < scene.size(); i++){
+			if (scene[i]->type == "Plane") {
+				planes.push_back(scene[i]);
+			} else {
+				objs.push_back(scene[i]);
+			}
+		} 
+		//cout << "building tree" << endl;
+		BVH_Node * tree = BVH_Node::buildTree(objs, 0);
+		//cout << "tree built" << endl;
+		SceneObject * obj = nullptr;
+		recurseDownTree(r, tree, obj);
+
+		return obj;
+	} 
+	else {
+		for (uint i = 0; i < scene.size(); i++){
+
+			mat4 M = scene[i]->itransforms;
+			vec4 Oprime = M*vec4(r->origin, 1.0);
+			vec4 Dprime = M*vec4(r->direction, 0.0);
+
+			ray tr = ray(vec3(Oprime), vec3(Dprime));
+
+			//float hit = scene[i]->intersect(*r);
+			float hit = scene[i]->intersect(tr);
+			
+			if ((hit > 0) && (closestHit == -1)){
+				closestHit = hit;
+				closestObjIndex = i;
+				tRay = tr;
+			}
+			
+			if ((hit > 0) && (hit < closestHit)){
+				closestHit = hit;
+				closestObjIndex = i;
+				tRay = tr;
+			}
+		}
+		return scene[closestObjIndex];
+	}
+}
+
+vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * camera, vector <Light *> lights, bool altbrdf, int numRecurse, bool print, bool fresnel, bool beers, bool sds, float & distanceHit)
 {
 
 	float closestHit = -1;
 	int closestObjIndex = -1;
 	ray tRay = ray(vec3(0), vec3(0));
 		
-	for (uint i = 0; i < scene.size(); i++){
+	SceneObject * obj = getIntersect(r, scene, closestHit, closestObjIndex, tRay, sds);
+	// for (uint i = 0; i < scene.size(); i++){
 
-		mat4 M = scene[i]->itransforms;
-		vec4 Oprime = M*vec4(r->origin, 1.0);
-		vec4 Dprime = M*vec4(r->direction, 0.0);
+	// 	mat4 M = scene[i]->itransforms;
+	// 	vec4 Oprime = M*vec4(r->origin, 1.0);
+	// 	vec4 Dprime = M*vec4(r->direction, 0.0);
 
-		ray tr = ray(vec3(Oprime), vec3(Dprime));
+	// 	ray tr = ray(vec3(Oprime), vec3(Dprime));
 
 		
-		//float hit = scene[i]->intersect(*r);
-		float hit = scene[i]->intersect(tr);
+	// 	//float hit = scene[i]->intersect(*r);
+	// 	float hit = scene[i]->intersect(tr);
 		
-		if ((hit > 0) && (closestHit == -1)){
-			closestHit = hit;
-			closestObjIndex = i;
-			tRay = tr;
-		}
+	// 	if ((hit > 0) && (closestHit == -1)){
+	// 		closestHit = hit;
+	// 		closestObjIndex = i;
+	// 		tRay = tr;
+	// 	}
 		
-		if ((hit > 0) && (hit < closestHit)){
-			closestHit = hit;
-			closestObjIndex = i;
-			tRay = tr;
-		}
-	}
+	// 	if ((hit > 0) && (hit < closestHit)){
+	// 		closestHit = hit;
+	// 		closestObjIndex = i;
+	// 		tRay = tr;
+	// 	}
+	// }
 
 	if (closestHit == -1){
 
@@ -381,7 +472,7 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 	
 	} else {
 
-		SceneObject * obj = scene[closestObjIndex];
+		//SceneObject * obj = scene[closestObjIndex];
 
 		float distance = 0.f;
 		float fresnel_ref = 0.f;
@@ -392,13 +483,13 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 		vec3 OGP = r->origin+closestHit*r->direction;
 		vec3 P = tRay.origin+closestHit*tRay.direction; 
 		
-		vec3 normal = obj->computeNormal(P);
-		// vec3 normal;
-		// if (obj->type == "Box") {
-		// 	normal = obj->computeNormal(OGP);
-		// } else {
-		// 	normal = obj->computeNormal(P);
-		// }
+		//vec3 normal = obj->computeNormal(P);
+		vec3 normal;
+		if (obj->type == "Box") {
+			normal = obj->computeNormal(OGP);
+		} else {
+			normal = obj->computeNormal(P);
+		}
 		
 		vec3 color = vec3(0);
 		vec3 refracColor = vec3(0);
@@ -415,7 +506,7 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 				if (dot(r->direction, normal) > 0) {
 					refRay = ray(OGP+.001f*-normal, refDir);
 				}
-				refColor = getColorForRay(&refRay, scene, camera, lights, altbrdf, numRecurse+1, print, fresnel, beers, distance)*obj->color;
+				refColor = getColorForRay(&refRay, scene, camera, lights, altbrdf, numRecurse+1, print, fresnel, beers, sds, distance)*obj->color;
 			}
 		}
 
@@ -447,7 +538,7 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 				cout << "   Iteration Type: Refraction" << endl;
 			}
 			
-			refracColor = (getColorForRay(&refracRay, scene, camera, lights, altbrdf, numRecurse+1, print, fresnel, beers, distance));
+			refracColor = (getColorForRay(&refracRay, scene, camera, lights, altbrdf, numRecurse+1, print, fresnel, beers, sds, distance));
 
 			if (entering){
 				if (beers){

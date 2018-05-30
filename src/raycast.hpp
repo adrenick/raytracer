@@ -4,6 +4,7 @@
 
 #include "Camera.hpp"
 #include "SceneObject.hpp"
+#include "BVH_Node.hpp"
 #include <vector>
 
 class raycast {
@@ -28,9 +29,13 @@ public:
 
 	static glm::vec3 computeColor(glm::vec3 hit, std::vector <SceneObject *> scene, int objIndex, glm::vec3 normal, Camera * camera, std::vector <Light *> lights, bool print, ray * c,  bool altbrdf, glm::vec3 & a, glm::vec3 & d, glm::vec3 & s);
 
-	static glm::vec3 getColorForRay(ray * r, std::vector <SceneObject *> scene, Camera * camera, std::vector <Light *> lights, bool altbrdf, int numRecurse, bool print, bool fresnel, bool beers, float & distanceHit);
+	static SceneObject * getIntersect(ray * r, std::vector <SceneObject *> scene, float & closestHit, int & closestObjIndex, ray & tRay, bool sds);
 
-	static void render(std::vector <SceneObject *> & scene, Camera * camera, std::vector <Light *> lights, int width, int height, bool altbrdf, bool beers, bool fresnel, int ssN);
+	static float recurseDownTree(ray * r, BVH_Node * tree, SceneObject * obj);
+
+	static glm::vec3 getColorForRay(ray * r, std::vector <SceneObject *> scene, Camera * camera, std::vector <Light *> lights, bool altbrdf, int numRecurse, bool print, bool fresnel, bool beers, bool sds, float & distanceHit);
+
+	static void render(std::vector <SceneObject *> & scene, Camera * camera, std::vector <Light *> lights, int width, int height, bool altbrdf, bool beers, bool fresnel, bool sds, int ssN);
 
 	static float schlicks_approx(float n, glm::vec3 normal, glm::vec3 d);
 

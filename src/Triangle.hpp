@@ -2,6 +2,9 @@
 	CSC 473
 	Raytracer Project */
 
+#ifndef TRIANGLE_H
+#define TRIANGLE_H
+
 #include "SceneObject.hpp"
 
 class Triangle : public SceneObject
@@ -13,6 +16,8 @@ public:
 	glm::vec3 C;
 
 	float intersect(const ray & r);
+
+	glm::vec3 computeCenter();
 
 	void print();
 
@@ -40,3 +45,5 @@ public:
 			itransforms = glm::mat4(1.0f);
 		}
 };
+
+#endif

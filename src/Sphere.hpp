@@ -2,6 +2,9 @@
 	CSC 473
 	Raytracer Project */
 
+#ifndef SPHERE_H
+#define SPHERE_H
+
 #include "SceneObject.hpp"
 
 class Sphere : public SceneObject
@@ -12,6 +15,8 @@ public:
 	float radius;
 
 	float intersect(const ray & r);
+
+	glm::vec3 computeCenter();
 
 	void print();
 
@@ -32,3 +37,6 @@ public:
 			itransforms = glm::mat4(1.0f);
 		}	
 };
+
+
+#endif
