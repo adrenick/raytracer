@@ -295,6 +295,31 @@ void raycast::render(vector <SceneObject *> & scene, Camera * camera, vector <Li
 
 	unsigned char *data = new unsigned char[size.x * size.y * numChannels];
 
+	BVH_Node * tree = nullptr;
+	if (sds){
+		
+		std::vector <SceneObject *> objs;
+		std::vector <SceneObject *> planes;
+
+		for (uint i = 0; i < scene.size(); i++){
+			if (scene[i]->type == "Plane") {
+				planes.push_back(scene[i]);
+			} else {
+				cout << "adding to scene" << endl;
+				objs.push_back(scene[i]);
+			}
+		} 
+		//cout << "building tree" << endl;
+		tree = BVH_Node::buildTree(objs, 0);
+		tree->printTree();
+		//cout << "tree built" << endl;
+		//SceneObject * obj = nullptr;
+		//closestHit = recurseDownTree(r, tree, obj);
+		//cout << "made it " << endl;
+
+		//return obj;
+	}
+
 	for (int y = 0; y < size.y; ++ y)
 	{
 	    for (int x = 0; x < size.x; ++ x)
@@ -306,13 +331,13 @@ void raycast::render(vector <SceneObject *> & scene, Camera * camera, vector <Li
 			if (ssN == 0){
 				float f;
 				r = createRay(camera, width, height, x, y);
-				color = getColorForRay(r, scene, camera, lights, altbrdf, 0, false, fresnel, beers, sds, f);
+				color = getColorForRay(r, tree, scene, camera, lights, altbrdf, 0, false, fresnel, beers, tree, f);
 			} else {
 				for (int m = 0; m < ssN; ++m){
 					for (int n = 0; n < ssN; ++n){
 						float f;
 						r = createSuperSampledRay(camera, width, height, x, y, m, n, ssN);
-						color += getColorForRay(r, scene, camera, lights, altbrdf, 0, false, fresnel, beers, sds, f);
+						color += getColorForRay(r, tree, scene, camera, lights, altbrdf, 0, false, fresnel, beers, tree, f);
 					}
 				}
 				color = color/((float)ssN*ssN);
@@ -349,11 +374,14 @@ float raycast::recurseDownTree(ray * r, BVH_Node * tree, SceneObject * obj)
 
 	if (hit > 0) {
 		if (tree->children.empty()) {
-
+			cout << "base" << endl;
 			obj = tree->objects[0];
+			cout << "obj" << endl;
+			cout << "obj type: " << tree->objects[0]->type << endl;
 			return tree->objects[0]->intersect(*r);
 
 		} else {
+			cout << "else " << endl;
 			float rhit, lhit;
 			SceneObject * robj;
 			SceneObject * lobj;
@@ -381,26 +409,31 @@ float raycast::recurseDownTree(ray * r, BVH_Node * tree, SceneObject * obj)
 
 }
 
-SceneObject * raycast::getIntersect(ray * r, vector <SceneObject *> scene, float & closestHit, int & closestObjIndex, ray & tRay, bool sds)
+SceneObject * raycast::getIntersect(ray * r, BVH_Node * tree, vector <SceneObject *> scene, float & closestHit, int & closestObjIndex, ray & tRay, bool sds)
 {
 
-	if (sds){
+	if (tree != nullptr){
 		
-		std::vector <SceneObject *> objs;
-		std::vector <SceneObject *> planes;
+	// 	std::vector <SceneObject *> objs;
+	// 	std::vector <SceneObject *> planes;
 
-		for (uint i = 0; i < scene.size(); i++){
-			if (scene[i]->type == "Plane") {
-				planes.push_back(scene[i]);
-			} else {
-				objs.push_back(scene[i]);
-			}
-		} 
-		//cout << "building tree" << endl;
-		BVH_Node * tree = BVH_Node::buildTree(objs, 0);
-		//cout << "tree built" << endl;
+	// 	for (uint i = 0; i < scene.size(); i++){
+	// 		if (scene[i]->type == "Plane") {
+	// 			planes.push_back(scene[i]);
+	// 		} else {
+	// 			cout << "adding to scene" << endl;
+	// 			objs.push_back(scene[i]);
+	// 		}
+	// 	} 
+	// 	//cout << "building tree" << endl;
+	// 	BVH_Node * tree = BVH_Node::buildTree(objs, 0);
+	// 	tree->printTree();
+	// 	//cout << "tree built" << endl;
 		SceneObject * obj = nullptr;
+		cout << "about to recurseDownTree" << endl;
 		closestHit = recurseDownTree(r, tree, obj);
+		cout << "made it" << endl;
+	// 	//cout << "made it " << endl;
 
 		return obj;
 	} 
@@ -432,14 +465,16 @@ SceneObject * raycast::getIntersect(ray * r, vector <SceneObject *> scene, float
 	}
 }
 
-vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * camera, vector <Light *> lights, bool altbrdf, int numRecurse, bool print, bool fresnel, bool beers, bool sds, float & distanceHit)
+vec3 raycast::getColorForRay(ray * r, BVH_Node * tree, vector <SceneObject *> scene, Camera * camera, vector <Light *> lights, bool altbrdf, int numRecurse, bool print, bool fresnel, bool beers, bool sds, float & distanceHit)
 {
 
 	float closestHit = -1;
 	int closestObjIndex = -1;
 	ray tRay = ray(vec3(0), vec3(0));
 		
-	SceneObject * obj = getIntersect(r, scene, closestHit, closestObjIndex, tRay, sds);
+	SceneObject * obj = getIntersect(r, tree, scene, closestHit, closestObjIndex, tRay, sds);
+	cout << "closestHit: " << closestHit << endl;
+	cout << "obj type: " << obj->type << endl;
 	// for (uint i = 0; i < scene.size(); i++){
 
 	// 	mat4 M = scene[i]->itransforms;
@@ -467,11 +502,12 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 
 	if (closestHit == -1){
 
+		cout << "no hit" << endl;
 		vec3 color = vec3(0.0, 0.0, 0.0);
 		return color;
 	
 	} else {
-
+		cout << "hit" << endl;
 		//SceneObject * obj = scene[closestObjIndex];
 
 		float distance = 0.f;
@@ -506,7 +542,7 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 				if (dot(r->direction, normal) > 0) {
 					refRay = ray(OGP+.001f*-normal, refDir);
 				}
-				refColor = getColorForRay(&refRay, scene, camera, lights, altbrdf, numRecurse+1, print, fresnel, beers, sds, distance)*obj->color;
+				refColor = getColorForRay(&refRay, tree, scene, camera, lights, altbrdf, numRecurse+1, print, fresnel, beers, sds, distance)*obj->color;
 			}
 		}
 
@@ -538,7 +574,7 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 				cout << "   Iteration Type: Refraction" << endl;
 			}
 			
-			refracColor = (getColorForRay(&refracRay, scene, camera, lights, altbrdf, numRecurse+1, print, fresnel, beers, sds, distance));
+			refracColor = (getColorForRay(&refracRay, tree, scene, camera, lights, altbrdf, numRecurse+1, print, fresnel, beers, sds, distance));
 
 			if (entering){
 				if (beers){

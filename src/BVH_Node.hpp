@@ -20,12 +20,24 @@ public:
 	// 	objects = NULL;
 	// }
 
+	void printTree() {
+		if (children.empty()) {
+			std::cout << "leaf: " << objects[0]->type << std::endl;
+		} else {
+			std::cout << "left: " << std::endl;
+			children[0]->printTree();
+			std::cout<< "right: " << std::endl;
+			children[1]->printTree(); 
+		}
+	}
+
 	static BVH_Node * buildTree(std::vector <SceneObject *> objs, int axis) {
 
 		BVH_Node * newNode = new BVH_Node();
 		if (objs.size() <= 1) {
 			newNode->objects = objs;
 			newNode->volume = BoundingBox::calculateBBox(objs);
+			std::cout << "returning node" << std::endl;
 			return newNode;
 		}
 

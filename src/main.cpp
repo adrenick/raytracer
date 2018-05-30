@@ -107,6 +107,7 @@ int main(int argc, char *argv[])
 		Parse::parseFile(argv[2], scene, camera, lights);
 		raycast::pixelColor(scene, camera, lights, stoi(argv[3]), stoi(argv[4]), stoi(argv[5]), stoi(argv[6]));
 	} else if (exec == "printrays") {
+		BVH_Node * nulltree = nullptr;
 		if (argc < 6) {
 			cerr << "Usage: ./raytrace printrays <input_filename> <width> <height> <x> <y>" << endl;
 			return -1;
@@ -116,7 +117,7 @@ int main(int argc, char *argv[])
 		cout << "----\n   Iteration type: Primary" << endl;
 		ray * r = raycast::createRay(camera, stoi(argv[3]), stoi(argv[4]), stoi(argv[5]), stoi(argv[6]));
 		float f;
-		vec3 color = raycast::getColorForRay(r, scene, camera, lights, false, 0, true, false, false, false, f);
+		vec3 color = raycast::getColorForRay(r, nulltree, scene, camera, lights, false, 0, true, false, false, false, f);
 		cout << "Color: (" << (uint)round(color.x*255) << ", " << (uint)round(color.y*255) << ", " << (uint)round(color.z*255) << ")" << endl;
 	} else {
 		cerr << "Unexpected usage" << endl;
