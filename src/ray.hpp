@@ -6,6 +6,7 @@
 #define RAY_H
 
 #include <glm/glm.hpp>
+#include <glm/gtc/epsilon.hpp>
 #include <iostream>
 #include "Camera.hpp"
 

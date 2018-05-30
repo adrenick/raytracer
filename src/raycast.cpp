@@ -357,6 +357,8 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 
 		ray tr = ray(vec3(Oprime), vec3(Dprime));
 
+		
+		//float hit = scene[i]->intersect(*r);
 		float hit = scene[i]->intersect(tr);
 		
 		if ((hit > 0) && (closestHit == -1)){
@@ -389,7 +391,15 @@ vec3 raycast::getColorForRay(ray * r, vector <SceneObject *> scene, Camera * cam
 
 		vec3 OGP = r->origin+closestHit*r->direction;
 		vec3 P = tRay.origin+closestHit*tRay.direction; 
+		
 		vec3 normal = obj->computeNormal(P);
+		// vec3 normal;
+		// if (obj->type == "Box") {
+		// 	normal = obj->computeNormal(OGP);
+		// } else {
+		// 	normal = obj->computeNormal(P);
+		// }
+		
 		vec3 color = vec3(0);
 		vec3 refracColor = vec3(0);
 		vec3 refColor = vec3(0);
