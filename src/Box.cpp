@@ -99,19 +99,19 @@ glm::vec3 Box::computeNormal(glm::vec3 p) {
 	if (glm::epsilonEqual(p.x, min.x, 0.0001f)) {
 		normal =  glm::vec4(-1, 0, 0, 0);
 	}
-	if (glm::epsilonEqual(p.x, max.x, 0.0001f)) {
+	else if (glm::epsilonEqual(p.x, max.x, 0.0001f)) {
 		normal =  glm::vec4(1, 0, 0, 0);
 	}
-	if (glm::epsilonEqual(p.y, min.y, 0.0001f)) {
+	else if (glm::epsilonEqual(p.y, min.y, 0.0001f)) {
 		normal =  glm::vec4(0, -1, 0, 0);
 	}
-	if (glm::epsilonEqual(p.y, max.y, 0.0001f)) {
+	else if (glm::epsilonEqual(p.y, max.y, 0.0001f)) {
 		normal = glm::vec4(0, 1, 0, 0);
 	}
-	if (glm::epsilonEqual(p.z, min.z, 0.0001f)) {
+	else if (glm::epsilonEqual(p.z, min.z, 0.0001f)) {
 		normal = glm::vec4(0, 0, -1, 0);
 	}
-	if (glm::epsilonEqual(p.z, max.z, 0.0001f)) {
+	else if (glm::epsilonEqual(p.z, max.z, 0.0001f)) {
 		normal = glm::vec4(0, 0, 1, 0);
 	} else {
 		std::cerr << "cannot compute box normal" << std::endl;
