@@ -108,6 +108,8 @@ void raycast::pixelRay(Camera * camera, int width, int height, int x, int y)
 	ray * r = createRay(camera, width, height, x, y);
 
 	printPixelRay(x, y, r);
+
+	delete r;
 }
 
 
@@ -144,6 +146,8 @@ void raycast::pixelColor(vector <SceneObject *> scene, Camera * camera, vector <
 		vec3 normal = scene[closestObjIndex]->computeNormal(P);
 		computeColor(P, scene, scene[closestObjIndex], normal, camera, lights, true, r, false, a, d, s);
 	} 
+
+	delete r;
 }
 
 float raycast::firstHit(ray * r, vector <SceneObject *> scene, bool print)
@@ -297,7 +301,7 @@ void raycast::render(vector <SceneObject *> & scene, Camera * camera, vector <Li
 
 	BVH_Node * tree = nullptr;
 	if (sds){
-		
+		cout << "sds" << endl;
 		std::vector <SceneObject *> objs;
 		std::vector <SceneObject *> planes;
 
@@ -375,8 +379,12 @@ SceneObject * raycast::recurseDownTree(ray * r, BVH_Node * tree, float & closest
 
 	if (hit > 0) {
 		if (tree->children.empty()) {
+			// if (tree->objects.size() != 1) {
+			// 	cout << tree->objects.size() << endl;
+			// }
 			hit = tree->objects[0]->intersect(*r);
 			if ((closesthit == -1) || (hit < closesthit)) {
+				//cout << "hit: " << hit << endl; 
 				closesthit = hit;
 			}
 			return tree->objects[0];
@@ -390,11 +398,16 @@ SceneObject * raycast::recurseDownTree(ray * r, BVH_Node * tree, float & closest
 
 			lobj = recurseDownTree(r, tree->children[1], lhit);
 
-			if ((rhit < 0) || (lhit < rhit)) {
+			if ((lhit < 0) && (rhit < 0)){
+				closesthit = -1;
+				return nullptr;
+			} else if ((lhit > 0) && (lhit < rhit)) {
 				closesthit = lhit;
+				cout << "lhit: " << lhit << endl;
 				return lobj;
-			} else if ((lhit < 0) || (rhit < lhit)){
+			} else if ((rhit > 0) && (rhit < lhit)){
 				closesthit = rhit;
+				cout << "rhit: " << rhit << endl;
 				return robj;
 			} else {
 				closesthit = -1;
@@ -467,6 +480,7 @@ SceneObject * raycast::getIntersect(ray * r, BVH_Node * tree, vector <SceneObjec
 	// 	BVH_Node * tree = BVH_Node::buildTree(objs, 0);
 	// 	tree->printTree();
 	// 	//cout << "tree built" << endl;
+		cout << "tree" << endl;
 		SceneObject * obj = nullptr;
 		//cout << "about to recurseDownTree" << endl;
 		obj = recurseDownTree(r, tree, closestHit);
@@ -539,6 +553,7 @@ vec3 raycast::getColorForRay(ray * r, BVH_Node * tree, vector <SceneObject *> sc
 	// 		tRay = tr;
 	// 	}
 	// }
+	//cout << "closesthit" << closestHit << endl;
 
 	if (closestHit == -1){
 
@@ -547,7 +562,7 @@ vec3 raycast::getColorForRay(ray * r, BVH_Node * tree, vector <SceneObject *> sc
 		return color;
 	
 	} else {
-		//cout << "hit" << endl;
+		//cout << "***hit***" << endl;
 		//cout << "obj type: " << obj->type << endl;
 		//SceneObject * obj = scene[closestObjIndex];
 
@@ -566,11 +581,12 @@ vec3 raycast::getColorForRay(ray * r, BVH_Node * tree, vector <SceneObject *> sc
 		//vec3 normal = obj->computeNormal(P);
 		//cout << "before computer normal" << endl;
 		vec3 normal;
-		if (obj->type == "Box") {
-			normal = obj->computeNormal(OGP);
-		} else {
-			normal = obj->computeNormal(P);
-		}
+		normal = obj->computeNormal(P);
+		// if (obj->type == "Box") {
+		// 	normal = obj->computeNormal(OGP);
+		// } else {
+		// 	normal = obj->computeNormal(P);
+		// }
 		
 		//cout << "after compute normal" << endl;
 		vec3 color = vec3(0);

@@ -114,13 +114,13 @@ glm::vec3 Box::computeNormal(glm::vec3 p) {
 	if (glm::epsilonEqual(p.z, max.z, 0.0001f)) {
 		normal = glm::vec4(0, 0, 1, 0);
 	} else {
-		//std::cerr << "cannot compute box normal" << std::endl;
+		std::cerr << "cannot compute box normal" << std::endl;
 		normal = glm::vec4(0, 0, 0, 0);
 		//std::cerr << "cannot compute box normal" << std::endl;
 		//std::exit(-1);
 	}
 
-	normal = itransforms * normal;
+	//normal = itransforms * normal;
 	//return normal;
 
 	return glm::normalize(glm::vec3((glm::transpose(itransforms))*normal));

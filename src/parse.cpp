@@ -171,7 +171,8 @@ SceneObject * Parse::ParseSphere(stringstream & Stream)
 	v = Parse::ParseVector(Stream);
 
 	Stream.ignore(1, ',');
-	Stream.get(buf, 'p'); 
+	//Stream.get(buf, 'p'); 
+	Stream.get(buf, '\n'); 
 	if (Stream.eof()){
     	cerr << "Expected <x, y, x>, d'" << endl;
     }
@@ -183,6 +184,34 @@ SceneObject * Parse::ParseSphere(stringstream & Stream)
 	{
 		cerr << "Expected to read 1 distance but found '" << line << "'" << endl;
 	}
+	buf.str("");
+	Stream.get(buf, 'p');
+	string tforms = buf.str();
+	//cout << "tforms: " << tforms << endl;
+	stringstream transforms;
+	transforms.str(tforms);
+
+	mat4 Model = glm::mat4(1.0f);
+
+    string token;
+    transforms >> token;
+    vec3 t;
+    while ((token != "}") && (!transforms.eof()))
+    {
+		if (token == "scale"){
+			t = ParseVector(transforms);
+			Model = scale(mat4(1.f), t)*Model;
+		} else if (token == "rotate"){
+			t = ParseVector(transforms);
+			Model = rotate(mat4(1.f), radians(t.z), vec3(0, 0, 1))*Model;
+			Model = rotate(mat4(1.f), radians(t.y), vec3(0, 1, 0))*Model;
+			Model = rotate(mat4(1.f), radians(t.x), vec3(1, 0, 0))*Model;
+		} else if (token == "translate"){
+			t = ParseVector(transforms);
+			Model = translate(mat4(1.f), t)*Model;
+		}
+		transforms >> token;
+    }
 
 	Stream.ignore(10, '{');
     Stream.ignore(15, 'g');
@@ -202,11 +231,11 @@ SceneObject * Parse::ParseSphere(stringstream & Stream)
     stringstream rest;
     rest.str(whole);
 
-    mat4 Model = glm::mat4(1.0f);
+    //mat4 Model = glm::mat4(1.0f);
 
-    string token;
+    //string token;
     rest >> token;
-    vec3 t;
+    //vec3 t;
     while ((token != "}") && (!rest.eof()))
     {
 		if (token == "scale"){
