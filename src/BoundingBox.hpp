@@ -54,8 +54,8 @@ public:
 		glm::vec4 p8 = glm::vec4(box.max.x, box.min.y, box.min.z, 1.0f); //back bottom right
 	}
 
-	static BoundingBox * calculateBBox(std::vector <SceneObject *> objs) {
-		BoundingBox * total = new BoundingBox();
+	static BoundingBox calculateBBox(std::vector <SceneObject *> objs) {
+		BoundingBox total; //BoundingBox();
 		
 		for (uint i = 0; i < objs.size(); i++) {
 			BoundingBox box = BoundingBox();

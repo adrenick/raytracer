@@ -12,7 +12,7 @@ class BVH_Node
 	
 
 public:
-	Box * volume;
+	Box volume;
 	std::vector <BVH_Node> children;
 	std::vector <SceneObject *> objects;
 
@@ -23,12 +23,12 @@ public:
 
 	void printTree() {
 		if (children.empty()) {
-			std::cout << "leaf: " << objects[0]->type << " min: " << volume->min.x << " " << volume->min.y << " " << volume->min.z << " max: " << volume->max.x << " " << volume->max.y << " " << volume->max.z << std::endl;
+			std::cout << "leaf: " << objects[0]->type << " min: " << volume.min.x << " " << volume.min.y << " " << volume.min.z << " max: " << volume.max.x << " " << volume.max.y << " " << volume.max.z << std::endl;
 
 		} else {
-			std::cout << "left: " << " min: " << volume->min.x << " " << volume->min.y << " " << volume->min.z << " max: " << volume->max.x << " " << volume->max.y << " " << volume->max.z << std::endl;
+			std::cout << "left: " << " min: " << volume.min.x << " " << volume.min.y << " " << volume.min.z << " max: " << volume.max.x << " " << volume.max.y << " " << volume.max.z << std::endl;
 			children[0].printTree();
-			std::cout<< "right: " << " min: " << volume->min.x << " " << volume->min.y << " " << volume->min.z << " max: " << volume->max.x << " " << volume->max.y << " " << volume->max.z << std::endl;
+			std::cout<< "right: " << " min: " << volume.min.x << " " << volume.min.y << " " << volume.min.z << " max: " << volume.max.x << " " << volume.max.y << " " << volume.max.z << std::endl;
 			children[1].printTree(); 
 		}
 	}

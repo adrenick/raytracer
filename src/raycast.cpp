@@ -339,7 +339,6 @@ void raycast::render(vector <SceneObject *> & scene, Camera * camera, vector <Li
 					}
 				}
 				color = color/((float)ssN*ssN);
-				
 			}
 			//delete r;
 			
@@ -367,7 +366,7 @@ float raycast::schlicks_approx(float n, vec3 normal, vec3 v)
 
 void raycast::recurseDownTree(ray r, BVH_Node tree, float & closesthit, SceneObject * & closestObj, ray & tRay)
 {
-	float hit = tree.volume->intersect(r);
+	float hit = tree.volume.intersect(r);
 
 	if (hit > 0) {
 		if (tree.children.empty()) {
@@ -385,10 +384,10 @@ void raycast::recurseDownTree(ray r, BVH_Node tree, float & closesthit, SceneObj
 				}
 			}
 		} else {
-			if (tree.children[0].volume->intersect(r) > 0){
+			if (tree.children[0].volume.intersect(r) > 0){
 				recurseDownTree(r, tree.children[0], closesthit, closestObj, tRay);
 			}
-			if (tree.children[1].volume->intersect(r) > 0){
+			if (tree.children[1].volume.intersect(r) > 0){
 				recurseDownTree(r, tree.children[1], closesthit, closestObj, tRay);
 			}
 		}

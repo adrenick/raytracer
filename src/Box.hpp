@@ -34,7 +34,7 @@ public:
 
 	void transformBox(glm::mat4 itforms);
 
-	static Box * calculateBBox(std::vector <SceneObject *> objs);
+	static Box calculateBBox(std::vector <SceneObject *> objs);
 
 		Box(glm::vec3 mi, glm::vec3 ma, glm::vec3 c)
 		{

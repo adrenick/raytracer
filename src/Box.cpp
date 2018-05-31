@@ -177,8 +177,8 @@ void Box::transformBox(glm::mat4 itforms) {
 
 }
 
-Box * Box::calculateBBox(std::vector <SceneObject *> objs) {
-	Box * total = new Box();
+Box Box::calculateBBox(std::vector <SceneObject *> objs) {
+	Box total;// = new Box();
 		
 	for (uint i = 0; i < objs.size(); i++) {
 		Box box;// = Box();
@@ -188,7 +188,7 @@ Box * Box::calculateBBox(std::vector <SceneObject *> objs) {
 			box.Reset(obj->origin - glm::vec3(obj->radius));
 			box.AddPoint(obj->origin + glm::vec3(obj->radius));
 			box.transformBox(obj->itransforms);
-			total->AddBox(box);
+			total.AddBox(box);
 			//total->AddBox(box);
 		} else if (objs[i]->type == "Triangle") {
 			Triangle * obj = dynamic_cast<Triangle *> (objs[i]);
@@ -196,13 +196,13 @@ Box * Box::calculateBBox(std::vector <SceneObject *> objs) {
 			box.AddPoint(obj->B);
 			box.AddPoint(obj->C);
 			box.transformBox(obj->itransforms);
-			total->AddBox(box);
+			total.AddBox(box);
 		} else if (objs[i]->type == "Box") {
 			Box * obj = dynamic_cast<Box *> (objs[i]);
 			box.Reset(obj->min);
 			box.AddPoint(obj->max);
 			box.transformBox(obj->itransforms);
-			total->AddBox(box);
+			total.AddBox(box);
 		} else {
 			std::cerr << "snakes on a plane" << std::endl;
 		}
