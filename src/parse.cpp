@@ -329,7 +329,7 @@ SceneObject * Parse::ParseTriangle(stringstream & Stream)
 		rest >> token;
     }
     obj->itransforms = inverse(Model);
-    cout << "\n";
+    //cout << "\n";
 
     obj->ambient = amb;
     obj->diffuse = diff;

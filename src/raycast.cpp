@@ -301,7 +301,7 @@ void raycast::render(vector <SceneObject *> & scene, Camera * camera, vector <Li
 
 	BVH_Node * tree = nullptr;
 	if (sds){
-		cout << "sds" << endl;
+		//cout << "sds" << endl;
 		std::vector <SceneObject *> objs;
 		std::vector <SceneObject *> planes;
 
@@ -315,7 +315,7 @@ void raycast::render(vector <SceneObject *> & scene, Camera * camera, vector <Li
 		} 
 		//cout << "building tree" << endl;
 		tree = BVH_Node::buildTree(objs, 0);
-		tree->printTree();
+		//tree->printTree();
 		//cout << "tree built" << endl;
 		//SceneObject * obj = nullptr;
 		//closestHit = recurseDownTree(r, tree, obj);
@@ -379,150 +379,34 @@ void raycast::recurseDownTree(ray * r, BVH_Node * tree, float & closesthit, Scen
 
 	if (hit > 0) {
 		if (tree->children.empty()) {
-			// if (tree->objects.size() != 1) {
-			// 	cout << tree->objects.size() << endl;
-			// }
 			hit = tree->objects[0]->intersect(*r);
 			if (hit > 0){
 				if ((closesthit == -1) || (hit < closesthit)) {
-					//if (hit != -1) {
-						//cout << "~~~hit: " << hit << endl; 
-					//}
 					closesthit = hit;
 					closestObj = tree->objects[0];
-					//if (closestObj == nullptr) {
-						//cout << "basewhy" << endl;
-					//} else {
-						//cout << tree->objects[0]->type << endl;
-					//}
 				}
 			}
-			//return tree->objects[0];
-
 		} else {
-			//cout << "in else" << endl;
-			//float rhit, lhit;
-			//SceneObject * robj = nullptr;
-			//SceneObject * lobj = nullptr;
-
-			//recurseDownTree(r, tree->children[0], rhit, robj);
-			//recurseDownTree(r, tree->children[1], lhit, lobj);
-
-			//cout << "recurse right" << endl;
 			if (tree->children[0]->volume->intersect(*r) > 0){
 				recurseDownTree(r, tree->children[0], closesthit, closestObj);
 			}
-			//cout << "recurse left" << endl;
 			if (tree->children[1]->volume->intersect(*r) > 0){
 				recurseDownTree(r, tree->children[1], closesthit, closestObj);
 			}
-			// if ((lhit < 0) && (rhit < 0)){
-			// 	//closesthit = -1;
-			// 	//return nullptr;
-			// } else if ((lhit > 0) && (lhit < rhit)) {
-			// 	if ((closesthit == -1) || (lhit <= closesthit)) {
-			// 		closesthit = lhit;
-			// 		cout << "lhit: " << lhit << endl;
-			// 		closestObj = lobj;
-			// 		if (closestObj == nullptr) {
-			// 			cout << "lwhy" << endl;
-			// 		}
-			// 	}
-				
-			// 	//return lobj;
-			// } else if ((rhit > 0) && (rhit < lhit)){
-			// 	if ((closesthit == -1) || (rhit <= closesthit)) {
-			// 		closesthit = rhit;
-			// 		closestObj = robj;
-			// 		cout << "rhit: " << rhit << endl;
-			// 		if (closestObj == nullptr) {
-			// 			cout << "rwhy" << endl;
-			// 		}
-			// 	}
-			// 	//return robj;
-			// } else {
-			// 	//closesthit = -1;
-			// 	//return nullptr;
-			// }
 		}
-		
-	} else {
-		//closesthit = -1;
-		//return nullptr;
-	}		
-
-	// Box box = Box(tree->volume->min, tree->volume->max, vec3(0));
-	// float hit = box.intersect(*r);
-
-	// if (hit > 0) {
-	// 	if (tree->children.empty()) {
-	// 		cout << "base" << endl;
-	// 		obj = tree->objects[0];
-	// 		cout << "obj" << endl;
-	// 		cout << "obj type: " << tree->objects[0]->type << endl;
-	// 		return tree->objects[0]->intersect(*r);
-
-	// 	} else {
-	// 		cout << "else " << endl;
-	// 		float rhit, lhit;
-	// 		SceneObject * robj;
-	// 		SceneObject * lobj;
-
-	// 		rhit = recurseDownTree(r, tree->children[0], obj);
-	// 		robj = obj;
-
-	// 		lhit = recurseDownTree(r, tree->children[1], obj);
-	// 		lobj = obj;
-
-	// 		if ((rhit < 0) || (lhit < rhit)) {
-	// 			obj = lobj;
-	// 			return lhit;
-	// 		} else if ((lhit < 0) || (rhit < lhit)){
-	// 			obj = robj;
-	// 			return rhit;
-	// 		} else {
-	// 			return -1;
-	// 		}
-	// 	}
-		
-	// } else {
-	// 	return -1;
-	// }		
-
+	} 	
 }
 
 SceneObject * raycast::getIntersect(ray * r, BVH_Node * tree, vector <SceneObject *> scene, float & closestHit, int & closestObjIndex, ray & tRay, bool sds)
 {
 
 	if (tree != nullptr){
-		
-	// 	std::vector <SceneObject *> objs;
-	// 	std::vector <SceneObject *> planes;
-
-	// 	for (uint i = 0; i < scene.size(); i++){
-	// 		if (scene[i]->type == "Plane") {
-	// 			planes.push_back(scene[i]);
-	// 		} else {
-	// 			cout << "adding to scene" << endl;
-	// 			objs.push_back(scene[i]);
-	// 		}
-	// 	} 
-	// 	//cout << "building tree" << endl;
-	// 	BVH_Node * tree = BVH_Node::buildTree(objs, 0);
-	// 	tree->printTree();
-	// 	//cout << "tree built" << endl;
-		//cout << "tree" << endl;
 		SceneObject * obj = nullptr;
-		//cout << "about to recurseDownTree" << endl;
 		recurseDownTree(r, tree, closestHit, obj);
-		//cout << "bout to seg fault: " << endl;
-		//cout << obj->type << endl;
-		//cout << "made it " << closestHit << endl;
-		if (obj != nullptr) {
-			//cout << "YASSSS" << endl;
-		}
-		tRay = *r;
-	// 	//cout << "made it " << endl;
+		
+		vec4 Oprime = obj->itransforms*vec4(r->origin, 1.0);
+		vec4 Dprime = obj->itransforms*vec4(r->direction, 0.0);
+		tRay = ray(vec3(Oprime), vec3(Dprime));
 
 		return obj;
 	} 
@@ -535,7 +419,6 @@ SceneObject * raycast::getIntersect(ray * r, BVH_Node * tree, vector <SceneObjec
 
 			ray tr = ray(vec3(Oprime), vec3(Dprime));
 
-			//float hit = scene[i]->intersect(*r);
 			float hit = scene[i]->intersect(tr);
 			
 			if ((hit > 0) && (closestHit == -1)){
@@ -560,50 +443,15 @@ vec3 raycast::getColorForRay(ray * r, BVH_Node * tree, vector <SceneObject *> sc
 	float closestHit = -1;
 	int closestObjIndex = -1;
 	ray tRay = ray(vec3(0), vec3(0));
-	//cout << "before get intersect" << endl;
 		
 	SceneObject * obj = getIntersect(r, tree, scene, closestHit, closestObjIndex, tRay, sds);
-	//cout << "closestHit: " << closestHit << endl;
-	//cout << "obj type: " << obj->type << endl;
-	// for (uint i = 0; i < scene.size(); i++){
-
-	// 	mat4 M = scene[i]->itransforms;
-	// 	vec4 Oprime = M*vec4(r->origin, 1.0);
-	// 	vec4 Dprime = M*vec4(r->direction, 0.0);
-
-	// 	ray tr = ray(vec3(Oprime), vec3(Dprime));
-
-		
-	// 	//float hit = scene[i]->intersect(*r);
-	// 	float hit = scene[i]->intersect(tr);
-		
-	// 	if ((hit > 0) && (closestHit == -1)){
-	// 		closestHit = hit;
-	// 		closestObjIndex = i;
-	// 		tRay = tr;
-	// 	}
-		
-	// 	if ((hit > 0) && (hit < closestHit)){
-	// 		closestHit = hit;
-	// 		closestObjIndex = i;
-	// 		tRay = tr;
-	// 	}
-	// }
-	//cout << "closesthit" << closestHit << endl;
 
 	if (closestHit == -1){
 
-		//cout << "no hit" << endl;
 		vec3 color = vec3(0.0, 0.0, 0.0);
 		return color;
 	
 	} else {
-		//cout << "***hit***" << endl;
-		if (obj == nullptr) {
-			//cout << "why is the object uninitialized" << endl;
-		}
-		//cout << "obj type: " << obj->type << endl;
-		//SceneObject * obj = scene[closestObjIndex];
 
 		float distance = 0.f;
 		float fresnel_ref = 0.f;
@@ -611,31 +459,14 @@ vec3 raycast::getColorForRay(ray * r, BVH_Node * tree, vector <SceneObject *> sc
 		float ref = obj->reflection;
 		float refrac = obj->filter;
 
-		//cout << "before OGP" << endl;
 		vec3 OGP = r->origin+closestHit*r->direction;
 		vec3 P = tRay.origin+closestHit*tRay.direction; 
+		vec3 normal = obj->computeNormal(P);
 
-		//cout << "after OGP" << endl;
-		
-		//vec3 normal = obj->computeNormal(P);
-		//cout << "before computer normal" << endl;
-		vec3 normal;
-		//cout << "before normal" << endl;
-		
-		normal = obj->computeNormal(P);
-		//cout << "after normal" << endl;
-		// if (obj->type == "Box") {
-		// 	normal = obj->computeNormal(OGP);
-		// } else {
-		// 	normal = obj->computeNormal(P);
-		// }
-		
-		//cout << "after compute normal" << endl;
 		vec3 color = vec3(0);
 		vec3 refracColor = vec3(0);
 		vec3 refColor = vec3(0);
 		bool entering;
-
 
 		//Reflection
 		if (numRecurse < 6){
@@ -651,8 +482,9 @@ vec3 raycast::getColorForRay(ray * r, BVH_Node * tree, vector <SceneObject *> sc
 			}
 		}
 
+		//Refraction
 		if ((refrac > 0.f)){
-			//cout << "651" << endl;
+
 			vec3 dir = r->direction;
 			float dDotn = dot(dir, normal);
 			float objIor = obj->ior;
@@ -675,8 +507,6 @@ vec3 raycast::getColorForRay(ray * r, BVH_Node * tree, vector <SceneObject *> sc
 			float ratio = (n1/n2);
 			vec3 refracDir = ratio*(dir-dDotn*normal)-normal*(float)(sqrt(1-(pow(ratio, 2)*(1-pow(dDotn, 2)))));
 			ray refracRay = ray(OGP+0.001f*refracDir, refracDir);
-
-			//cout << "675" << endl;
 
 			if (print){
 				cout << "   Iteration Type: Refraction" << endl;

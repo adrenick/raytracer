@@ -58,8 +58,6 @@ public:
 
 	static void sortObjectsOnAxis(std::vector <SceneObject *> objs, int axis) {
 		
-
-		
 		if (axis == 0){
 			auto compare = [] (SceneObject * o1, SceneObject * o2) {
 				glm::vec3 center1 = o1->computeCenter();
