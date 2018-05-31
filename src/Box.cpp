@@ -166,14 +166,14 @@ void Box::transformBox(glm::mat4 itforms) {
 	p7 = itforms * p7;
 	p8 = itforms * p8;
 
-	Reset(p1);
-	AddPoint(p2);
-	AddPoint(p3);
-	AddPoint(p4);
-	AddPoint(p5);
-	AddPoint(p6);
-	AddPoint(p7);
-	AddPoint(p8);
+	Reset(glm::vec3(p1));
+	AddPoint(glm::vec3(p2));
+	AddPoint(glm::vec3(p3));
+	AddPoint(glm::vec3(p4));
+	AddPoint(glm::vec3(p5));
+	AddPoint(glm::vec3(p6));
+	AddPoint(glm::vec3(p7));
+	AddPoint(glm::vec3(p8));
 
 }
 

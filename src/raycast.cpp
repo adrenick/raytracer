@@ -404,9 +404,11 @@ SceneObject * raycast::getIntersect(ray * r, BVH_Node * tree, vector <SceneObjec
 		SceneObject * obj = nullptr;
 		recurseDownTree(r, tree, closestHit, obj);
 		
-		vec4 Oprime = obj->itransforms*vec4(r->origin, 1.0);
-		vec4 Dprime = obj->itransforms*vec4(r->direction, 0.0);
-		tRay = ray(vec3(Oprime), vec3(Dprime));
+		if (closestHit > 0) {
+			vec4 Oprime = obj->itransforms*vec4(r->origin, 1.0);
+			vec4 Dprime = obj->itransforms*vec4(r->direction, 0.0);
+			tRay = ray(vec3(Oprime), vec3(Dprime));
+		}
 
 		return obj;
 	} 
