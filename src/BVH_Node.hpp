@@ -39,7 +39,7 @@ public:
 		
 		if (objs.size() <= 1) {
 			newNode.objects = objs;
-			//newNode.volume = Box::calculateBBox(objs);
+			newNode.volume = Box::calculateBBox(objs);
 			return newNode;
 		}
 

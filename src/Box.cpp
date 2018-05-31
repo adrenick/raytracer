@@ -188,6 +188,7 @@ Box Box::calculateBBox(std::vector <SceneObject *> objs) {
 			//box = Box(obj->origin - glm::vec3(obj->radius), obj->origin - glm::vec3(obj->radius));
 			box.Reset(obj->origin - glm::vec3(obj->radius));
 			box.AddPoint(obj->origin + glm::vec3(obj->radius));
+			//box.itransforms = obj->itransforms;
 			box.transformBox(obj->itransforms);
 			total.AddBox(box);
 			//total->AddBox(box);
@@ -197,6 +198,7 @@ Box Box::calculateBBox(std::vector <SceneObject *> objs) {
 			box.AddPoint(obj->B);
 			box.AddPoint(obj->C);
 			//box = Box(glm::min(glm::min(obj->A, obj->B), obj->C), )
+			//box.itransforms = obj->itransforms;
 			box.transformBox(obj->itransforms);
 			total.AddBox(box);
 		} else if (objs[i]->type == "Box") {
@@ -204,6 +206,7 @@ Box Box::calculateBBox(std::vector <SceneObject *> objs) {
 			//box.Reset(obj->min);
 			//box.AddPoint(obj->max);
 			box = *obj;
+			//box.itransforms = obj->itransforms;
 			box.transformBox(obj->itransforms);
 			total.AddBox(box);
 		} else {
