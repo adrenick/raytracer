@@ -2,7 +2,8 @@
 	CSC 473
 	Raytracer Project */
 
-#include "BoundingBox.hpp"
+//#include "BoundingBox.hpp"
+#include "Box.hpp"
 #include "SceneObject.hpp"
 
 
@@ -11,7 +12,7 @@ class BVH_Node
 	
 
 public:
-	BoundingBox * volume;
+	Box * volume;
 	std::vector <BVH_Node *> children;
 	std::vector <SceneObject *> objects;
 
@@ -37,7 +38,7 @@ public:
 		BVH_Node * newNode = new BVH_Node();
 		if (objs.size() <= 1) {
 			newNode->objects = objs;
-			newNode->volume = BoundingBox::calculateBBox(objs);
+			newNode->volume = Box::calculateBBox(objs);
 			//std::cout << "returning node" << std::endl;
 			return newNode;
 		}
@@ -50,7 +51,7 @@ public:
 		newNode->children.push_back(buildTree(left_half(objs), (axis+1)%3));
 		newNode->children.push_back(buildTree(right_half(objs), (axis+1)%3));
 
-		newNode->volume = BoundingBox::calculateBBox(objs);
+		newNode->volume = Box::calculateBBox(objs);
 
 		return newNode;
 	}

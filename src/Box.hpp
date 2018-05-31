@@ -6,6 +6,8 @@
 #define BOX_H
 
 #include "SceneObject.hpp"
+#include "Sphere.hpp"
+#include "Triangle.hpp"
 
 class Box : public SceneObject
 {
@@ -23,6 +25,16 @@ public:
 	void calcGminmax(float & min, float & max, float & gmin, float & gmax);
 
 	glm::vec3 computeNormal(glm::vec3 p);
+
+	void Reset(glm::vec3 p);
+	
+	void AddPoint(glm::vec3 p);
+
+	void AddBox(Box other);
+
+	void transformBox(glm::mat4 itforms);
+
+	static Box * calculateBBox(std::vector <SceneObject *> objs);
 
 		Box(glm::vec3 mi, glm::vec3 ma, glm::vec3 c)
 		{

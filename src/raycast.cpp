@@ -374,8 +374,8 @@ float raycast::schlicks_approx(float n, vec3 normal, vec3 v)
 
 void raycast::recurseDownTree(ray * r, BVH_Node * tree, float & closesthit, SceneObject * & closestObj)
 {
-	Box box = Box(tree->volume->min, tree->volume->max, vec3(0));
-	float hit = box.intersect(*r);
+	//Box box = Box(tree->volume->min, tree->volume->max, vec3(0));
+	float hit = tree->volume->intersect(*r);
 
 	if (hit > 0) {
 		if (tree->children.empty()) {
@@ -385,34 +385,37 @@ void raycast::recurseDownTree(ray * r, BVH_Node * tree, float & closesthit, Scen
 			hit = tree->objects[0]->intersect(*r);
 			if (hit > 0){
 				if ((closesthit == -1) || (hit < closesthit)) {
-					if (hit != -1) {
+					//if (hit != -1) {
 						//cout << "~~~hit: " << hit << endl; 
-					}
+					//}
 					closesthit = hit;
 					closestObj = tree->objects[0];
-					if (closestObj == nullptr) {
+					//if (closestObj == nullptr) {
 						//cout << "basewhy" << endl;
-					} else {
+					//} else {
 						//cout << tree->objects[0]->type << endl;
-					}
+					//}
 				}
 			}
 			//return tree->objects[0];
 
 		} else {
 			//cout << "in else" << endl;
-			float rhit, lhit;
-			SceneObject * robj = nullptr;
-			SceneObject * lobj = nullptr;
+			//float rhit, lhit;
+			//SceneObject * robj = nullptr;
+			//SceneObject * lobj = nullptr;
 
 			//recurseDownTree(r, tree->children[0], rhit, robj);
 			//recurseDownTree(r, tree->children[1], lhit, lobj);
 
 			//cout << "recurse right" << endl;
-			recurseDownTree(r, tree->children[0], closesthit, closestObj);
+			if (tree->children[0]->volume->intersect(*r) > 0){
+				recurseDownTree(r, tree->children[0], closesthit, closestObj);
+			}
 			//cout << "recurse left" << endl;
-			recurseDownTree(r, tree->children[1], closesthit, closestObj);
-
+			if (tree->children[1]->volume->intersect(*r) > 0){
+				recurseDownTree(r, tree->children[1], closesthit, closestObj);
+			}
 			// if ((lhit < 0) && (rhit < 0)){
 			// 	//closesthit = -1;
 			// 	//return nullptr;
@@ -617,7 +620,10 @@ vec3 raycast::getColorForRay(ray * r, BVH_Node * tree, vector <SceneObject *> sc
 		//vec3 normal = obj->computeNormal(P);
 		//cout << "before computer normal" << endl;
 		vec3 normal;
+		//cout << "before normal" << endl;
+		
 		normal = obj->computeNormal(P);
+		//cout << "after normal" << endl;
 		// if (obj->type == "Box") {
 		// 	normal = obj->computeNormal(OGP);
 		// } else {
@@ -646,6 +652,7 @@ vec3 raycast::getColorForRay(ray * r, BVH_Node * tree, vector <SceneObject *> sc
 		}
 
 		if ((refrac > 0.f)){
+			//cout << "651" << endl;
 			vec3 dir = r->direction;
 			float dDotn = dot(dir, normal);
 			float objIor = obj->ior;
@@ -669,11 +676,20 @@ vec3 raycast::getColorForRay(ray * r, BVH_Node * tree, vector <SceneObject *> sc
 			vec3 refracDir = ratio*(dir-dDotn*normal)-normal*(float)(sqrt(1-(pow(ratio, 2)*(1-pow(dDotn, 2)))));
 			ray refracRay = ray(OGP+0.001f*refracDir, refracDir);
 
+			//cout << "675" << endl;
+
 			if (print){
 				cout << "   Iteration Type: Refraction" << endl;
 			}
 			
-			refracColor = (getColorForRay(&refracRay, tree, scene, camera, lights, altbrdf, numRecurse+1, print, fresnel, beers, sds, distance));
+			if (numRecurse < 12){
+				if  (!std::isnan(refracRay.direction.x)) {
+					//cerr << "nan" << endl;
+					refracColor = (getColorForRay(&refracRay, tree, scene, camera, lights, altbrdf, numRecurse+1, print, fresnel, beers, sds, distance));
+				} else {
+					 //cerr << "HEKLPO: "<< dDotn << endl;
+				}
+			}
 
 			if (entering){
 				if (beers){
@@ -688,6 +704,7 @@ vec3 raycast::getColorForRay(ray * r, BVH_Node * tree, vector <SceneObject *> sc
 				vec3 d = -r->direction;
 				fresnel_ref = schlicks_approx(objIor, normal, d);
 			}
+			//cout << "696" << endl;
 		}
 		 //cout << "line 638" << endl;
 		vec3 a, d, s;

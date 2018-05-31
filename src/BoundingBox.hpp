@@ -43,6 +43,17 @@ public:
 		AddPoint(other.max);
 	}
 
+	void transformBox (BoundingBox box, glm::mat4 itforms) {
+		glm::vec4 p1 = glm::vec4(box.min, 1.0f);
+		glm::vec4 p2 = glm::vec4(box.max, 1.0f);  //front top right
+		glm::vec4 p3 = glm::vec4(box.min.x, box.max.y, box.min.z, 1.0f); //back top left
+		glm::vec4 p4 = glm::vec4(box.max.x, box.max.y, box.min.z, 1.0f); //back top right
+		glm::vec4 p5 = glm::vec4(box.min.x, box.max.y, box.max.z, 1.0f); //front top left
+		glm::vec4 p6 = glm::vec4(box.min.x, box.min.y, box.max.z, 1.0f); //front bottom left
+		glm::vec4 p7 = glm::vec4(box.max.x, box.min.y, box.max.z, 1.0f); //front bottom right
+		glm::vec4 p8 = glm::vec4(box.max.x, box.min.y, box.min.z, 1.0f); //back bottom right
+	}
+
 	static BoundingBox * calculateBBox(std::vector <SceneObject *> objs) {
 		BoundingBox * total = new BoundingBox();
 		
@@ -53,6 +64,7 @@ public:
 				Sphere * obj = dynamic_cast<Sphere *> (objs[i]);
 				box.Reset(obj->origin - glm::vec3(obj->radius));
 				box.AddPoint(obj->origin + glm::vec3(obj->radius));
+				//total->AddBox(transformBox(box, obj->itransforms));
 				total->AddBox(box);
 			} else if (objs[i]->type == "Triangle") {
 				Triangle * obj = dynamic_cast<Triangle *> (objs[i]);
