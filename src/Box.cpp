@@ -178,13 +178,14 @@ void Box::transformBox(glm::mat4 itforms) {
 }
 
 Box Box::calculateBBox(std::vector <SceneObject *> objs) {
-	Box total;// = new Box();
+	Box total = Box();// = new Box();
 		
 	for (uint i = 0; i < objs.size(); i++) {
 		Box box;// = Box();
 			
 		if (objs[i]->type == "Sphere"){
 			Sphere * obj = dynamic_cast<Sphere *> (objs[i]);
+			//box = Box(obj->origin - glm::vec3(obj->radius), obj->origin - glm::vec3(obj->radius));
 			box.Reset(obj->origin - glm::vec3(obj->radius));
 			box.AddPoint(obj->origin + glm::vec3(obj->radius));
 			box.transformBox(obj->itransforms);
@@ -195,12 +196,14 @@ Box Box::calculateBBox(std::vector <SceneObject *> objs) {
 			box.Reset(obj->A);
 			box.AddPoint(obj->B);
 			box.AddPoint(obj->C);
+			//box = Box(glm::min(glm::min(obj->A, obj->B), obj->C), )
 			box.transformBox(obj->itransforms);
 			total.AddBox(box);
 		} else if (objs[i]->type == "Box") {
 			Box * obj = dynamic_cast<Box *> (objs[i]);
-			box.Reset(obj->min);
-			box.AddPoint(obj->max);
+			//box.Reset(obj->min);
+			//box.AddPoint(obj->max);
+			box = *obj;
 			box.transformBox(obj->itransforms);
 			total.AddBox(box);
 		} else {

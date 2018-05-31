@@ -45,6 +45,13 @@ public:
 
 		sortObjectsOnAxis(objs, axis);
 
+		// std::size_t const half = objs.size()/2;
+		// std::vector<SceneObject *> left(objs.begin(), objs.begin() + half);
+		// std::vector<SceneObject *> right(objs.begin() + half, objs.end());
+
+		// newNode.children.push_back(buildTree(left, (axis+1)%3));
+		// newNode.children.push_back(buildTree(right, (axis+1)%3));
+
 		newNode.children.push_back(buildTree(left_half(objs), (axis+1)%3));
 		newNode.children.push_back(buildTree(right_half(objs), (axis+1)%3));
 
