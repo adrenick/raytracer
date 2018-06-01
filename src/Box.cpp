@@ -13,7 +13,7 @@ glm::vec3 Box::computeCenter() {
 float Box::intersect(const ray & r)
 {
 
-	float tgmin = std::numeric_limits<float>::min();
+	float tgmin = -std::numeric_limits<float>::max();
 	float tgmax = std::numeric_limits<float>::max();
 
 	float dx = r.direction.x;
@@ -34,17 +34,17 @@ float Box::intersect(const ray & r)
 	calcGminmax(tzmin, tzmax, tgmin, tgmax);
 
 	if (dx == 0) {
-		if ((r.origin.x < txmin) || (r.origin.x > txmax)) {
+		if ((r.origin.x < min.x) || (r.origin.x > max.x)) {
 			return -1;
 		}
 	}
 	if (dy == 0) {
-		if ((r.origin.y < tymin) || (r.origin.y > tymax)) {
+		if ((r.origin.y < min.y) || (r.origin.y > max.y)) {
 			return -1;
 		}
 	}
 	if (dz == 0) {
-		if ((r.origin.z < tzmin) || (r.origin.z > tzmax)) {
+		if ((r.origin.z < min.z) || (r.origin.z > max.z)) {
 			return -1;
 		}
 	}

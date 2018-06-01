@@ -60,7 +60,7 @@ public:
 		return newNode;
 	}
 
-	static void sortObjectsOnAxis(std::vector <SceneObject *> objs, int axis) {
+	static void sortObjectsOnAxis(std::vector <SceneObject *> & objs, int axis) {
 		
 		if (axis == 0){
 			auto compare = [] (SceneObject * o1, SceneObject * o2) {

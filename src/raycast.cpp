@@ -553,14 +553,14 @@ vec3 raycast::getColorForRay(ray r, BVH_Node tree, vector <SceneObject *> scene,
 				cout << "   Iteration Type: Refraction" << endl;
 			}
 			
-			if (numRecurse < 12){
-				if  (!std::isnan(refracRay.direction.x)) {
+			//if (numRecurse < 12){
+				//if  (!std::isnan(refracRay.direction.x)) {
 					//cerr << "nan" << endl;
 					refracColor = (getColorForRay(refracRay, tree, scene, camera, lights, altbrdf, numRecurse+1, print, fresnel, beers, sds, planes, distance));
-				} else {
+				//} else {
 					 //cerr << "HEKLPO: "<< dDotn << endl;
-				}
-			}
+				//}
+			//}
 
 			if (entering){
 				if (beers){
