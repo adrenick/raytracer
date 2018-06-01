@@ -13,7 +13,7 @@ class BVH_Node
 
 public:
 	Box volume;
-	std::vector <BVH_Node> children;
+	std::vector <BVH_Node *> children;
 	std::vector <SceneObject *> objects;
 
 	// BVH_Node() {
@@ -27,19 +27,19 @@ public:
 
 		} else {
 			std::cout << "left: " << " min: " << volume.min.x << " " << volume.min.y << " " << volume.min.z << " max: " << volume.max.x << " " << volume.max.y << " " << volume.max.z << std::endl;
-			children[0].printTree();
+			children[0]->printTree();
 			std::cout<< "right: " << " min: " << volume.min.x << " " << volume.min.y << " " << volume.min.z << " max: " << volume.max.x << " " << volume.max.y << " " << volume.max.z << std::endl;
-			children[1].printTree(); 
+			children[1]->printTree(); 
 		}
 	}
 
-	static BVH_Node buildTree(std::vector <SceneObject *> objs, int axis) {
+	static BVH_Node * buildTree(std::vector <SceneObject *> objs, int axis) {
 
-		BVH_Node newNode = BVH_Node();
+		BVH_Node * newNode = new BVH_Node();
 		
 		if (objs.size() <= 1) {
-			newNode.objects = objs;
-			newNode.volume = Box::calculateBBox(objs);
+			newNode->objects = objs;
+			newNode->volume = Box::calculateBBox(objs);
 			return newNode;
 		}
 
@@ -55,10 +55,10 @@ public:
 
 
 
-		newNode.children.push_back(buildTree(left_half(sortedObjs), (axis+1)%3));
-		newNode.children.push_back(buildTree(right_half(sortedObjs), (axis+1)%3));
+		newNode->children.push_back(buildTree(left_half(sortedObjs), (axis+1)%3));
+		newNode->children.push_back(buildTree(right_half(sortedObjs), (axis+1)%3));
 
-		newNode.volume = Box::calculateBBox(objs);
+		newNode->volume = Box::calculateBBox(objs);
 
 		return newNode;
 	}
