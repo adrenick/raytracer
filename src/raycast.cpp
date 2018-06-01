@@ -381,8 +381,8 @@ void raycast::recurseDownTree(ray r, BVH_Node tree, float & closesthit, SceneObj
 			}
 		}
 	} else {
-		float hit = tree.volume.intersect(r);
-		if (hit > 0){
+		//float hit = tree.volume.intersect(r);
+		//if (hit > 0){
 			//cout << "*** " << tree.children.size() << endl;
 
 			if (tree.children[0].volume.intersect(r) > 0){
@@ -391,7 +391,7 @@ void raycast::recurseDownTree(ray r, BVH_Node tree, float & closesthit, SceneObj
 			if (tree.children[1].volume.intersect(r) > 0){
 				recurseDownTree(r, tree.children[1], closesthit, closestObj, tRay);
 			}
-		}
+		//}
 	} 
 
 	// float hit = tree.volume.intersect(r);

@@ -36,7 +36,7 @@ float Box::intersect(const ray & r)
 	if (dx == 0) {
 		if ((r.origin.x < min.x) || (r.origin.x > max.x)) {
 			return -1;
-		}
+		} 
 	}
 	if (dy == 0) {
 		if ((r.origin.y < min.y) || (r.origin.y > max.y)) {

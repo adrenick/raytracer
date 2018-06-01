@@ -43,7 +43,8 @@ public:
 			return newNode;
 		}
 
-		sortObjectsOnAxis(objs, axis);
+		std::vector <SceneObject *> sortedObjs = objs;
+		sortObjectsOnAxis(sortedObjs, axis);
 
 		// std::size_t const half = objs.size()/2;
 		// std::vector<SceneObject *> left(objs.begin(), objs.begin() + half);
@@ -52,15 +53,17 @@ public:
 		// newNode.children.push_back(buildTree(left, (axis+1)%3));
 		// newNode.children.push_back(buildTree(right, (axis+1)%3));
 
-		newNode.children.push_back(buildTree(left_half(objs), (axis+1)%3));
-		newNode.children.push_back(buildTree(right_half(objs), (axis+1)%3));
+
+
+		newNode.children.push_back(buildTree(left_half(sortedObjs), (axis+1)%3));
+		newNode.children.push_back(buildTree(right_half(sortedObjs), (axis+1)%3));
 
 		newNode.volume = Box::calculateBBox(objs);
 
 		return newNode;
 	}
 
-	static void sortObjectsOnAxis(std::vector <SceneObject *> & objs, int axis) {
+	static void sortObjectsOnAxis(std::vector<SceneObject *> & objs, int axis) {
 		
 		if (axis == 0){
 			auto compare = [] (SceneObject * o1, SceneObject * o2) {
