@@ -385,15 +385,15 @@ void raycast::recurseDownTree(ray r, BVH_Node * tree, float & closesthit, SceneO
 		//float hit = tree.volume.intersect(r);
 		//if (hit > 0){
 			//cout << "*** " << tree.children.size() << endl;
-		if (tree->children.size() >= 1)	{
+		//if (tree->children.size() >= 1)	{
 			if (tree->children[0]->volume.intersect(r) > 0){
 				recurseDownTree(r, tree->children[0], closesthit, closestObj, tRay);
 			}
-		} if (tree->children.size() >= 2) {
+		//} if (tree->children.size() >= 2) {
 			if (tree->children[1]->volume.intersect(r) > 0){
 				recurseDownTree(r, tree->children[1], closesthit, closestObj, tRay);
 			}
-		}
+		//}
 		//}
 	} 
 
