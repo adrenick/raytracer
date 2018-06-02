@@ -306,6 +306,7 @@ void raycast::render(vector <SceneObject *> & scene, Camera * camera, vector <Li
 	BVH_Node * tree;
 	std::vector <SceneObject *> planes;
 	if (sds){
+		cout << "sds" << endl;
 		std::vector <SceneObject *> objs;
 		for (uint i = 0; i < scene.size(); i++){
 			if (scene[i]->type == "Plane") {
@@ -550,7 +551,7 @@ vec3 raycast::getColorForRay(ray r, BVH_Node * tree, vector <SceneObject *> scen
 
 			float ratio = (n1/n2);
 			//vec3 refracDir = ratio*(dir-dDotn*normal)-normal*(float)(sqrt(1-(pow(ratio, 2)*(1-pow(dDotn, 2)))));
-			vec3 refracDir = ratio*(dir-dDotn*OGNormal)-OGNormal*(float)(sqrt(1-(pow(ratio, 2)*(1-pow(dDotn, 2)))));
+			vec3 refracDir = ratio*(dir-dDotn*normal)-normal*(float)(sqrt(1-(pow(ratio, 2)*(1-pow(dDotn, 2)))));
 			ray refracRay = ray(OGP+0.001f*refracDir, refracDir);
 
 			if (print){
@@ -558,12 +559,12 @@ vec3 raycast::getColorForRay(ray r, BVH_Node * tree, vector <SceneObject *> scen
 			}
 			
 			if (numRecurse < 12){
-				if  (!std::isnan(refracRay.direction.x)) {
+				//if  (!std::isnan(refracRay.direction.x)) {
 					//cerr << "nan" << endl;
 					refracColor = (getColorForRay(refracRay, tree, scene, camera, lights, altbrdf, numRecurse+1, print, fresnel, beers, sds, planes, distance));
-				} else {
-					 cerr << "HEKLPO: "<< normal.x << " " << normal.y << " " << normal.z << endl;
-				}
+				//} else {
+					 //cerr << "HEKLPO: "<< normal.x << " " << normal.y << " " << normal.z << endl;
+				//}
 			}
 
 			if (entering){
