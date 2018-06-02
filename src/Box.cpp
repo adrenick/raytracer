@@ -12,70 +12,170 @@ glm::vec3 Box::computeCenter() {
 
 float Box::intersect(const ray & r)
 {
+	//float tgmin = -std::numeric_limits<float>::max();
+ 	//float tgmax = std::numeric_limits<float>::max();
 
-	float tgmin = -std::numeric_limits<float>::max();
-	float tgmax = std::numeric_limits<float>::max();
+  	float txmin = (min.x - r.origin.x)/r.direction.x;
+ 	float txmax = (max.x - r.origin.x)/r.direction.x;
 
-	float dx = r.direction.x;
-	float dy = r.direction.y;
-	float dz = r.direction.z;
+ 	float tymin = (min.y - r.origin.y)/r.direction.y;
+ 	float tymax = (max.y - r.origin.y)/r.direction.y;
 
-	float txmin = (min.x - r.origin.x)/dx;
-	float txmax = (max.x - r.origin.x)/dx;
+ 	float tzmin = (min.z - r.origin.z)/r.direction.z;
+ 	float tzmax = (max.z - r.origin.z)/r.direction.z;
 
-	float tymin = (min.y - r.origin.y)/dy;
-	float tymax = (max.y - r.origin.y)/dy;
-
-	float tzmin = (min.z - r.origin.z)/dz;
-	float tzmax = (max.z - r.origin.z)/dz;
-
-	calcGminmax(txmin, txmax, tgmin, tgmax);
-	calcGminmax(tymin, tymax, tgmin, tgmax);
-	calcGminmax(tzmin, tzmax, tgmin, tgmax);
-
-	if (dx == 0) {
+ 	if (txmin > txmax) {
+ 		std::swap(txmin, txmax);
+ 	}
+ 	if (tymin > tymax) {
+ 		std::swap(tymin, tymax);
+ 	}
+ 	if (tzmin > tzmax) {
+ 		std::swap(tzmin, tzmax);
+ 	}
+	if (r.direction.x == 0) {
 		if ((r.origin.x < min.x) || (r.origin.x > max.x)) {
 			return -1;
-		} 
+		} else {
+			cerr << "*******" << endl;
+			txmin = -std::numeric_limits<float>::max();
+			txmax = std::numeric_limits<float>::max();
+		}
 	}
-	if (dy == 0) {
+	if (r.direction.y == 0) {
 		if ((r.origin.y < min.y) || (r.origin.y > max.y)) {
 			return -1;
+		} else {
+			cerr << "*******" << endl;
+			tymin = -std::numeric_limits<float>::max();
+			tymax = std::numeric_limits<float>::max();
 		}
+
 	}
-	if (dz == 0) {
+	if (r.direction.z == 0) {
 		if ((r.origin.z < min.z) || (r.origin.z > max.z)) {
 			return -1;
+		} else {
+			cerr << "*******" << endl;
+			tzmin = -std::numeric_limits<float>::max();
+			tzmax = std::numeric_limits<float>::max();
 		}
 	}
 
-	if (tgmin > tgmax) {
-		return -1;
-	}
-	if (tgmax < 0) {
-		return -1;
-	}
 
-	if (tgmin > 0) {
-		return tgmin;
-	} else {
-		return tgmax;
-	}
-	
+ 	float smallestMax = glm::min(glm::min(txmax, tymax), tzmax);
+ 	float largestMin = glm::max(glm::max(txmin, tymin), tzmin);
+
+ 	if ((smallestMax < largestMin) || (smallestMax < 0)) {
+ 		return -1;
+ 	}
+
+ 	if (largestMin > 0) {
+ 		return largestMin;
+ 	} else {
+ 		return smallestMax;
+ 	}
 } 
 
-void Box::calcGminmax(float & min, float & max, float & gmin, float & gmax)
-{
-	if (min > max) {
-		std::swap(min, max);
-	}
-	if (min > gmin) {
-		gmin = min;
-	}
-	if (max < gmax) {
-		gmax = max;
-	}
-}
+ // 	if (txmin > tgmin) {
+	// 	tgmin = txmin;
+	// }
+	// if (tymin > tgmin) {
+	// 	tgmin = tymin;
+	// }
+	// if (tzmin > tgmin) {
+	// 	tgmin = tzmin;
+	// }
+	// if (txmax < tgmax) {
+	// 	tgmax = txmax;
+	// }
+	// if (tymax < tgmax) {
+	// 	tgmax = tymax;
+	// }
+	// if (tzmax < tgmax) {
+	// 	tgmax = tzmax;
+	// }
+
+// 	float tgmin = -std::numeric_limits<float>::max();
+// 	float tgmax = std::numeric_limits<float>::max();
+
+// 	float dx = r.direction.x;
+// 	float dy = r.direction.y;
+// 	float dz = r.direction.z;
+
+// 	float txmin = (min.x - r.origin.x)/dx;
+// 	float txmax = (max.x - r.origin.x)/dx;
+
+// 	float tymin = (min.y - r.origin.y)/dy;
+// 	float tymax = (max.y - r.origin.y)/dy;
+
+// 	float tzmin = (min.z - r.origin.z)/dz;
+// 	float tzmax = (max.z - r.origin.z)/dz;
+
+// 	calcGminmax(txmin, txmax, tgmin, tgmax);
+// 	calcGminmax(tymin, tymax, tgmin, tgmax);
+// 	calcGminmax(tzmin, tzmax, tgmin, tgmax);
+
+// 	if (dx == 0) {
+// 		if ((r.origin.x < min.x) || (r.origin.x > max.x)) {
+// 			return -1;
+// 		} else {
+// 			txmin = -std::numeric_limits<float>::max();
+// 			txmax = -std::numeric_limits<float>::max();
+// 		}
+// 		// } else if (dy > 0) {
+// 		// 	return max.x
+// 		// } else if (dy < 0) {
+// 		// 	return min.x
+// 		// }
+// 	}
+// 	if (dy == 0) {
+// 		if ((r.origin.y < min.y) || (r.origin.y > max.y)) {
+// 			return -1;
+// 		} else {
+// 			tymin = -std::numeric_limits<float>::max();
+// 			tymax = -std::numeric_limits<float>::max();
+// 		}
+// 		// } else if (dx > 0) {
+// 		// 	return 
+// 		// }
+// 	}
+// 	if (dz == 0) {
+// 		if ((r.origin.z < min.z) || (r.origin.z > max.z)) {
+// 			return -1;
+// 		} else {
+// 			tzmin = -std::numeric_limits<float>::max();
+// 			tzmax = -std::numeric_limits<float>::max();
+// 		}
+// 	}
+
+// 	if (tgmin > tgmax) {
+// 		return -1;
+// 	}
+// 	if (tgmax < 0) {
+// 		return -1;
+// 	}
+
+// 	if (tgmin > 0) {
+// 		return tgmin;
+// 	} else {
+// 		return tgmax;
+// 	}
+	
+// } 
+
+// void Box::calcGminmax(float & min, float & max, float & gmin, float & gmax)
+// {
+// 	if (min > max) {
+// 		std::swap(min, max);
+// 	}
+// 	if (min > gmin) {
+// 		gmin = min;
+// 	}
+// 	if (max < gmax) {
+// 		gmax = max;
+// 	}
+// }
 
 void Box::print()
 {

@@ -532,6 +532,7 @@ vec3 raycast::getColorForRay(ray r, BVH_Node * tree, vector <SceneObject *> scen
 			float dDotn = dot(dir, normal);
 			float objIor = obj->ior;
 			float n1, n2;
+			vec3 OGNormal = normal;
 
 			if (dDotn < 0) {
 				n1 = 1.0f;
@@ -548,7 +549,8 @@ vec3 raycast::getColorForRay(ray r, BVH_Node * tree, vector <SceneObject *> scen
 			}
 
 			float ratio = (n1/n2);
-			vec3 refracDir = ratio*(dir-dDotn*normal)-normal*(float)(sqrt(1-(pow(ratio, 2)*(1-pow(dDotn, 2)))));
+			//vec3 refracDir = ratio*(dir-dDotn*normal)-normal*(float)(sqrt(1-(pow(ratio, 2)*(1-pow(dDotn, 2)))));
+			vec3 refracDir = ratio*(dir-dDotn*OGNormal)-OGNormal*(float)(sqrt(1-(pow(ratio, 2)*(1-pow(dDotn, 2)))));
 			ray refracRay = ray(OGP+0.001f*refracDir, refracDir);
 
 			if (print){
@@ -560,7 +562,7 @@ vec3 raycast::getColorForRay(ray r, BVH_Node * tree, vector <SceneObject *> scen
 					//cerr << "nan" << endl;
 					refracColor = (getColorForRay(refracRay, tree, scene, camera, lights, altbrdf, numRecurse+1, print, fresnel, beers, sds, planes, distance));
 				} else {
-					 cerr << "HEKLPO: "<< dDotn << endl;
+					 cerr << "HEKLPO: "<< normal.x << " " << normal.y << " " << normal.z << endl;
 				}
 			}
 
