@@ -240,6 +240,10 @@ void Box::AddPoint(glm::vec3 p) {
 	max.x = glm::max(max.x, p.x);
 	max.y = glm::max(max.y, p.y);
 	max.z = glm::max(max.z, p.z);
+
+	// max.x = glm::min(max.x, p.x);
+	// max.y = glm::min(max.y, p.y);
+	// max.z = glm::min(max.z, p.z);
 }
 
 void Box::AddBox(Box other) {
@@ -278,7 +282,8 @@ void Box::transformBox(glm::mat4 itforms) {
 }
 
 Box Box::calculateBBox(std::vector <SceneObject *> objs) {
-	Box total = Box();// = new Box();
+	Box total;// = Box();// = new Box();
+	bool untouched = true;
 		
 	for (uint i = 0; i < objs.size(); i++) {
 		Box box;// = Box();
@@ -286,28 +291,54 @@ Box Box::calculateBBox(std::vector <SceneObject *> objs) {
 		if (objs[i]->type == "Sphere"){
 			Sphere * obj = dynamic_cast<Sphere *> (objs[i]);
 			//box = Box(obj->origin - glm::vec3(obj->radius), obj->origin - glm::vec3(obj->radius));
+			
+			//total.Reset(obj->origin - glm::vec3(obj->radius));
 			box.Reset(obj->origin - glm::vec3(obj->radius));
 			box.AddPoint(obj->origin + glm::vec3(obj->radius));
 			//box.itransforms = obj->itransforms;
 			box.transformBox(obj->itransforms);
+			// if (untouched){
+			// 	total.Reset(box.min);
+			// 	untouched = false;
+			// }
 			total.AddBox(box);
 			//total->AddBox(box);
 		} else if (objs[i]->type == "Triangle") {
 			Triangle * obj = dynamic_cast<Triangle *> (objs[i]);
+
+			//total.Reset(obj->A);
 			box.Reset(obj->A);
 			box.AddPoint(obj->B);
 			box.AddPoint(obj->C);
 			//box = Box(glm::min(glm::min(obj->A, obj->B), obj->C), )
 			//box.itransforms = obj->itransforms;
 			box.transformBox(obj->itransforms);
+
+			// if (untouched){
+			// 	total.Reset(box.min);
+			// 	untouched = false;
+			// }
+
 			total.AddBox(box);
 		} else if (objs[i]->type == "Box") {
 			Box * obj = dynamic_cast<Box *> (objs[i]);
 			//box.Reset(obj->min);
 			//box.AddPoint(obj->max);
 			box = *obj;
+			// if (untouched){
+			// 	total.Reset(obj->min);
+			// 	untouched = false;
+			// }
+			//total.Reset(obj->min);
+
 			//box.itransforms = obj->itransforms;
 			box.transformBox(obj->itransforms);
+
+			// if (untouched){
+			// 	total.Reset(box.min);
+			// 	untouched = false;
+			// }
+
 			total.AddBox(box);
 		} else {
 			std::cerr << "snakes on a plane" << std::endl;

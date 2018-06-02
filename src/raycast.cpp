@@ -306,7 +306,7 @@ void raycast::render(vector <SceneObject *> & scene, Camera * camera, vector <Li
 	BVH_Node * tree;
 	std::vector <SceneObject *> planes;
 	if (sds){
-		cout << "sds" << endl;
+		//cout << "sds" << endl;
 		std::vector <SceneObject *> objs;
 		for (uint i = 0; i < scene.size(); i++){
 			if (scene[i]->type == "Plane") {
@@ -378,6 +378,7 @@ void raycast::recurseDownTree(ray r, BVH_Node * tree, float & closesthit, SceneO
 			if ((closesthit == -1) || (hit < closesthit)) {
 				closesthit = hit;
 				closestObj = tree->objects[0];
+				//tRay = r;
 				tRay = tr;
 			}
 		}
@@ -396,32 +397,6 @@ void raycast::recurseDownTree(ray r, BVH_Node * tree, float & closesthit, SceneO
 		//}
 		//}
 	} 
-
-	// float hit = tree.volume.intersect(r);
-	// if (hit > 0) {
-	// 	if (tree.children.empty()) {
-
-	// 		vec4 Oprime = tree.objects[0]->itransforms*vec4(r.origin, 1.0);
-	// 		vec4 Dprime = tree.objects[0]->itransforms*vec4(r.direction, 0.0);
-	// 		ray tr = ray(vec3(Oprime), vec3(Dprime));
-
-	// 		hit = tree.objects[0]->intersect(tr);
-	// 		if (hit > 0){
-	// 			if ((closesthit == -1) || (hit < closesthit)) {
-	// 				closesthit = hit;
-	// 				closestObj = tree.objects[0];
-	// 				tRay = tr;
-	// 			}
-	// 		}
-	// 	} else {
-	// 		if (tree.children[0].volume.intersect(r) > 0){
-	// 			recurseDownTree(r, tree.children[0], closesthit, closestObj, tRay);
-	// 		}
-	// 		if (tree.children[1].volume.intersect(r) > 0){
-	// 			recurseDownTree(r, tree.children[1], closesthit, closestObj, tRay);
-	// 		}
-	// 	}
-	// } 	
 }
 
 void raycast::intersectPlanes(ray r, float & closestHit, SceneObject * & obj, ray & tRay, vector <SceneObject *> planes)
@@ -452,6 +427,9 @@ SceneObject * raycast::getIntersect(ray r, BVH_Node * tree, vector <SceneObject 
 		SceneObject * obj = nullptr;
 		recurseDownTree(r, tree, closestHit, obj, tRay);
 		intersectPlanes(r, closestHit, obj, tRay, planes);
+		// if (closestHit > 0 ){
+		// 	cout << obj->color.x << endl;
+		// }
 		return obj;
 	} 
 	else {
@@ -477,6 +455,10 @@ SceneObject * raycast::getIntersect(ray r, BVH_Node * tree, vector <SceneObject 
 				tRay = tr;
 			}
 		}
+		// if (closestHit > 0) {
+		// 	cout << scene[closestObjIndex]->color.x << endl;
+		// }
+		
 		return scene[closestObjIndex];
 	}
 }
@@ -519,6 +501,7 @@ vec3 raycast::getColorForRay(ray r, BVH_Node * tree, vector <SceneObject *> scen
 			{
 				vec3 refDir = r.direction - 2.f*dot(r.direction, normal)*normal;
 				ray refRay = ray(OGP+.001f*normal, refDir);
+
 				if (dot(r.direction, normal) > 0) {
 					refRay = ray(OGP+.001f*-normal, refDir);
 				}
@@ -533,7 +516,7 @@ vec3 raycast::getColorForRay(ray r, BVH_Node * tree, vector <SceneObject *> scen
 			float dDotn = dot(dir, normal);
 			float objIor = obj->ior;
 			float n1, n2;
-			vec3 OGNormal = normal;
+			//vec3 OGNormal = normal;
 
 			if (dDotn < 0) {
 				n1 = 1.0f;

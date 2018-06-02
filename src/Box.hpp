@@ -47,8 +47,12 @@ public:
 		{
 			min = glm::vec3(std::numeric_limits<float>::max());
 			max = -glm::vec3(std::numeric_limits<float>::max());
-			//min = glm::vec3(0., 0., 0.);
-			//max = glm::vec3(0., 0., 0.);
+			max = glm::vec3(std::numeric_limits<float>::lowest());
+			max = glm::vec3(std::numeric_limits<float>::min());
+			//max = -glm::vec3(std::numeric_limits<float>::max());
+			min = glm::vec3(0., 0., 0.);
+
+			max = glm::vec3(0., 0., 0.);
 			color = glm::vec3(1., 1., 1.);
 			itransforms = glm::mat4(1.0f);
 		}	
