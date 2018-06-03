@@ -252,14 +252,14 @@ void Box::AddBox(Box other) {
 }
 
 void Box::transformBox(glm::mat4 itforms) {
-	glm::vec4 p1 = glm::vec4(min, 1.0f);
-	glm::vec4 p2 = glm::vec4(max, 1.0f);  //front top right
-	glm::vec4 p3 = glm::vec4(min.x, max.y, min.z, 1.0f); //back top left
-	glm::vec4 p4 = glm::vec4(max.x, max.y, min.z, 1.0f); //back top right
-	glm::vec4 p5 = glm::vec4(min.x, max.y, max.z, 1.0f); //front top left
-	glm::vec4 p6 = glm::vec4(min.x, min.y, max.z, 1.0f); //front bottom left
-	glm::vec4 p7 = glm::vec4(max.x, min.y, max.z, 1.0f); //front bottom right
-	glm::vec4 p8 = glm::vec4(max.x, min.y, min.z, 1.0f); //back bottom right
+	glm::vec4 p1 = glm::vec4(min, 0.0f);
+	glm::vec4 p2 = glm::vec4(max, 0.0f);  //front top right
+	glm::vec4 p3 = glm::vec4(min.x, max.y, min.z, 0.0f); //back top left
+	glm::vec4 p4 = glm::vec4(max.x, max.y, min.z, 0.0f); //back top right
+	glm::vec4 p5 = glm::vec4(min.x, max.y, max.z, 0.0f); //front top left
+	glm::vec4 p6 = glm::vec4(min.x, min.y, max.z, 0.0f); //front bottom left
+	glm::vec4 p7 = glm::vec4(max.x, min.y, max.z, 0.0f); //front bottom right
+	glm::vec4 p8 = glm::vec4(max.x, min.y, min.z, 0.0f); //back bottom right
 
 	p1 = itforms * p1;
 	p2 = itforms * p2;
@@ -283,27 +283,12 @@ void Box::transformBox(glm::mat4 itforms) {
 
 Box Box::calculateBBox(std::vector <SceneObject *> objs) {
 	Box total;// = Box();// = new Box();
-	bool untouched = true;
+	//bool untouched = true;
 		
 	for (uint i = 0; i < objs.size(); i++) {
 		Box box;// = Box();
 			
-		if (objs[i]->type == "Sphere"){
-			Sphere * obj = dynamic_cast<Sphere *> (objs[i]);
-			//box = Box(obj->origin - glm::vec3(obj->radius), obj->origin - glm::vec3(obj->radius));
-			
-			//total.Reset(obj->origin - glm::vec3(obj->radius));
-			box.Reset(obj->origin - glm::vec3(obj->radius));
-			box.AddPoint(obj->origin + glm::vec3(obj->radius));
-			//box.itransforms = obj->itransforms;
-			box.transformBox(obj->itransforms);
-			// if (untouched){
-			// 	total.Reset(box.min);
-			// 	untouched = false;
-			// }
-			total.AddBox(box);
-			//total->AddBox(box);
-		} else if (objs[i]->type == "Triangle") {
+		if (objs[i]->type == "Triangle") {
 			Triangle * obj = dynamic_cast<Triangle *> (objs[i]);
 
 			//total.Reset(obj->A);
@@ -320,6 +305,21 @@ Box Box::calculateBBox(std::vector <SceneObject *> objs) {
 			// }
 
 			total.AddBox(box);
+		} else if (objs[i]->type == "Sphere"){
+			Sphere * obj = dynamic_cast<Sphere *> (objs[i]);
+			//box = Box(obj->origin - glm::vec3(obj->radius), obj->origin - glm::vec3(obj->radius));
+			
+			//total.Reset(obj->origin - glm::vec3(obj->radius));
+			box.Reset(obj->origin - (obj->radius));
+			box.AddPoint(obj->origin + (obj->radius));
+			//box.itransforms = obj->itransforms;
+			box.transformBox(obj->itransforms);
+			// if (untouched){
+			// 	total.Reset(box.min);
+			// 	untouched = false;
+			// }
+			total.AddBox(box);
+			//total->AddBox(box);
 		} else if (objs[i]->type == "Box") {
 			Box * obj = dynamic_cast<Box *> (objs[i]);
 			//box.Reset(obj->min);
