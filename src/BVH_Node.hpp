@@ -37,7 +37,7 @@ public:
 
 		BVH_Node * newNode = new BVH_Node();
 		
-		if (objs.size() <= 1) {
+		if (objs.size() <= 6) {
 			newNode->objects = objs;
 			newNode->volume = Box::calculateBBox(objs);
 			return newNode;

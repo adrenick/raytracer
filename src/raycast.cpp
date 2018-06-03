@@ -369,32 +369,35 @@ void raycast::recurseDownTree(ray r, BVH_Node * tree, float & closesthit, SceneO
 {
 	
 	if (tree->children.empty()) {
-		vec4 Oprime = tree->objects[0]->itransforms*vec4(r.origin, 1.0);
-		vec4 Dprime = tree->objects[0]->itransforms*vec4(r.direction, 0.0);
-		ray tr = ray(vec3(Oprime), vec3(Dprime));
+		for (uint i = 0; i < tree->objects.size(); i++){
+			vec4 Oprime = tree->objects[i]->itransforms*vec4(r.origin, 1.0);
+			vec4 Dprime = tree->objects[i]->itransforms*vec4(r.direction, 0.0);
+			ray tr = ray(vec3(Oprime), vec3(Dprime));
 
-		float hit = tree->objects[0]->intersect(tr);
-		if (hit > 0){
-			if ((closesthit == -1) || (hit < closesthit)) {
-				closesthit = hit;
-				closestObj = tree->objects[0];
-				//tRay = r;
-				tRay = tr;
+			float hit = tree->objects[i]->intersect(tr);
+			if (hit > 0){
+				if ((closesthit == -1) || (hit < closesthit)) {
+					closesthit = hit;
+					closestObj = tree->objects[i];
+					//tRay = r;
+					tRay = tr;
+				}
 			}
-		}
+		}	
+			
 	} else {
 		//float hit = tree.volume.intersect(r);
 		//if (hit > 0){
 			//cout << "*** " << tree.children.size() << endl;
-		//if (tree->children.size() >= 1)	{
+		if (tree->children.size() >= 1)	{
 			if (tree->children[0]->volume.intersect(r) > 0){
 				recurseDownTree(r, tree->children[0], closesthit, closestObj, tRay);
 			}
-		//} if (tree->children.size() >= 2) {
+		} if (tree->children.size() >= 2) {
 			if (tree->children[1]->volume.intersect(r) > 0){
 				recurseDownTree(r, tree->children[1], closesthit, closestObj, tRay);
 			}
-		//}
+		}
 		//}
 	} 
 }
