@@ -11,7 +11,9 @@ glm::vec3 Triangle::computeCenter() {
 	float y = (A.y + B.y + C.y)/3.f;;
 	float z = (A.z + B.z + C.z)/3.f;;
 
-	return glm::vec3(x, y, z);
+	glm::vec3 center = glm::vec3(x, y, z);
+
+	return glm::vec3(itransforms*glm::vec4(center, 0.f));
 }
 
 float Triangle::intersect(const ray & r)

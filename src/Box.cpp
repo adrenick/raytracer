@@ -7,7 +7,10 @@
 using namespace std;
 
 glm::vec3 Box::computeCenter() {
-	return glm::vec3((max.x-min.x)/2.f, (max.y-min.y)/2.f, (max.z-min.z)/2.f);
+	
+	glm::vec3 center = glm::vec3((max.x-min.x)/2.f, (max.y-min.y)/2.f, (max.z-min.z)/2.f);
+	
+	return glm::vec3(itransforms*glm::vec4(center, 0.f));
 }
 
 float Box::intersect(const ray & r)
