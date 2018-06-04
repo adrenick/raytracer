@@ -10,7 +10,7 @@ glm::vec3 Box::computeCenter() {
 	
 	glm::vec3 center = glm::vec3((max.x-min.x)/2.f, (max.y-min.y)/2.f, (max.z-min.z)/2.f);
 	
-	return glm::vec3(itransforms*glm::vec4(center, 0.f));
+	return glm::vec3(glm::inverse(itransforms)*glm::vec4(center, 0.f));
 }
 
 float Box::intersect(const ray & r)
@@ -255,23 +255,23 @@ void Box::AddBox(Box other) {
 }
 
 void Box::transformBox(glm::mat4 itforms) {
-	glm::vec4 p1 = glm::vec4(min, 0.0f);
-	glm::vec4 p2 = glm::vec4(max, 0.0f);  //front top right
-	glm::vec4 p3 = glm::vec4(min.x, max.y, min.z, 0.0f); //back top left
-	glm::vec4 p4 = glm::vec4(max.x, max.y, min.z, 0.0f); //back top right
-	glm::vec4 p5 = glm::vec4(min.x, max.y, max.z, 0.0f); //front top left
-	glm::vec4 p6 = glm::vec4(min.x, min.y, max.z, 0.0f); //front bottom left
-	glm::vec4 p7 = glm::vec4(max.x, min.y, max.z, 0.0f); //front bottom right
-	glm::vec4 p8 = glm::vec4(max.x, min.y, min.z, 0.0f); //back bottom right
+	glm::vec4 p1 = glm::vec4(min, 1.0f);
+	glm::vec4 p2 = glm::vec4(max, 1.0f);  //front top right
+	glm::vec4 p3 = glm::vec4(min.x, max.y, min.z, 1.0f); //back top left
+	glm::vec4 p4 = glm::vec4(max.x, max.y, min.z, 1.0f); //back top right
+	glm::vec4 p5 = glm::vec4(min.x, max.y, max.z, 1.0f); //front top left
+	glm::vec4 p6 = glm::vec4(min.x, min.y, max.z, 1.0f); //front bottom left
+	glm::vec4 p7 = glm::vec4(max.x, min.y, max.z, 1.0f); //front bottom right
+	glm::vec4 p8 = glm::vec4(max.x, min.y, min.z, 1.0f); //back bottom right
 
-	p1 = itforms * p1;
-	p2 = itforms * p2;
-	p3 = itforms * p3;
-	p4 = itforms * p4;
-	p5 = itforms * p5;
-	p6 = itforms * p6;
-	p7 = itforms * p7;
-	p8 = itforms * p8;
+	p1 = glm::inverse(itforms) * p1;
+	p2 = glm::inverse(itforms) * p2;
+	p3 = glm::inverse(itforms) * p3;
+	p4 = glm::inverse(itforms) * p4;
+	p5 = glm::inverse(itforms) * p5;
+	p6 = glm::inverse(itforms) * p6;
+	p7 = glm::inverse(itforms) * p7;
+	p8 = glm::inverse(itforms) * p8;
 
 	Reset(glm::vec3(p1));
 	AddPoint(glm::vec3(p2));

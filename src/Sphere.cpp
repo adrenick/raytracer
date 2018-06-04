@@ -7,7 +7,7 @@
 using namespace std;
 
 glm::vec3 Sphere::computeCenter() {
-	return glm::vec3(itransforms*glm::vec4(origin, 0.f));
+	return glm::vec3(glm::inverse(itransforms)*glm::vec4(origin, 0.f));
 }
 
 float Sphere::intersect(const ray & r)
