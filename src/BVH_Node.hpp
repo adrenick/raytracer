@@ -23,7 +23,7 @@ public:
 
 	void printTree() {
 		if (children.empty()) {
-			std::cout << "leaf: " << objects[0]->type << std::endl;
+			std::cout << "leaf: " << objects[0]->type << " min: " << volume.min.x << " " << volume.min.y << " " << volume.min.z << " max: " << volume.max.x << " " << volume.max.y << " " << volume.max.z << std::endl;
 
 		} else {
 			std::cout << "left: " << " min: " << volume.min.x << " " << volume.min.y << " " << volume.min.z << " max: " << volume.max.x << " " << volume.max.y << " " << volume.max.z << std::endl;
@@ -37,7 +37,7 @@ public:
 
 		BVH_Node * newNode = new BVH_Node();
 		
-		if (objs.size() <= 6) {
+		if (objs.size() <= 1) {
 			newNode->objects = objs;
 			newNode->volume = Box::calculateBBox(objs);
 			return newNode;
