@@ -202,11 +202,11 @@ vec3 raycast::computeColor(vec3 hit, vector <SceneObject *> scene, SceneObject *
 
 	vec3 amb = obj->color * obj->ambient;
 	
-	if (gi == 0) {
+	if (gi > 0) {
 		amb = a;
 	}
 	vec3 color = amb;
-	
+
 	for (uint i = 0; i < lights.size(); i++){
 
 		vec3 n = normal;
