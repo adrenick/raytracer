@@ -365,41 +365,78 @@ float raycast::schlicks_approx(float n, vec3 normal, vec3 v)
 	return F;
 }
 
-void raycast::recurseDownTree(ray r, BVH_Node * tree, float & closesthit, SceneObject * & closestObj, ray & tRay)
+bool raycast::recurseDownTree(ray r, BVH_Node * tree, float & closesthit, SceneObject * & closestObj, ray & tRay)
 {
 	
-	if (tree->children.empty()) {
-		for (uint i = 0; i < tree->objects.size(); i++){
-			vec4 Oprime = tree->objects[i]->itransforms*vec4(r.origin, 1.0);
-			vec4 Dprime = tree->objects[i]->itransforms*vec4(r.direction, 0.0);
-			ray tr = ray(vec3(Oprime), vec3(Dprime));
+	if (tree->volume.intersect(r) < 0)
+	{
+		return false;
+	}
 
-			float hit = tree->objects[i]->intersect(tr);
-			if (hit > 0){
-				if ((closesthit == -1) || (hit < closesthit)) {
-					closesthit = hit;
-					closestObj = tree->objects[i];
-					//tRay = r;
-					tRay = tr;
-				}
-			}
-		}	
-			
-	} else {
-		//float hit = tree.volume.intersect(r);
-		//if (hit > 0){
-			//cout << "*** " << tree.children.size() << endl;
-		if (tree->children.size() >= 1)	{
-			if (tree->children[0]->volume.intersect(r) > 0){
-				recurseDownTree(r, tree->children[0], closesthit, closestObj, tRay);
-			}
-		} if (tree->children.size() >= 2) {
-			if (tree->children[1]->volume.intersect(r) > 0){
-				recurseDownTree(r, tree->children[1], closesthit, closestObj, tRay);
+	for (uint i = 0; i < tree->children.size(); i++) {
+		float newHit;
+		SceneObject * newObj = nullptr;
+		ray newTRay;
+		if (recurseDownTree(r, tree->children[i], newHit, newObj, newTRay) > 0) {
+			if ((closestObj == nullptr) || ((newHit >= 0) && (newHit < closesthit))) {
+				closestObj = newObj;
+				closesthit = newHit;
+				tRay = newTRay;
 			}
 		}
-		//}
-	} 
+	}
+
+	for (uint i = 0; i < tree->objects.size(); i++){
+		vec4 Oprime = tree->objects[i]->itransforms*vec4(r.origin, 1.0);
+		vec4 Dprime = tree->objects[i]->itransforms*vec4(r.direction, 0.0);
+		ray tr = ray(vec3(Oprime), vec3(Dprime));
+
+		float hit = tree->objects[i]->intersect(tr);
+		if (hit >= 0){
+			if ((closestObj == nullptr) || (hit < closesthit))
+			{
+				closestObj = tree->objects[i];
+				closesthit = hit;
+				tRay = tr;
+			}
+		}
+	}
+
+	return closestObj != nullptr;
+
+
+	// if (tree->children.empty()) {
+	// 	for (uint i = 0; i < tree->objects.size(); i++){
+	// 		vec4 Oprime = tree->objects[i]->itransforms*vec4(r.origin, 1.0);
+	// 		vec4 Dprime = tree->objects[i]->itransforms*vec4(r.direction, 0.0);
+	// 		ray tr = ray(vec3(Oprime), vec3(Dprime));
+
+	// 		float hit = tree->objects[i]->intersect(tr);
+	// 		if (hit > 0){
+	// 			if ((closesthit == -1) || (hit < closesthit)) {
+	// 				closesthit = hit;
+	// 				closestObj = tree->objects[i];
+	// 				//tRay = r;
+	// 				tRay = tr;
+	// 			}
+	// 		}
+	// 	}	
+			
+	// } else {
+	// 	//float hit = tree.volume.intersect(r);
+	// 	//if (hit > 0){
+	// 		//cout << "*** " << tree.children.size() << endl;
+	// 	if (tree->children.size() >= 1)	{
+	// 		if (tree->children[0]->volume.intersect(r) > 0){
+	// 			recurseDownTree(r, tree->children[0], closesthit, closestObj, tRay);
+	// 		}
+	// 	} if (tree->children.size() >= 2) {
+	// 		if (tree->children[1]->volume.intersect(r) > 0){
+	// 			recurseDownTree(r, tree->children[1], closesthit, closestObj, tRay);
+	// 		}
+	// 	}
+	// 	//}
+	// } 
 }
 
 void raycast::intersectPlanes(ray r, float & closestHit, SceneObject * & obj, ray & tRay, vector <SceneObject *> planes)
@@ -428,12 +465,18 @@ SceneObject * raycast::getIntersect(ray r, BVH_Node * tree, vector <SceneObject 
 	if (sds){
 		//cout << "sds" << endl;
 		SceneObject * obj = nullptr;
-		recurseDownTree(r, tree, closestHit, obj, tRay);
+		bool intersect = recurseDownTree(r, tree, closestHit, obj, tRay);
 		intersectPlanes(r, closestHit, obj, tRay, planes);
 		// if (closestHit > 0 ){
 		// 	cout << obj->color.x << endl;
 		// }
-		return obj;
+		if (intersect){
+			return obj;
+		} else {
+			closestHit = -1;
+			return nullptr;
+		}
+		
 	} 
 	else {
 		for (uint i = 0; i < scene.size(); i++){

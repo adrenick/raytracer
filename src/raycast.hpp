@@ -31,7 +31,7 @@ public:
 
 	static SceneObject * getIntersect(ray r, BVH_Node * tree, std::vector <SceneObject *> scene, float & closestHit, int & closestObjIndex, ray & tRay, bool sds, std::vector <SceneObject *> planes);
 
-	static void recurseDownTree(ray r, BVH_Node * tree, float & closesthit, SceneObject * & closestObj, ray & tRay);
+	static bool recurseDownTree(ray r, BVH_Node * tree, float & closesthit, SceneObject * & closestObj, ray & tRay);
 
 	static glm::vec3 getColorForRay(ray r, BVH_Node * tree, std::vector <SceneObject *> scene, Camera * camera, std::vector <Light *> lights, bool altbrdf, int numRecurse, bool print, bool fresnel, bool beers, bool sds, std::vector <SceneObject *> planes, float & distanceHit);
 
