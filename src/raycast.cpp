@@ -315,7 +315,11 @@ void raycast::render(vector <SceneObject *> & scene, Camera * camera, vector <Li
 				objs.push_back(scene[i]);
 			}
 		} 
-		tree = BVH_Node::buildTree(objs, 0);
+		//const std::vector <SceneObject *> objects = objs;
+		tree = new BVH_Node(objs);
+
+		tree->buildTree(0);
+		//tree = BVH_Node::buildTree(objs, 0);
 		tree->printTree();
 	}
 
