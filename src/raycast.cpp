@@ -682,17 +682,20 @@ vec3 raycast::getColorForRay(ray r, BVH_Node * tree, vector <SceneObject *> scen
 				ray giRay = ray(OGP+0.0001f*dir, dir);
 				
 				// cout << "687" << endl;
-				a += getColorForRay(giRay, tree, scene, camera, lights, altbrdf, numRecurse +1, print, fresnel, beers, sds, planes, distance, gi);
+				if (gi == 64){
+					a += getColorForRay(giRay, tree, scene, camera, lights, altbrdf, numRecurse+1, print, fresnel, beers, sds, planes, distance, 16);
+				}
+				
 				// cout << "689" << endl;
 			}
 
 			a *= 1.f/ gi; // do this every time?
 
-			if (gi == 64){
-				gi = 16;
-			} else {
-				gi = 0;
-			}
+			// if (gi == 64){
+			// 	gi = 16;
+			// } else {
+			// 	gi = 0;
+			// }
 
 
 
