@@ -19,7 +19,7 @@ public:
 
 	BVH_Node(std::vector<SceneObject *> & objects);
 
-	void printTree();
+	void printTree(const std::string & name);
 
 	void buildTree(int axis);
 

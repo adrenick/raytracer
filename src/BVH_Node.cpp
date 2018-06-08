@@ -10,16 +10,44 @@ BVH_Node::BVH_Node(std::vector<SceneObject *> & objects)
 	this->volume = calculateBBox(objects);
 }
 
-void BVH_Node::printTree() {
-	if (children.empty()) {
-		std::cout << "leaf: " << objects[0]->type << " min: " << volume.min.x << " " << volume.min.y << " " << volume.min.z << " max: " << volume.max.x << " " << volume.max.y << " " << volume.max.z << std::endl;
+void BVH_Node::printTree(const std::string & name) {
 
-	} else {
-		std::cout << "left: " << " min: " << volume.min.x << " " << volume.min.y << " " << volume.min.z << " max: " << volume.max.x << " " << volume.max.y << " " << volume.max.z << std::endl;
-		children[0]->printTree();
-		std::cout<< "right: " << " min: " << volume.min.x << " " << volume.min.y << " " << volume.min.z << " max: " << volume.max.x << " " << volume.max.y << " " << volume.max.z << std::endl;
-		children[1]->printTree(); 
+	std::cout << name << ":" << std::endl;
+	std::cout << "- min: " << volume.min.x << " " << volume.min.y << " " << volume.min.z << std::endl;
+	std::cout << "- max: " << volume.max.x << " " << volume.max.y << " " << volume.max.z << std::endl;
+	if (objects.size())
+	{
+		std::cout << "- leaf" << std::endl;
+
+		for (const SceneObject * object : objects)
+		{
+			std::cout << "- object "  << object->type << std::endl;
+		}
 	}
+	else
+	{
+		std::cout << "- branch" << std::endl;
+	}
+	std::cout << std::endl;
+
+
+	if (children.size() > 0)
+	{
+		children[0]->printTree(name + "->left");
+	}
+	if (children.size() > 1)
+	{
+		children[1]->printTree(name + "->right");
+	}
+	// if (children.empty()) {
+	// 	std::cout << "leaf: " << objects[0]->type << " min: " << volume.min.x << " " << volume.min.y << " " << volume.min.z << " max: " << volume.max.x << " " << volume.max.y << " " << volume.max.z << std::endl;
+
+	// } else {
+	// 	std::cout << "left: " << " min: " << volume.min.x << " " << volume.min.y << " " << volume.min.z << " max: " << volume.max.x << " " << volume.max.y << " " << volume.max.z << std::endl;
+	// 	children[0]->printTree();
+	// 	std::cout<< "right: " << " min: " << volume.min.x << " " << volume.min.y << " " << volume.min.z << " max: " << volume.max.x << " " << volume.max.y << " " << volume.max.z << std::endl;
+	// 	children[1]->printTree(); 
+	// }
 }
 
 void BVH_Node::buildTree(int axis) {

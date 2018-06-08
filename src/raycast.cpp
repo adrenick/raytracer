@@ -323,7 +323,8 @@ void raycast::render(vector <SceneObject *> & scene, Camera * camera, vector <Li
 
 		tree->buildTree(0);
 		//tree = BVH_Node::buildTree(objs, 0);
-		tree->printTree();
+		std::string root = "root";
+		tree->printTree(root);
 	}
 
 	for (int y = 0; y < size.y; ++ y)
@@ -558,7 +559,7 @@ vec3 raycast::generateHemispherePt(vec3 normal) {
 	// vector <vec3> pts;
 	float u, v;
 	// for (uint i = 0; i <= count; i++){
-		u = rand() / (float) RAND_MAX;
+		u = rand() / (float) RAND_MAX; //STRATIFY
 		v = rand() / (float) RAND_MAX;
 
 	vec3 pt = (alignSample(cosineWeightedPt(u, v), vec3(0, 0, 1), normal));
@@ -684,7 +685,7 @@ vec3 raycast::getColorForRay(ray r, BVH_Node * tree, vector <SceneObject *> scen
 				// cout << "687" << endl;
 				if (gi == 64){
 					a += getColorForRay(giRay, tree, scene, camera, lights, altbrdf, numRecurse+1, print, fresnel, beers, sds, planes, distance, 16);
-				}
+				} 
 				
 				// cout << "689" << endl;
 			}
