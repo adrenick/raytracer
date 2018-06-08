@@ -6,14 +6,27 @@
 #include <iostream>
 using namespace std;
 
-glm::vec3 Triangle::computeCenter() {
-	float x = (A.x + B.x + C.x)/3.f;
-	float y = (A.y + B.y + C.y)/3.f;;
-	float z = (A.z + B.z + C.z)/3.f;;
+// glm::vec3 Triangle::computeCenter() {
+// 	float x = (A.x + B.x + C.x)/3.f;
+// 	float y = (A.y + B.y + C.y)/3.f;;
+// 	float z = (A.z + B.z + C.z)/3.f;;
 
-	glm::vec3 center = glm::vec3(x, y, z);
+// 	glm::vec3 center = glm::vec3(x, y, z);
 
-	return glm::vec3(glm::inverse(itransforms)*glm::vec4(center, 0.f));
+// 	return glm::vec3(glm::inverse(itransforms)*glm::vec4(center, 0.f));
+// }
+
+BB Triangle::getBoundingBox() {
+	BB box;
+
+	box.Reset(A);
+	box.AddPoint(B);
+	box.AddPoint(C);
+
+	box.transformBox(transforms);
+
+	return box;
+	
 }
 
 float Triangle::intersect(const ray & r)

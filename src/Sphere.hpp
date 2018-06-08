@@ -6,6 +6,7 @@
 #define SPHERE_H
 
 #include "SceneObject.hpp"
+#include "BB.hpp"
 
 class Sphere : public SceneObject
 {
@@ -16,9 +17,11 @@ public:
 
 	float intersect(const ray & r);
 
-	glm::vec3 computeCenter();
+	//glm::vec3 computeCenter();
 
 	void print();
+
+	BB getBoundingBox();
 
 	glm::vec3 computeNormal(glm::vec3 p);
 
@@ -28,6 +31,7 @@ public:
 			radius = r;
 			color = c;
 			itransforms = glm::mat4(1.0f);
+			transforms = glm::mat4(1.0f);
 		}
 		Sphere()
 		{
@@ -35,6 +39,7 @@ public:
 			radius = 0.;
 			color = glm::vec3(1., 1., 1.);
 			itransforms = glm::mat4(1.0f);
+			transforms = glm::mat4(1.0f);
 		}	
 };
 

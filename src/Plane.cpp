@@ -22,6 +22,11 @@ float Plane::intersect(const ray & r)
 	}
 }
 
+BB Plane::getBoundingBox() {
+	BB box;
+	return box;
+}
+
 void Plane::print()
 {
 	cout << "- Normal: {" << normal.x << " " << normal.y << " " << normal.z << "}" << endl;

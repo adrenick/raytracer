@@ -5,6 +5,7 @@
 #ifndef SCENEOBJECT_H
 #define SCENEOBJECT_H
 
+#include "BB.hpp"
 #include "ray.hpp"
 #include "Camera.hpp"
 #include "Light.hpp"
@@ -26,6 +27,9 @@ public:
 	float refraction;
 
 	glm::mat4 itransforms; 
+	glm::mat4 transforms; 
+
+	BB boundingBox;
 
 	std::string type;
 	glm::vec3 color;
@@ -35,9 +39,11 @@ public:
 
 	virtual void print() = 0;
 
+	virtual BB getBoundingBox() = 0;
+
 	virtual glm::vec3 computeNormal(glm::vec3 hit) = 0;
 
-	virtual glm::vec3 computeCenter() = 0;
+	//virtual glm::vec3 computeCenter() = 0;
 
 	static void printScene(std::vector <SceneObject *> scene, Camera * camera, std::vector <Light *> lights);
 };

@@ -3,6 +3,7 @@
 	Raytracer Project */
 
 #include "SceneObject.hpp"
+#include "BB.hpp"
 
 class Plane : public SceneObject
 {
@@ -15,6 +16,8 @@ public:
 
 	glm::vec3 computeNormal(glm::vec3 p);
 
+	BB getBoundingBox();
+
 	glm::vec3 computeCenter();
 
 	void print();
@@ -25,6 +28,7 @@ public:
 			distance = d;
 			color = c;
 			itransforms = glm::mat4(1.0f);
+			transforms = glm::mat4(1.0f);
 		}
 		Plane()
 		{
@@ -32,5 +36,6 @@ public:
 			distance = 0.;
 			color = glm::vec3(1., 1., 1.);
 			itransforms = glm::mat4(1.0f);
+			transforms = glm::mat4(1.0f);
 		}	
 };

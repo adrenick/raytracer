@@ -8,6 +8,7 @@
 #include "SceneObject.hpp"
 #include "Sphere.hpp"
 #include "Triangle.hpp"
+#include "BB.hpp"
 
 class Box : public SceneObject
 {
@@ -20,21 +21,9 @@ public:
 
 	void print();
 
-	glm::vec3 computeCenter();
-
-	void calcGminmax(float & min, float & max, float & gmin, float & gmax);
-
 	glm::vec3 computeNormal(glm::vec3 p);
 
-	void Reset(glm::vec3 p);
-	
-	void AddPoint(glm::vec3 p);
-
-	void AddBox(Box other);
-
-	void transformBox(glm::mat4 itforms);
-
-	static Box calculateBBox(std::vector <SceneObject *> objs);
+	BB getBoundingBox();
 
 		Box(glm::vec3 mi, glm::vec3 ma, glm::vec3 c)
 		{
@@ -42,29 +31,17 @@ public:
 			max = ma;
 			color = c;
 			itransforms = glm::mat4(1.0f);
+			transforms = glm::mat4(1.0f);
 		}
 		Box()
 		{
-			// min = glm::vec3(std::numeric_limits<float>::max());
-			// max = -glm::vec3(std::numeric_limits<float>::max());
-			// max = glm::vec3(std::numeric_limits<float>::lowest());
-			// max = glm::vec3(std::numeric_limits<float>::min());
-			// //max = -glm::vec3(std::numeric_limits<float>::max());
-			// min = glm::vec3(0., 0., 0.);
-			// max = glm::vec3(0., 0., 0.);
-
-			// min = glm::vec3(1000000000);
-			// max = glm::vec3(-1000000000);
 
 			min = glm::vec3(std::numeric_limits<float>::max());
 			max = glm::vec3(-std::numeric_limits<float>::max());
 
-
-			//min = glm::vec3(-1000);
-			//max = glm::vec3(1000);
-
 			color = glm::vec3(1., 1., 1.);
 			itransforms = glm::mat4(1.0f);
+			transforms = glm::mat4(1.0f);
 		}	
 };
 

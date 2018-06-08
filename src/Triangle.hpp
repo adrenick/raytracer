@@ -6,6 +6,7 @@
 #define TRIANGLE_H
 
 #include "SceneObject.hpp"
+#include "BB.hpp"
 
 class Triangle : public SceneObject
 {
@@ -16,6 +17,8 @@ public:
 	glm::vec3 C;
 
 	float intersect(const ray & r);
+
+	BB getBoundingBox();
 
 	glm::vec3 computeCenter();
 
@@ -32,6 +35,7 @@ public:
 			color = c;
 
 			itransforms = glm::mat4(1.0f);
+			transforms = glm::mat4(1.0f);
 		}
 
 		Triangle()
@@ -43,6 +47,7 @@ public:
 			color = glm::vec3(1., 1., 1.);
 
 			itransforms = glm::mat4(1.0f);
+			transforms = glm::mat4(1.0f);
 		}
 };
 

@@ -143,7 +143,9 @@ SceneObject * Parse::ParseBox(std::stringstream & Stream)
 		}
 		rest >> token;
     }
+    obj->transforms = Model;
     obj->itransforms = inverse(Model);
+    obj->boundingBox = obj->getBoundingBox();
 
     obj->ambient = amb;
     obj->diffuse = diff;
@@ -252,7 +254,9 @@ SceneObject * Parse::ParseSphere(stringstream & Stream)
 		}
 		rest >> token;
     }
+    obj->transforms = Model;
     obj->itransforms = inverse(Model);
+    obj->boundingBox = obj->getBoundingBox();
 
     obj->ambient = amb;
     obj->diffuse = diff;
@@ -354,8 +358,9 @@ SceneObject * Parse::ParseTriangle(stringstream & Stream)
 
 		rest >> token;
     }
+    obj->transforms = Model;
     obj->itransforms = inverse(Model);
-    //cout << "\n";
+    obj->boundingBox = obj->getBoundingBox();
 
     obj->ambient = amb;
     obj->diffuse = diff;
@@ -629,7 +634,9 @@ SceneObject * Parse::ParsePlane(stringstream & Stream)
 		rest >> token;
     }
 
+	obj->transforms = Model;
     obj->itransforms = inverse(Model);
+    obj->boundingBox = obj->getBoundingBox();
 
     obj->ambient = amb;
     obj->diffuse = diff;
