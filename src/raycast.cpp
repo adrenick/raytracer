@@ -147,7 +147,7 @@ void raycast::pixelColor(vector <SceneObject *> scene, Camera * camera, vector <
 		vec3 a, d, s;
 		vec3 P = r.origin+closestHit*r.direction;
 		vec3 normal = scene[closestObjIndex]->computeNormal(P);
-		computeColor(P, scene, scene[closestObjIndex], normal, camera, lights, true, false, a, d, s);
+		computeColor(P, scene, scene[closestObjIndex], normal, camera, lights, true, false, a, d, s, 0);
 	} 
 
 	//delete r;
@@ -196,13 +196,17 @@ float raycast::firstHit(ray r, vector <SceneObject *> scene, bool print)
 	return closestHit;
 }
 
-vec3 raycast::computeColor(vec3 hit, vector <SceneObject *> scene, SceneObject * obj, vec3 normal, Camera * camera, vector <Light *> lights, bool print, bool altbrdf, glm::vec3 & a, glm::vec3 & d, glm::vec3 & s)
+vec3 raycast::computeColor(vec3 hit, vector <SceneObject *> scene, SceneObject * obj, vec3 normal, Camera * camera, vector <Light *> lights, bool print, bool altbrdf, glm::vec3 & a, glm::vec3 & d, glm::vec3 & s, int gi)
 {
 	//SceneObject * obj = scene[objIndex];
 
 	vec3 amb = obj->color * obj->ambient;
 	vec3 color = amb;
-	a = amb;
+	if (gi > 0) {
+		a = vec3(0);
+	} else {	
+		a = amb;
+	}
 
 	for (uint i = 0; i < lights.size(); i++){
 
@@ -295,7 +299,7 @@ float raycast::calcG(vec3 x, vec3 h, vec3 n, float r)
 	return chi * (2 / (1 + sqrt(quant)));
 }
 
-void raycast::render(vector <SceneObject *> & scene, Camera * camera, vector <Light *> lights, int width, int height, bool altbrdf, bool beers, bool fresnel, bool sds, int ssN)
+void raycast::render(vector <SceneObject *> & scene, Camera * camera, vector <Light *> lights, int width, int height, bool altbrdf, bool beers, bool fresnel, bool sds, int ssN, int gi)
 {
 	const int numChannels = 3;
 	const string fileName = "output.png";
@@ -334,13 +338,13 @@ void raycast::render(vector <SceneObject *> & scene, Camera * camera, vector <Li
 			if (ssN == 0){
 				float f;
 				r = createRay(camera, width, height, x, y);
-				color = getColorForRay(r, tree, scene, camera, lights, altbrdf, 0, false, fresnel, beers, sds, planes, f);
+				color = getColorForRay(r, tree, scene, camera, lights, altbrdf, 0, false, fresnel, beers, sds, planes, f, gi);
 			} else {
 				for (int m = 0; m < ssN; ++m){
 					for (int n = 0; n < ssN; ++n){
 						float f;
 						r = createSuperSampledRay(camera, width, height, x, y, m, n, ssN);
-						color += getColorForRay(r, tree, scene, camera, lights, altbrdf, 0, false, fresnel, beers, sds, planes, f);
+						color += getColorForRay(r, tree, scene, camera, lights, altbrdf, 0, false, fresnel, beers, sds, planes, f, gi);
 					}
 				}
 				color = color/((float)ssN*ssN);
@@ -513,7 +517,57 @@ SceneObject * raycast::getIntersect(ray r, BVH_Node * tree, vector <SceneObject 
 	}
 }
 
-vec3 raycast::getColorForRay(ray r, BVH_Node * tree, vector <SceneObject *> scene, Camera * camera, vector <Light *> lights, bool altbrdf, int numRecurse, bool print, bool fresnel, bool beers, bool sds, std::vector <SceneObject *> planes, float & distanceHit)
+vec3 raycast::alignSample(vec3 sample, vec3 up, vec3 normal) {
+	
+	float angle = acos(dot(up, normal));
+
+	vec3 axis; 
+	if (normal == up) {
+		return sample;
+	} else if (normal == -up) {
+		return -sample;
+	} else {
+		axis = cross(up, normal);
+	} 	
+	
+	
+
+	mat4 rotMat = mat4(1.f);
+	rotMat = rotate(mat4(1.f), angle, axis) * rotMat; //?
+
+	//mat4 Model = glm::mat4(1.0f);
+	//Model = rotate(mat4(1.f), radians(t.z), vec3(0, 0, 1))*Model;
+
+	return vec3(rotMat * vec4(sample, 0.f));
+}	
+
+vec3 raycast::cosineWeightedPt(float u, float v) {
+	const double pi = 3.14159265358979323846;
+
+	float radial = sqrt(u);
+	float theta = 2.f * pi * v;
+
+	float x = radial * cos(theta);
+	float y = radial * sin(theta);
+
+	return vec3(x, y, sqrt(1.f - u));
+}
+
+vec3 raycast::generateHemispherePt(vec3 normal) {
+	
+	// vector <vec3> pts;
+	float u, v;
+	// for (uint i = 0; i <= count; i++){
+		u = rand() / (float) RAND_MAX;
+		v = rand() / (float) RAND_MAX;
+
+	vec3 pt = (alignSample(cosineWeightedPt(u, v), vec3(0, 0, 1), normal));
+	// }
+
+	return pt;
+}
+
+vec3 raycast::getColorForRay(ray r, BVH_Node * tree, vector <SceneObject *> scene, Camera * camera, vector <Light *> lights, bool altbrdf, int numRecurse, bool print, bool fresnel, bool beers, bool sds, std::vector <SceneObject *> planes, float & distanceHit, int gi)
 {
 
 	float closestHit = -1;
@@ -555,7 +609,7 @@ vec3 raycast::getColorForRay(ray r, BVH_Node * tree, vector <SceneObject *> scen
 				if (dot(r.direction, normal) > 0) {
 					refRay = ray(OGP+.001f*-normal, refDir);
 				}
-				refColor = getColorForRay(refRay, tree, scene, camera, lights, altbrdf, numRecurse+1, print, fresnel, beers, sds, planes, distance)*obj->color;
+				refColor = getColorForRay(refRay, tree, scene, camera, lights, altbrdf, numRecurse+1, print, fresnel, beers, sds, planes, distance, gi)*obj->color;
 			}
 		}
 
@@ -594,7 +648,7 @@ vec3 raycast::getColorForRay(ray r, BVH_Node * tree, vector <SceneObject *> scen
 			if (numRecurse < 12){
 				//if  (!std::isnan(refracRay.direction.x)) {
 					//cerr << "nan" << endl;
-					refracColor = (getColorForRay(refracRay, tree, scene, camera, lights, altbrdf, numRecurse+1, print, fresnel, beers, sds, planes, distance));
+					refracColor = (getColorForRay(refracRay, tree, scene, camera, lights, altbrdf, numRecurse+1, print, fresnel, beers, sds, planes, distance, gi));
 				//} else {
 					 //cerr << "HEKLPO: "<< normal.x << " " << normal.y << " " << normal.z << endl;
 				//}
@@ -616,7 +670,38 @@ vec3 raycast::getColorForRay(ray r, BVH_Node * tree, vector <SceneObject *> scen
 		}
 
 		vec3 a, d, s;
-		vec3 localColor = computeColor(OGP, scene, obj, normal, camera, lights, false, altbrdf, a, d, s);
+		vec3 localColor = computeColor(OGP, scene, obj, normal, camera, lights, false, altbrdf, a, d, s, gi);
+
+		if (gi > 0){
+			// cout << "676" << endl;
+			for (uint i = 0; i < gi; i++) {
+				vec3 pt = generateHemispherePt(normal);
+				vec3 dir = normalize(pt);
+				// cout << "680" << endl;
+				ray giRay = ray(OGP+0.0001f*dir, dir);
+				if (gi == 64){
+					gi = 16;
+				} else {
+					gi = 0;
+				}
+				// cout << "687" << endl;
+				a += getColorForRay(giRay, tree, scene, camera, lights, altbrdf, numRecurse +1, print, fresnel, beers, sds, planes, distance, gi);
+				// cout << "689" << endl;
+			}
+
+			a *= 1.f/ gi;
+
+			// cout << "694" << endl;
+
+			// vector <vec3> sample_pts = generateHemispherePts(64, normal);
+
+			// int num_pts = sample_pts.size();
+			// for (uint i; i < num_pts; i++){
+			// 	a += getColorForRay(sample_pts[i]) * dot(sample_pts[i], normal);
+			// }
+			// a *= 2.f / num_pts;
+		}
+		
 
 		color = (1.f-refrac)*(1.f-ref)*localColor + 
 				((1.f-refrac)*(ref)+(refrac)*(fresnel_ref))*refColor + 
