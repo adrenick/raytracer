@@ -202,9 +202,7 @@ vec3 raycast::computeColor(vec3 hit, vector <SceneObject *> scene, SceneObject *
 
 	vec3 amb = obj->color * obj->ambient;
 	vec3 color = amb;
-	if (gi > 0) {
-		a = vec3(0);
-	} else {	
+	if (gi == 0) {
 		a = amb;
 	}
 
@@ -521,7 +519,8 @@ vec3 raycast::alignSample(vec3 sample, vec3 up, vec3 normal) {
 	
 	float angle = acos(dot(up, normal));
 
-	vec3 axis; 
+	vec3 axis;
+
 	if (normal == up) {
 		return sample;
 	} else if (normal == -up) {
@@ -669,27 +668,31 @@ vec3 raycast::getColorForRay(ray r, BVH_Node * tree, vector <SceneObject *> scen
 			}
 		}
 
-		vec3 a, d, s;
+		vec3 a = vec3(0.f);
+		vec3 d, s;
 		vec3 localColor = computeColor(OGP, scene, obj, normal, camera, lights, false, altbrdf, a, d, s, gi);
 
 		if (gi > 0){
+			//cout << "gi: " << gi << endl;
 			// cout << "676" << endl;
 			for (uint i = 0; i < gi; i++) {
 				vec3 pt = generateHemispherePt(normal);
 				vec3 dir = normalize(pt);
 				// cout << "680" << endl;
 				ray giRay = ray(OGP+0.0001f*dir, dir);
-				if (gi == 64){
-					gi = 16;
-				} else {
-					gi = 0;
-				}
+				
 				// cout << "687" << endl;
 				a += getColorForRay(giRay, tree, scene, camera, lights, altbrdf, numRecurse +1, print, fresnel, beers, sds, planes, distance, gi);
 				// cout << "689" << endl;
 			}
 
 			a *= 1.f/ gi;
+
+			if (gi == 64){
+					gi = 16;
+				} else {
+					gi = 0;
+				}
 
 			// cout << "694" << endl;
 
