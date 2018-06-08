@@ -8,7 +8,7 @@ using namespace std;
 
 glm::vec3 Box::computeCenter() {
 	
-	glm::vec3 center = glm::vec3((max.x-min.x)/2.f, (max.y-min.y)/2.f, (max.z-min.z)/2.f);
+	glm::vec3 center = glm::vec3((max.x+min.x)/2.f, (max.y+min.y)/2.f, (max.z+min.z)/2.f);
 	
 	return glm::vec3(glm::inverse(itransforms)*glm::vec4(center, 0.f));
 }
@@ -197,22 +197,22 @@ glm::vec3 Box::computeNormal(glm::vec3 p) {
 
 	glm::vec4 normal;
 
-	if (glm::epsilonEqual(p.x, min.x, 0.0001f)) {
+	if (glm::epsilonEqual(p.x, min.x, 0.001f)) {
 		normal =  glm::vec4(-1, 0, 0, 0);
 	}
-	else if (glm::epsilonEqual(p.x, max.x, 0.0001f)) {
+	else if (glm::epsilonEqual(p.x, max.x, 0.001f)) {
 		normal =  glm::vec4(1, 0, 0, 0);
 	}
-	else if (glm::epsilonEqual(p.y, min.y, 0.0001f)) {
+	else if (glm::epsilonEqual(p.y, min.y, 0.001f)) {
 		normal =  glm::vec4(0, -1, 0, 0);
 	}
-	else if (glm::epsilonEqual(p.y, max.y, 0.0001f)) {
+	else if (glm::epsilonEqual(p.y, max.y, 0.001f)) {
 		normal = glm::vec4(0, 1, 0, 0);
 	}
-	else if (glm::epsilonEqual(p.z, min.z, 0.0001f)) {
+	else if (glm::epsilonEqual(p.z, min.z, 0.001f)) {
 		normal = glm::vec4(0, 0, -1, 0);
 	}
-	else if (glm::epsilonEqual(p.z, max.z, 0.0001f)) {
+	else if (glm::epsilonEqual(p.z, max.z, 0.001f)) {
 		normal = glm::vec4(0, 0, 1, 0);
 	} else {
 		std::cerr << "cannot compute box normal" << std::endl;
