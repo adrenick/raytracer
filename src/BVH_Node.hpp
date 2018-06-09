@@ -24,16 +24,8 @@ public:
 	void buildTree(int axis);
 
 	static BB calculateBBox(std::vector <SceneObject *> objs);
-	
 
 	void sortObjectsOnAxis(int axis);
-
-		// BVH_Node(std::vector<SceneObject *> & objs) {
-		// 	std::vector <BVH_Node *> c;
-		// 	objects = objs;
-		// 	children = c;
-		// }
-
 };
 
 #endif

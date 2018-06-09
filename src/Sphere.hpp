@@ -17,8 +17,6 @@ public:
 
 	float intersect(const ray & r);
 
-	//glm::vec3 computeCenter();
-
 	void print();
 
 	BB getBoundingBox();

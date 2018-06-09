@@ -21,7 +21,6 @@ ray raycast::createRay(Camera * camera, int width, int height, int x, int y)
 	vec3 origin = camera->location;
 	vec3 dir = normalize((Us * camera->right)+(Vs * camera->up)+(Ws * normalize(camera->location-camera->look_at)));
 
-	//ray * r = new ray(origin, dir);
 	ray r = ray(origin, dir);
 
 	return r;
@@ -36,7 +35,6 @@ ray raycast::createSuperSampledRay(Camera * camera, int width, int height, int x
 	vec3 origin = camera->location;
 	vec3 dir = normalize((Us * camera->right)+(Vs * camera->up)+(Ws * normalize(camera->location-camera->look_at)));
 
-	//ray * r = new ray(origin, dir);
 	ray r = ray(origin, dir);
 
 	return r;
@@ -58,8 +56,6 @@ void raycast::doRaycast(vector <SceneObject *> & scene, Camera * camera, int wid
 	    	unsigned int red, green, blue = 0;
 
 			ray r = createRay(camera, width, height, x, y);
-			//vec3 origin = r->origin;
-			//vec3 dir = r->direction;
 
 			float closestHit = -1;
 			float closestObjIndex = -1;
@@ -88,8 +84,6 @@ void raycast::doRaycast(vector <SceneObject *> & scene, Camera * camera, int wid
 	        data[(size.x * numChannels) * (size.y - 1 - y) + numChannels * x + 0] = red;
 	        data[(size.x * numChannels) * (size.y - 1 - y) + numChannels * x + 1] = green;
 	        data[(size.x * numChannels) * (size.y - 1 - y) + numChannels * x + 2] = blue;
-
-	        //delete r;
 	    }
 	}
 
@@ -111,8 +105,6 @@ void raycast::pixelRay(Camera * camera, int width, int height, int x, int y)
 	ray r = createRay(camera, width, height, x, y);
 
 	printPixelRay(x, y, r);
-
-	//delete r;
 }
 
 
@@ -120,8 +112,6 @@ void raycast::pixelColor(vector <SceneObject *> scene, Camera * camera, vector <
 {
 
 	ray r = createRay(camera, width, height, x, y);
-	//vec3 origin = r->origin;
-	//vec3 dir = r->direction;
 
 	printPixelRay(x, y, r);
 
@@ -148,12 +138,10 @@ void raycast::pixelColor(vector <SceneObject *> scene, Camera * camera, vector <
 		vec3 P = r.origin+closestHit*r.direction;
 		vec3 normal = scene[closestObjIndex]->computeNormal(P);
 		BVH_Node * nulltree = nullptr;
-		vector <SceneObject *> nullplanes;// = nullptr;
+		vector <SceneObject *> nullplanes;
 
 		computeColor(P, nulltree, scene, nullplanes, scene[closestObjIndex], normal, camera, lights, true, false, a, d, s, false, 0);
 	} 
-
-	//delete r;
 }
 
 float raycast::firstHit(ray r, vector <SceneObject *> scene, bool print)
@@ -201,8 +189,6 @@ float raycast::firstHit(ray r, vector <SceneObject *> scene, bool print)
 
 vec3 raycast::computeColor(vec3 hit, BVH_Node * tree, vector <SceneObject *> scene, vector <SceneObject *> planes, SceneObject * obj, vec3 normal, Camera * camera, vector <Light *> lights, bool print, bool altbrdf, vec3 & a, vec3 & d, vec3 & s, bool sds, int gi)
 {
-	//SceneObject * obj = scene[objIndex];
-
 	vec3 amb = obj->color * obj->ambient;
 	
 	if (gi > 0) {
@@ -217,17 +203,13 @@ vec3 raycast::computeColor(vec3 hit, BVH_Node * tree, vector <SceneObject *> sce
 		vec3 v = normalize(camera->location - hit);
 		vec3 h = normalize(l+v);
 		
-		//ray * lRay = new ray(hit + (n*0.001f), l); 
 		ray lRay = ray(hit + (n*0.001f), l); 
 
-		//float lightHit = firstHit(lRay , scene, false);
 		float lightHit = -1;
 		ray tRay = ray(vec3(0), vec3(0));
 		getIntersect(lRay, tree, scene, lightHit, tRay, sds, planes);
-		//cout << "227" << endl;
 		
 		if (!((lightHit) != -1 && (lightHit < length(lights[i]->location - hit)))) {
-			//cout << "230" << endl;
 			vec3 kd = obj->diffuse*obj->color;
 			vec3 ks = obj->specular*obj->color;
 
@@ -256,9 +238,7 @@ vec3 raycast::computeColor(vec3 hit, BVH_Node * tree, vector <SceneObject *> sce
 				s = spec;
 				color += spec;
 			}
-			//cout << "259" << endl;
 		}
-		//delete lRay; 
 	}
 
 	if (print) {
@@ -317,7 +297,6 @@ void raycast::render(vector <SceneObject *> & scene, Camera * camera, vector <Li
 	BVH_Node * tree;
 	std::vector <SceneObject *> planes;
 	if (sds){
-		//cout << "sds" << endl;
 		std::vector <SceneObject *> objs;
 		for (uint i = 0; i < scene.size(); i++){
 			if (scene[i]->type == "Plane") {
@@ -326,11 +305,9 @@ void raycast::render(vector <SceneObject *> & scene, Camera * camera, vector <Li
 				objs.push_back(scene[i]);
 			}
 		} 
-		//const std::vector <SceneObject *> objects = objs;
 		tree = new BVH_Node(objs);
 
 		tree->buildTree(0);
-		//tree = BVH_Node::buildTree(objs, 0);
 		std::string root = "root";
 		tree->printTree(root);
 	}
@@ -357,7 +334,6 @@ void raycast::render(vector <SceneObject *> & scene, Camera * camera, vector <Li
 				}
 				color = color/((float)ssN*ssN);
 			}
-			//delete r;
 			
 			red = (unsigned int) std::round(clamp(color.x, 0.f, 1.f) * 255.f);
 			green = (unsigned int) std::round(clamp(color.y, 0.f, 1.f) * 255.f);
@@ -419,40 +395,6 @@ bool raycast::recurseDownTree(ray r, BVH_Node * tree, float & closesthit, SceneO
 	}
 
 	return closestObj != nullptr;
-
-
-	// if (tree->children.empty()) {
-	// 	for (uint i = 0; i < tree->objects.size(); i++){
-	// 		vec4 Oprime = tree->objects[i]->itransforms*vec4(r.origin, 1.0);
-	// 		vec4 Dprime = tree->objects[i]->itransforms*vec4(r.direction, 0.0);
-	// 		ray tr = ray(vec3(Oprime), vec3(Dprime));
-
-	// 		float hit = tree->objects[i]->intersect(tr);
-	// 		if (hit > 0){
-	// 			if ((closesthit == -1) || (hit < closesthit)) {
-	// 				closesthit = hit;
-	// 				closestObj = tree->objects[i];
-	// 				//tRay = r;
-	// 				tRay = tr;
-	// 			}
-	// 		}
-	// 	}	
-			
-	// } else {
-	// 	//float hit = tree.volume.intersect(r);
-	// 	//if (hit > 0){
-	// 		//cout << "*** " << tree.children.size() << endl;
-	// 	if (tree->children.size() >= 1)	{
-	// 		if (tree->children[0]->volume.intersect(r) > 0){
-	// 			recurseDownTree(r, tree->children[0], closesthit, closestObj, tRay);
-	// 		}
-	// 	} if (tree->children.size() >= 2) {
-	// 		if (tree->children[1]->volume.intersect(r) > 0){
-	// 			recurseDownTree(r, tree->children[1], closesthit, closestObj, tRay);
-	// 		}
-	// 	}
-	// 	//}
-	// } 
 }
 
 void raycast::intersectPlanes(ray r, float & closestHit, SceneObject * & obj, ray & tRay, vector <SceneObject *> planes)
@@ -479,14 +421,10 @@ SceneObject * raycast::getIntersect(ray r, BVH_Node * tree, vector <SceneObject 
 {
 
 	if (sds){
-		//cout << "sds" << endl;
 		SceneObject * obj = nullptr;
 		bool intersect = recurseDownTree(r, tree, closestHit, obj, tRay);
 		intersectPlanes(r, closestHit, obj, tRay, planes);
-		// if (closestHit > 0 ){
-		// 	cout << obj->color.x << endl;
-		// }
-		//cout << "487" << endl;
+
 		if (intersect){
 			return obj;
 		} else {
@@ -519,9 +457,6 @@ SceneObject * raycast::getIntersect(ray r, BVH_Node * tree, vector <SceneObject 
 				tRay = tr;
 			}
 		}
-		// if (closestHit > 0) {
-		// 	cout << scene[closestObjIndex]->color.x << endl;
-		// }
 		
 		return scene[closestObjIndex];
 	}
@@ -541,13 +476,8 @@ vec3 raycast::alignSample(vec3 sample, vec3 up, vec3 normal) {
 		axis = cross(up, normal);
 	} 	
 	
-	
-
 	mat4 rotMat = mat4(1.f);
-	rotMat = rotate(mat4(1.f), angle, axis) * rotMat; //?
-
-	//mat4 Model = glm::mat4(1.0f);
-	//Model = rotate(mat4(1.f), radians(t.z), vec3(0, 0, 1))*Model;
+	rotMat = rotate(mat4(1.f), angle, axis) * rotMat; 
 
 	return vec3(rotMat * vec4(sample, 0.f));
 }	
@@ -566,14 +496,13 @@ vec3 raycast::cosineWeightedPt(float u, float v) {
 
 vec3 raycast::generateHemispherePt(vec3 normal) {
 	
-	// vector <vec3> pts;
+
 	float u, v;
-	// for (uint i = 0; i <= count; i++){
-		u = rand() / (float) RAND_MAX; //STRATIFY
-		v = rand() / (float) RAND_MAX;
+
+	u = rand() / (float) RAND_MAX; //STRATIFY
+	v = rand() / (float) RAND_MAX;
 
 	vec3 pt = (alignSample(cosineWeightedPt(u, v), vec3(0, 0, 1), normal));
-	// }
 
 	return pt;
 }
@@ -630,7 +559,6 @@ vec3 raycast::getColorForRay(ray r, BVH_Node * tree, vector <SceneObject *> scen
 			float dDotn = dot(dir, normal);
 			float objIor = obj->ior;
 			float n1, n2;
-			//vec3 OGNormal = normal;
 
 			if (dDotn < 0) {
 				n1 = 1.0f;
@@ -647,7 +575,6 @@ vec3 raycast::getColorForRay(ray r, BVH_Node * tree, vector <SceneObject *> scen
 			}
 
 			float ratio = (n1/n2);
-			//vec3 refracDir = ratio*(dir-dDotn*normal)-normal*(float)(sqrt(1-(pow(ratio, 2)*(1-pow(dDotn, 2)))));
 			vec3 refracDir = ratio*(dir-dDotn*normal)-normal*(float)(sqrt(1-(pow(ratio, 2)*(1-pow(dDotn, 2)))));
 			ray refracRay = ray(OGP+0.001f*refracDir, refracDir);
 
@@ -656,12 +583,7 @@ vec3 raycast::getColorForRay(ray r, BVH_Node * tree, vector <SceneObject *> scen
 			}
 			
 			if (numRecurse < 12){
-				//if  (!std::isnan(refracRay.direction.x)) {
-					//cerr << "nan" << endl;
-					refracColor = (getColorForRay(refracRay, tree, scene, camera, lights, altbrdf, numRecurse+1, print, fresnel, beers, sds, planes, distance, gi));
-				//} else {
-					 //cerr << "HEKLPO: "<< normal.x << " " << normal.y << " " << normal.z << endl;
-				//}
+				refracColor = (getColorForRay(refracRay, tree, scene, camera, lights, altbrdf, numRecurse+1, print, fresnel, beers, sds, planes, distance, gi));
 			}
 
 			if (entering){
@@ -683,41 +605,18 @@ vec3 raycast::getColorForRay(ray r, BVH_Node * tree, vector <SceneObject *> scen
 		vec3 d, s;
 
 		if (gi > 0){
-			// cout << "gi: " << gi << endl;
-			// cout << "676" << endl;
 			for (uint i = 0; i < gi; i++) {
 				vec3 pt = generateHemispherePt(normal);
 				vec3 dir = normalize(pt);
-				// cout << "680" << endl;
+
 				ray giRay = ray(OGP+0.0001f*dir, dir);
 				
-				// cout << "687" << endl;
 				if (gi == 64){
 					a += getColorForRay(giRay, tree, scene, camera, lights, altbrdf, numRecurse+1, print, fresnel, beers, sds, planes, distance, 16);
 				} 
-				
-				// cout << "689" << endl;
 			}
 
-			a *= 1.f/ gi; // do this every time?
-
-			// if (gi == 64){
-			// 	gi = 16;
-			// } else {
-			// 	gi = 0;
-			// }
-
-
-
-			// cout << "694" << endl;
-
-			// vector <vec3> sample_pts = generateHemispherePts(64, normal);
-
-			// int num_pts = sample_pts.size();
-			// for (uint i; i < num_pts; i++){
-			// 	a += getColorForRay(sample_pts[i]) * dot(sample_pts[i], normal);
-			// }
-			// a *= 2.f / num_pts;
+			a *= 1.f/ gi; 
 		}
 												
 		vec3 localColor = computeColor(OGP, tree, scene, planes, obj, normal, camera, lights, false, altbrdf, a, d, s, sds, gi);

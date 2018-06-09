@@ -67,7 +67,6 @@ float Box::intersect(const ray & r)
 		}
 	}
 
-
  	float smallestMax = glm::min(glm::min(txmax, tymax), tzmax);
  	float largestMin = glm::max(glm::max(txmin, tymin), tzmin);
 

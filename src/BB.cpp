@@ -8,29 +8,11 @@ using namespace std;
 
 glm::vec3 BB::computeCenter() {
 	
-	// glm::vec3 center = glm::vec3((max.x+min.x)/2.f, (max.y+min.y)/2.f, (max.z+min.z)/2.f);
-	
-	// return glm::vec3(glm::inverse(itransforms)*glm::vec4(center, 0.f));
-
 	return (max + min)/2.f;
 }
 
-// BB BB::getBoundingBox() {
-	
-// 	BB box;
-
-// 	box.Reset(min);
-// 	box.AddPoint(max);
-// 	box.transformBox(inverse(itransforms));
-
-// 	return box;
-// }
-
 float BB::intersect(const ray & r)
 {
-	//float tgmin = -std::numeric_limits<float>::max();
- 	//float tgmax = std::numeric_limits<float>::max();
-
   	float txmin = (min.x - r.origin.x)/r.direction.x;
  	float txmax = (max.x - r.origin.x)/r.direction.x;
 
@@ -78,7 +60,6 @@ float BB::intersect(const ray & r)
 		}
 	}
 
-
  	float smallestMax = glm::min(glm::min(txmax, tymax), tzmax);
  	float largestMin = glm::max(glm::max(txmin, tymin), tzmin);
 
@@ -93,50 +74,6 @@ float BB::intersect(const ray & r)
  	}
 } 
 
-
-// void BB::print()
-// {
-// 	cout << "- Min: {" << min.x << " " << min.y << " " << min.z << "}" << endl;
-// 	cout << "- Max: {" << max.x << " " << max.y << " " << max.z << "}" << endl;
-// 	cout << "- Color: {" << color.x << " " << color.y << " " << color.z << " " << filter << "}" << endl;
-// 	cout << "- Material: \n  - Ambient: " << ambient << "\n  - Diffuse: " << diffuse << endl;
-// 	cout << "  - Specular: " << specular << "\n  - Roughness: " << roughness << endl;
-// 	cout << "  - Reflection: " << reflection << endl;
-// 	cout << "  - Refraction: " << refraction << endl;
-// 	cout << "  - IOR: " << ior << endl;
-// 	cout << endl;
-// }
-
-// glm::vec3 BB::computeNormal(glm::vec3 p) {
-
-// 	glm::vec4 normal;
-
-// 	if (glm::epsilonEqual(p.x, min.x, 0.001f)) {
-// 		normal =  glm::vec4(-1, 0, 0, 0);
-// 	}
-// 	else if (glm::epsilonEqual(p.x, max.x, 0.001f)) {
-// 		normal =  glm::vec4(1, 0, 0, 0);
-// 	}
-// 	else if (glm::epsilonEqual(p.y, min.y, 0.001f)) {
-// 		normal =  glm::vec4(0, -1, 0, 0);
-// 	}
-// 	else if (glm::epsilonEqual(p.y, max.y, 0.001f)) {
-// 		normal = glm::vec4(0, 1, 0, 0);
-// 	}
-// 	else if (glm::epsilonEqual(p.z, min.z, 0.001f)) {
-// 		normal = glm::vec4(0, 0, -1, 0);
-// 	}
-// 	else if (glm::epsilonEqual(p.z, max.z, 0.001f)) {
-// 		normal = glm::vec4(0, 0, 1, 0);
-// 	} else {
-// 		std::cerr << "cannot compute box normal" << std::endl;
-// 		cout << "point: " << p.x << " " << p.y << " " << p.z << endl;
-// 		normal = glm::vec4(0, 0, 0, 0);
-// 	}
-
-// 	return glm::normalize(glm::vec3((glm::transpose(itransforms))*normal));
-
-// }
 
 void BB::Reset(glm::vec3 p) {
 	min = max = p;
@@ -186,45 +123,3 @@ void BB::transformBox(glm::mat4 tforms) {
 	AddPoint(glm::vec3(p8));
 
 }
-
-// BB BB::calculateBBox(std::vector <SceneObject *> objs) {
-// 	BB total= BB();
-		
-// 	for (uint i = 0; i < objs.size(); i++) {
-// 		total.AddBox(objs[i]->getBoundingBox());
-// 		// Box box = Box();
-			
-// 		// if (objs[i]->type == "Triangle") {
-// 		// 	Triangle * obj = dynamic_cast<Triangle *> (objs[i]);
-
-// 		// 	box.Reset(obj->A);
-// 		// 	box.AddPoint(obj->B);
-// 		// 	box.AddPoint(obj->C);
-
-// 		// 	box.transformBox(obj->itransforms);
-
-// 		// 	total.AddBox(box);
-// 		// } else if (objs[i]->type == "Sphere"){
-// 		// 	Sphere * obj = dynamic_cast<Sphere *> (objs[i]);
-
-// 		// 	box.Reset(obj->origin - (obj->radius));
-// 		// 	box.AddPoint(obj->origin + (obj->radius));
-
-// 		// 	box.transformBox(obj->itransforms);
-
-// 		// 	total.AddBox(box);
-// 		// } else if (objs[i]->type == "Box") {
-// 		// 	Box * obj = dynamic_cast<Box *> (objs[i]);
-
-// 		// 	box = *obj;
-
-// 		// 	box.transformBox(obj->itransforms);
-
-// 		// 	total.AddBox(box);
-// 		// } else {
-// 		// 	std::cerr << "snakes on a plane" << std::endl;
-// 		// }
-// 	}
-
-// 	return total;
-// }

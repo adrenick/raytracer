@@ -62,11 +62,9 @@ vec3 Parse::ParseVector(stringstream & Stream)
 	Stream.ignore(numeric_limits<streamsize>::max(), '>');
 
 	std::string line = buf.str(); 
-	//cout << "line: " << line << endl;
+
 	int read = sscanf(line.c_str(), "%f, %f, %f", &x, &y, &z);
 	v = vec3(x, y, z);
-
-	//cout << "v: " << v.x << " " << v.y << " " << v.z << endl;
 
 	if (read != 3)
 	{
@@ -84,25 +82,12 @@ SceneObject * Parse::ParseBox(std::stringstream & Stream)
 	float amb, diff, spec, rough, ior, ref, refrac = 0.f;
 	stringbuf buf;
 
-	//Stream.ignore(1, ' ');
-
 	min = Parse::ParseVector(Stream);
 
 	Stream.ignore(1, ',');
 
 	max = Parse::ParseVector(Stream);
-	// Stream.get(buf, 'p'); 
-	// if (Stream.eof()){
- //    	cerr << "Expected <x, y, x>, d'" << endl;
- //    }
 
-	// string line = buf.str();
-	// int read = sscanf(line.c_str(), "%f", &d);
-
-	// if (read != 1)
-	// {
-	// 	cerr << "Expected to read 1 distance but found '" << line << "'" << endl;
-	// }
 	buf.str("");
 	Stream.get(buf, 'p');
 	string tforms = buf.str();
@@ -150,11 +135,7 @@ SceneObject * Parse::ParseBox(std::stringstream & Stream)
     stringstream rest;
     rest.str(whole);
 
-    //mat4 Model = glm::mat4(1.0f);
-
-    //string token;
     rest >> token;
-    //vec3 t;
     while ((token != "}") && (!rest.eof()))
     {
 		if (token == "scale"){
@@ -201,7 +182,6 @@ SceneObject * Parse::ParseSphere(stringstream & Stream)
 	v = Parse::ParseVector(Stream);
 
 	Stream.ignore(1, ',');
-	//Stream.get(buf, 'p'); 
 	Stream.get(buf, '\n'); 
 	if (Stream.eof()){
     	cerr << "Expected <x, y, x>, d'" << endl;
@@ -217,7 +197,6 @@ SceneObject * Parse::ParseSphere(stringstream & Stream)
 	buf.str("");
 	Stream.get(buf, 'p');
 	string tforms = buf.str();
-	//cout << "tforms: " << tforms << endl;
 	stringstream transforms;
 	transforms.str(tforms);
 
@@ -261,11 +240,7 @@ SceneObject * Parse::ParseSphere(stringstream & Stream)
     stringstream rest;
     rest.str(whole);
 
-    //mat4 Model = glm::mat4(1.0f);
-
-    //string token;
     rest >> token;
-    //vec3 t;
     while ((token != "}") && (!rest.eof()))
     {
 		if (token == "scale"){
@@ -367,7 +342,6 @@ SceneObject * Parse::ParseTriangle(stringstream & Stream)
     stringstream rest;
     rest.str(whole);
 
-    //string token;
     rest >> token;
     while ((token != "}") && (!rest.eof()))
     {
@@ -513,7 +487,6 @@ float Parse::ParseReflection(stringstream & Stream)
 	line = Stream.str();
 
 	return r;
-
 }
 
 
