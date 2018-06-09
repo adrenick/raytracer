@@ -147,7 +147,10 @@ void raycast::pixelColor(vector <SceneObject *> scene, Camera * camera, vector <
 		vec3 a, d, s;
 		vec3 P = r.origin+closestHit*r.direction;
 		vec3 normal = scene[closestObjIndex]->computeNormal(P);
-		computeColor(P, scene, scene[closestObjIndex], normal, camera, lights, true, false, a, d, s, 0);
+		BVH_Node * nulltree = nullptr;
+		vector <SceneObject *> nullplanes;// = nullptr;
+
+		computeColor(P, nulltree, scene, nullplanes, scene[closestObjIndex], normal, camera, lights, true, false, a, d, s, false, 0);
 	} 
 
 	//delete r;
@@ -196,7 +199,7 @@ float raycast::firstHit(ray r, vector <SceneObject *> scene, bool print)
 	return closestHit;
 }
 
-vec3 raycast::computeColor(vec3 hit, vector <SceneObject *> scene, SceneObject * obj, vec3 normal, Camera * camera, vector <Light *> lights, bool print, bool altbrdf, glm::vec3 & a, glm::vec3 & d, glm::vec3 & s, int gi)
+vec3 raycast::computeColor(vec3 hit, BVH_Node * tree, vector <SceneObject *> scene, vector <SceneObject *> planes, SceneObject * obj, vec3 normal, Camera * camera, vector <Light *> lights, bool print, bool altbrdf, vec3 & a, vec3 & d, vec3 & s, bool sds, int gi)
 {
 	//SceneObject * obj = scene[objIndex];
 
@@ -217,10 +220,14 @@ vec3 raycast::computeColor(vec3 hit, vector <SceneObject *> scene, SceneObject *
 		//ray * lRay = new ray(hit + (n*0.001f), l); 
 		ray lRay = ray(hit + (n*0.001f), l); 
 
-		float lightHit = firstHit(lRay , scene, false);
+		//float lightHit = firstHit(lRay , scene, false);
+		float lightHit = -1;
+		ray tRay = ray(vec3(0), vec3(0));
+		getIntersect(lRay, tree, scene, lightHit, tRay, sds, planes);
+		//cout << "227" << endl;
 		
 		if (!((lightHit) != -1 && (lightHit < length(lights[i]->location - hit)))) {
-
+			//cout << "230" << endl;
 			vec3 kd = obj->diffuse*obj->color;
 			vec3 ks = obj->specular*obj->color;
 
@@ -249,6 +256,7 @@ vec3 raycast::computeColor(vec3 hit, vector <SceneObject *> scene, SceneObject *
 				s = spec;
 				color += spec;
 			}
+			//cout << "259" << endl;
 		}
 		//delete lRay; 
 	}
@@ -467,7 +475,7 @@ void raycast::intersectPlanes(ray r, float & closestHit, SceneObject * & obj, ra
 	}
 }
 
-SceneObject * raycast::getIntersect(ray r, BVH_Node * tree, vector <SceneObject *> scene, float & closestHit, int & closestObjIndex, ray & tRay, bool sds, vector <SceneObject *> planes)
+SceneObject * raycast::getIntersect(ray r, BVH_Node * tree, vector <SceneObject *> scene, float & closestHit, ray & tRay, bool sds, vector <SceneObject *> planes)
 {
 
 	if (sds){
@@ -478,6 +486,7 @@ SceneObject * raycast::getIntersect(ray r, BVH_Node * tree, vector <SceneObject 
 		// if (closestHit > 0 ){
 		// 	cout << obj->color.x << endl;
 		// }
+		//cout << "487" << endl;
 		if (intersect){
 			return obj;
 		} else {
@@ -487,6 +496,7 @@ SceneObject * raycast::getIntersect(ray r, BVH_Node * tree, vector <SceneObject 
 		
 	} 
 	else {
+		int closestObjIndex = -1;
 		for (uint i = 0; i < scene.size(); i++){
 
 			mat4 M = scene[i]->itransforms;
@@ -572,10 +582,9 @@ vec3 raycast::getColorForRay(ray r, BVH_Node * tree, vector <SceneObject *> scen
 {
 
 	float closestHit = -1;
-	int closestObjIndex = -1;
 	ray tRay = ray(vec3(0), vec3(0));
 		
-	SceneObject * obj = getIntersect(r, tree, scene, closestHit, closestObjIndex, tRay, sds, planes);
+	SceneObject * obj = getIntersect(r, tree, scene, closestHit, tRay, sds, planes);
 
 	if (closestHit == -1){
 
@@ -674,7 +683,7 @@ vec3 raycast::getColorForRay(ray r, BVH_Node * tree, vector <SceneObject *> scen
 		vec3 d, s;
 
 		if (gi > 0){
-			//cout << "gi: " << gi << endl;
+			// cout << "gi: " << gi << endl;
 			// cout << "676" << endl;
 			for (uint i = 0; i < gi; i++) {
 				vec3 pt = generateHemispherePt(normal);
@@ -710,8 +719,8 @@ vec3 raycast::getColorForRay(ray r, BVH_Node * tree, vector <SceneObject *> scen
 			// }
 			// a *= 2.f / num_pts;
 		}
-
-		vec3 localColor = computeColor(OGP, scene, obj, normal, camera, lights, false, altbrdf, a, d, s, gi);
+												
+		vec3 localColor = computeColor(OGP, tree, scene, planes, obj, normal, camera, lights, false, altbrdf, a, d, s, sds, gi);
 		
 
 		color = (1.f-refrac)*(1.f-ref)*localColor + 
@@ -729,7 +738,7 @@ vec3 raycast::getColorForRay(ray r, BVH_Node * tree, vector <SceneObject *> scen
 			cout << r.direction.x << " " << r.direction.y << " " << r.direction.z << "}" << endl;
 			cout << "  Transformed Ray: {" << tRay.origin.x << " " << tRay.origin.y << " " << tRay.origin.z << "} -> {";
 			cout << tRay.direction.x << " " << tRay.direction.y << " " << tRay.direction.z << "}" << endl;
-			cout << "       Hit Object: (ID #" << closestObjIndex+1 << " - " << scene[closestObjIndex]->type << ")" << endl;
+			//cout << "       Hit Object: (ID #" << closestObjIndex+1 << " - " << scene[closestObjIndex]->type << ")" << endl;
 			cout << "Transformed Intersection: {" << P.x << " " << P.y << " " << P.z << "} at T = " << closestHit << endl;
 			cout << "     Intersection: {" << OGP.x << " " << OGP.y << " " << OGP.z << "} at T = " << closestHit << endl;
 			cout << "           Normal: {" << normal.x << " " << normal.y << " " << normal.z << "}" << endl;

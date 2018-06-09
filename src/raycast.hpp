@@ -27,9 +27,9 @@ public:
 
 	static void pixelColor(std::vector <SceneObject *> scene, Camera * camera, std::vector <Light *> lights, int width, int height, int x, int y);
 
-	static glm::vec3 computeColor(glm::vec3 hit, std::vector <SceneObject *> scene, SceneObject * obj, glm::vec3 normal, Camera * camera, std::vector <Light *> lights, bool print, bool altbrdf, glm::vec3 & a, glm::vec3 & d, glm::vec3 & s, int gi);
+	static glm::vec3 computeColor(glm::vec3 hit, BVH_Node * tree, std::vector <SceneObject *> scene, std::vector <SceneObject *> planes, SceneObject * obj, glm::vec3 normal, Camera * camera, std::vector <Light *> lights, bool print, bool altbrdf, glm::vec3 & a, glm::vec3 & d, glm::vec3 & s, bool sds, int gi);
 
-	static SceneObject * getIntersect(ray r, BVH_Node * tree, std::vector <SceneObject *> scene, float & closestHit, int & closestObjIndex, ray & tRay, bool sds, std::vector <SceneObject *> planes);
+	static SceneObject * getIntersect(ray r, BVH_Node * tree, std::vector <SceneObject *> scene, float & closestHit, ray & tRay, bool sds, std::vector <SceneObject *> planes);
 
 	static bool recurseDownTree(ray r, BVH_Node * tree, float & closesthit, SceneObject * & closestObj, ray & tRay);
 
