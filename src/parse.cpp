@@ -686,13 +686,78 @@ Light * Parse::ParseLight(std::stringstream & Stream)
 	vec3 c;
 	stringbuf buf;
 
-	l = Parse::ParseVector(Stream);
+	Stream.get(buf, '}');
+	string whole = buf.str();
+	stringstream rest; 
+	rest.str(whole);
+	//cout << "whole: " << whole << endl;
 
-	Stream.get(buf, 'b');
+	//l = Parse::ParseVector(Stream);
+	l = Parse::ParseVector(rest);
 
-	c = Parse::ParseVector(Stream);
+	//buf.str("");
+	//Stream.get(buf, 'b');
+	rest.get(buf, 'b');
 
-	return new Light(l, c);
+	//c = Parse::ParseVector(Stream);
+	c = Parse::ParseVector(rest);
+
+	// buf.str("");
+ //    Stream.get(buf, '}');
+ //    string whole = buf.str();
+ //    cout << "whole: " << whole << endl;
+ //    stringstream rest;
+	// rest.str(whole);
+
+    string token;
+    rest >> token;
+
+    Light * light = new Light(l, c);
+    
+    if (token == "area_light") {
+    	vec3 axis1;
+    	vec3 axis2;
+    	int rows;
+    	int columns;
+
+    	light->isAreaLight = true;
+
+    	axis1 = Parse::ParseVector(rest);
+    	rest.ignore(1, ',');
+    	axis2 = Parse::ParseVector(rest);
+    	rest.ignore(1, ',');
+
+    	buf.str("");
+    	rest.get(buf, ',');
+    	string line = buf.str();
+		int read = sscanf(line.c_str(), "%d", &rows);
+
+		if (read != 1)
+		{
+			cerr << "Expected to read 1 distance but found '" << line << "'" << endl;
+		}
+
+		rest.ignore(1, ',');
+		buf.str("");
+    	rest.get(buf, EOF);
+    	line = buf.str();
+		read = sscanf(line.c_str(), "%d", &columns);
+
+		if (read != 1)
+		{
+			cerr << "Expected to read 1 distance but found '" << line << "'" << endl;
+		}
+
+		light->axis1 = axis1;
+		light->axis2 = axis2;
+		light->rows = rows;
+		light->columns = columns;
+
+    } else {
+    	light->isAreaLight = false;
+    }
+
+	return light;
 }
 
 void Parse::parseString(std::stringstream & stream, vector <SceneObject *> & scene, Camera * & camera, vector <Light *> & lights)

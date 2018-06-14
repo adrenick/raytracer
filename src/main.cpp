@@ -75,6 +75,7 @@ int main(int argc, char *argv[])
 		bool fresnel = false;
 		int ssN = 0;
 		bool sds = false;
+		bool soft = false;
 		int gi = 0;
 		if (argc == 6){
 			string opt = argv[5];
@@ -88,6 +89,8 @@ int main(int argc, char *argv[])
 				sds = true;
 			} else if (opt == "-gi") {
 				gi = 64;
+			} else if (opt == "soft"){
+				soft = true;
 			} else {
 				int pos = opt.find("ss=");
 				if (pos != std::string::npos){
@@ -100,7 +103,7 @@ int main(int argc, char *argv[])
 		}
 		
 		Parse::parseFile(argv[2], scene, camera, lights);
-		raycast::render(scene, camera, lights, atoi(argv[3]), atoi(argv[4]), altbrdf, beers, fresnel, sds, ssN, gi);
+		raycast::render(scene, camera, lights, atoi(argv[3]), atoi(argv[4]), altbrdf, beers, fresnel, sds, ssN, gi, soft);
 
 	} else if (exec == "pixelcolor"){
 		if (argc < 7 || argc > 8){
