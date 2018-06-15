@@ -222,7 +222,7 @@ void raycast::blinnPhong(SceneObject * obj, vec3 n, vec3 l, vec3 h, vec3 & d, ve
 
 }
 
-bool raycast::inShadow(vec3 hit, vec3 lightPosition, BVH_Node * tree, vector <SceneObject *> scene, vector <SceneObject *> planes, bool sds)
+bool raycast::inShadow(SceneObject * & obj, float & hitPt, vec3 hit, vec3 lightPosition, BVH_Node * tree, vector <SceneObject *> scene, vector <SceneObject *> planes, bool sds)
 {
 	float lightHit = -1;
 	ray tRay = ray(vec3(0), vec3(0));
@@ -230,17 +230,17 @@ bool raycast::inShadow(vec3 hit, vec3 lightPosition, BVH_Node * tree, vector <Sc
 	vec3 l = normalize(lightPosition - hit);
 	ray lRay = ray(hit + (l*0.001f), l); 
 
-	getIntersect(lRay, tree, scene, lightHit, tRay, sds, planes);
+	obj = getIntersect(lRay, tree, scene, lightHit, tRay, sds, planes);
 
 	if (lightHit > 0) {
 		if (lightHit <= length(lightPosition - hit)) {
+			hitPt = lightHit;
 			return true;
 		}
 	}
 
 	return false;
 }
-
 
 vec3 raycast::computeColor(vec3 hit, BVH_Node * tree, vector <SceneObject *> scene, vector <SceneObject *> planes, SceneObject * obj, vec3 normal, Camera * camera, vector <Light *> lights, bool print, bool altbrdf, vec3 & a, vec3 & d, vec3 & s, bool sds, int gi)
 {
@@ -251,67 +251,62 @@ vec3 raycast::computeColor(vec3 hit, BVH_Node * tree, vector <SceneObject *> sce
 	}
 	vec3 color = amb;
 
-	//vec3 n = normal;
 	vec3 v = normalize(camera->location - hit);
 
 	for (uint n = 0; n < lights.size(); n++){
-		//cout << "255" << endl;
 		vec3 l = normalize(lights[n]->location - hit);
 		vec3 h = normalize(l+v);
-		//cout << "261" << endl;
 
 		for (uint i = 0; i < lights[n]->rows; i++) {
-			//cout << "264" << endl;
 			for (uint j = 0; j < lights[n]->columns; j++){
-				//cout << "263" << endl;
 				vec3 sample = lights[n]->getSample(i, j);
-				//cout << "sample: " << sample.x << " " << sample.y << " " << sample.z << endl;
+				l = normalize(sample - hit);
 				float weight = 1.0 / (lights[n]->rows * lights[n]->columns);
-				//cout << "266" << endl;
 
-				if (!inShadow(hit, sample, tree, scene, planes, sds)) {
-					//cout << "269" << endl;
+				SceneObject * hitObj;
+				float hitPt = -1;
+
+				if (!inShadow(hitObj, hitPt, hit, sample, tree, scene, planes, sds)) {
 					if (altbrdf) {
 						color += (lights[n]->color)*cookTorrence(obj, normal, l, v, h);
 					} else {
-						//cout << "273" << endl;
 						blinnPhong(obj, normal, l, h, d, s);
 						color += (lights[n]->color)*d*weight;
 						color += (lights[n]->color)*s*weight;
-						//cout << "277" << endl;
+					}
+
+				} else {
+					if (hitObj->filter > 0 && hitObj != obj){
+
+						vec3 P = hit + l*hitPt;
+
+						vec3 refNormal = hitObj->computeNormal(P);
+
+						float dDotn = dot(l, refNormal);
+						float n1 = 1.0f;
+						float n2 = hitObj->ior;
+						float ratio = (n1/n2);
+						
+						vec3 refracDir = ratio*(l-dDotn*refNormal)-refNormal*(float)(sqrt(1-(pow(ratio, 2)*(1-pow(dDotn, 2)))));
+						ray entering = ray(P+0.001f*refracDir, refracDir);
+
+						entering = ray(P+0.001f, l);
+
+						float exitHit = hitObj->intersect(entering);
+
+						vec3 exitPt = P + exitHit*entering.direction;
+
+						ray r = ray(lights[n]->location, normalize(exitPt - lights[n]->location));
+						float i = hitObj->intersect(r);
+
+						float dif = abs(dot(r.direction, hitObj->computeNormal(lights[n]->location + r.direction*i)));
+
+						color += color*dif*hitObj->ior*weight; 
 					}
 				}
-				//cout << "280" << endl;
 			}
-			//cout << "282" << endl;
-		}
-
-
-		//cout << "283" << endl;
-		
-		// ray lRay = ray(hit + (n*0.001f), l); 
-
-		// float lightHit = -1;
-		// ray tRay = ray(vec3(0), vec3(0));
-		// getIntersect(lRay, tree, scene, lightHit, tRay, sds, planes);
-		
-		// for (uint i = 0; i < lights[i]->rows; i++) {
-		// 	for (uint j = 0; j < lights[i]->columns; j++){
-
-		// 		if (!((lightHit) != -1 && (lightHit < length(lights[i]->location - hit)))) {
-		// 			if (altbrdf){
-		// 				color += (lights[i]->color)* cookTorrence(obj, n, l, v, h);
-		// 			} else {
-		// 				color += blinnPhong(obj, n, l, h);
-		// 			}
-		// 		}
-		// 	}
-		// }
-
-			
+		}	
 	}
-
-	//cout << "305" << endl;
 
 	if (print) {
 		uint r = round(clamp(color.x, 0.f, 1.f) * 255.f);
@@ -358,7 +353,7 @@ float raycast::calcG(vec3 x, vec3 h, vec3 n, float r)
 	return chi * (2 / (1 + sqrt(quant)));
 }
 
-void raycast::render(vector <SceneObject *> & scene, Camera * camera, vector <Light *> lights, int width, int height, bool altbrdf, bool beers, bool fresnel, bool sds, int ssN, int gi, bool soft)
+void raycast::render(vector <SceneObject *> & scene, Camera * camera, vector <Light *> lights, int width, int height, bool altbrdf, bool beers, bool fresnel, bool sds, int ssN, int gi)
 {
 	const int numChannels = 3;
 	const string fileName = "output.png";
@@ -491,7 +486,6 @@ void raycast::intersectPlanes(ray r, float & closestHit, SceneObject * & obj, ra
 
 SceneObject * raycast::getIntersect(ray r, BVH_Node * tree, vector <SceneObject *> scene, float & closestHit, ray & tRay, bool sds, vector <SceneObject *> planes)
 {
-	//cout << "487" << endl;
 	if (sds){
 		SceneObject * obj = nullptr;
 		bool intersect = recurseDownTree(r, tree, closestHit, obj, tRay);
@@ -690,10 +684,8 @@ vec3 raycast::getColorForRay(ray r, BVH_Node * tree, vector <SceneObject *> scen
 
 			a *= 1.f/ gi; 
 		}
-		
-		//cout << "683" << endl;								
+										
 		vec3 localColor = computeColor(OGP, tree, scene, planes, obj, normal, camera, lights, false, altbrdf, a, d, s, sds, gi);
-		//cout << "684" << endl;
 
 		color = (1.f-refrac)*(1.f-ref)*localColor + 
 				((1.f-refrac)*(ref)+(refrac)*(fresnel_ref))*refColor + 

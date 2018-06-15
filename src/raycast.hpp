@@ -37,7 +37,7 @@ public:
 
 	static void intersectPlanes(ray r, float & closestHit, SceneObject * & obj, ray & tRay, std::vector <SceneObject *> planes);
 
-	static void render(std::vector <SceneObject *> & scene, Camera * camera, std::vector <Light *> lights, int width, int height, bool altbrdf, bool beers, bool fresnel, bool sds, int ssN, int gi, bool soft);
+	static void render(std::vector <SceneObject *> & scene, Camera * camera, std::vector <Light *> lights, int width, int height, bool altbrdf, bool beers, bool fresnel, bool sds, int ssN, int gi);
 
 	static float schlicks_approx(float n, glm::vec3 normal, glm::vec3 d);
 
@@ -55,5 +55,5 @@ public:
 
 	static void blinnPhong(SceneObject * obj,  glm::vec3 n,  glm::vec3 l,  glm::vec3 h,  glm::vec3 & d,  glm::vec3 & s); 
 
-	static bool inShadow(glm::vec3 hit, glm::vec3 lightPosition, BVH_Node * tree, std::vector <SceneObject *> scene, std::vector <SceneObject *> planes, bool sds);
+	static bool inShadow(SceneObject * & obj, float & hitPt, glm::vec3 hit, glm::vec3 lightPosition, BVH_Node * tree, std::vector <SceneObject *> scene, std::vector <SceneObject *> planes, bool sds);
 };
