@@ -27,6 +27,5 @@ glm::vec3 Light::getSample(int i, int j)
 		return location;
 	} else {
 		return (location - axis1 / 2.f - axis2 / 2.f) + (float)i * (axis1 / (float)rows) + (float)j * (axis2 / (float)columns);
-		//(((location - axis1) / 2.f) - (axis2 / 2.f)) + (float)i * (axis1 / (float)rows) + (float)j * (axis2 / (float)columns);
 	}
 }

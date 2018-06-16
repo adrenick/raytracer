@@ -5,9 +5,8 @@ Final Project
 Alexa Drenick
 CSC 473# raytracer-adrenick
 
-amy.pov for "creative" pov file
-alexa.pov for grid of ior and filter values
-alexa_refl_refr.pov for grid of refraction and reflection values
-
-use -altbrdf flag to see implementation of cook-torrence with GGX G and D
+- Soft shadows and caustics
+- Resources: http://www.povray.org/documentation/view/3.6.0/313/, http://research.nvidia.com/sites/default/files/pubs/2016-02_A-Phenomenological-Scattering/McGuire2016Transparency.pdf
+- Used light class to implement sampling for area light
+- Refactored computeColor method to make final project additions clearer
 

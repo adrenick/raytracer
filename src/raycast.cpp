@@ -46,8 +46,8 @@ void raycast::doRaycast(vector <SceneObject *> & scene, Camera * camera, int wid
 	const string fileName = "output.png";
 	const glm::ivec2 size = glm::ivec2(width, height);
 
-	//unsigned char *data = new unsigned char[size.x * size.y * numChannels];
-	unsigned char data [size.x * size.y * numChannels];
+	unsigned char *data = new unsigned char[size.x * size.y * numChannels];
+	//unsigned char data [size.x * size.y * numChannels];
 
 	for (int y = 0; y < size.y; ++ y)
 	{
@@ -88,7 +88,7 @@ void raycast::doRaycast(vector <SceneObject *> & scene, Camera * camera, int wid
 	}
 
 	stbi_write_png(fileName.c_str(), size.x, size.y, numChannels, data, size.x * numChannels);
-	//delete[] data;
+	delete[] data;
 
 }
 
@@ -268,7 +268,7 @@ vec3 raycast::computeColor(vec3 hit, BVH_Node * tree, vector <SceneObject *> sce
 
 				if (!inShadow(hitObj, hitPt, hit, sample, tree, scene, planes, sds)) {
 					if (altbrdf) {
-						color += (lights[n]->color)*cookTorrence(obj, normal, l, v, h);
+						color += (lights[n]->color)*cookTorrence(obj, normal, l, v, h)*weight;
 					} else {
 						blinnPhong(obj, normal, l, h, d, s);
 						color += (lights[n]->color)*d*weight;
@@ -359,7 +359,8 @@ void raycast::render(vector <SceneObject *> & scene, Camera * camera, vector <Li
 	const string fileName = "output.png";
 	const glm::ivec2 size = glm::ivec2(width, height);
 
-	unsigned char data [size.x * size.y * numChannels];
+	unsigned char *data = new unsigned char[size.x * size.y * numChannels];
+	//unsigned char data [size.x * size.y * numChannels];
 
 	BVH_Node * tree;
 	std::vector <SceneObject *> planes;
@@ -413,7 +414,7 @@ void raycast::render(vector <SceneObject *> & scene, Camera * camera, vector <Li
 	}
 
 	stbi_write_png(fileName.c_str(), size.x, size.y, numChannels, data, size.x * numChannels);
-	//delete[] data;
+	delete[] data;
 }
 
 float raycast::schlicks_approx(float n, vec3 normal, vec3 v)
